@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.intern.ptp" >
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_app_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".Navigation.NavigationActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".Login.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+            <intent-filter android:label="@string/app_name" >
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Resident.ResidentActivity"
+            android:launchMode="singleTask"
+            android:label="@string/title_activity_resident" >
+        </activity>
+        <activity
+            android:name=".Location.LocationActivity"
+            android:launchMode="singleTask"
+            android:label="@string/title_activity_location" >
+        </activity>
+
+        <service android:name=".FCM.MyFcmListenerService" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".FCM.MyInstanceIDListenerService" >
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".Alert.AlertActivity"
+            android:label="@string/title_activity_alert" >
+        </activity>
+        <activity
+            android:name=".Map.MapActivity"
+            android:launchMode="singleTask"
+            android:label="@string/title_activity_map" >
+        </activity>
+
+        <service
+            android:name=".Map.MapService"
+            android:exported="false"
+            android:process=":mapservice" >
+        </service>
+
+        <service
+            android:name=".Nearest.NearestService"
+            android:exported="false"
+            android:process=":nearestservice" >
+        </service>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Resident Tracking</string>
+
+    <string name="title_section1">Resident List</string>
+    <string name="title_section2">Location List</string>
+    <string name="title_section3">Map List</string>
+    <string name="title_section4">Alert List</string>
+    <string name="title_section5">Nearest Resident</string>
+    <string name="title_section6">Profile</string>
+    <string name="title_section7">Change Password</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
+
+    <string name="action_settings">Refresh</string>
+
+
+
+    <string name="action_refresh">Refresh</string>
+    <string name="action_locations">View locations list</string>
+    <string name="LocationActivity">Location</string>
+    <string name="action_search">Search</string>
+    <string name="search_hint">Enter resident name &#8230;</string>
+
+    <string name="title_activity_login">Login</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+
+    <string name="title_fragment_resident">Resident List</string>
+    <string name="title_fragment_location">Location List</string>
+    <string name="title_fragment_map">Map List</string>
+    <string name="title_fragment_alert">Alert List</string>
+    <string name="title_fragment_neasrest_resident">Nearest Resident</string>
+    <string name="title_fragment_profile">Profile</string>
+    <string name="title_fragment_change">Change Password</string>
+
+    <string name="title_activity_resident">Resident</string>
+    <string name="title_activity_location">Location</string>
+    <string name="title_activity_map">Map</string>
+    <string name="title_activity_alert">Alert</string>
+
+    <string name="loading_title" >Processing Data &#8230;</string>
+    <string name="loading_message" >Please Wait</string>
+    <string name="title_activity_alert_dialog">AlertDialogActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+</resources>

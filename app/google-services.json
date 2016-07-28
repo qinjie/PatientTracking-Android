@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "843721625305",
+    "firebase_url": "https://patient-tracking-system-1362.firebaseio.com",
+    "project_id": "patient-tracking-system-1362",
+    "storage_bucket": "patient-tracking-system-1362.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:843721625305:android:22785ec2e1beb10f",
+        "android_client_info": {
+          "package_name": "com.example.intern.ptp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "843721625305-cmqhi5n86beqtvdnvfig3mcite8h48fl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.intern.ptp",
+            "certificate_hash": "FDDFD13AAECC67E90E2EB5CA1F0CC4D2B6F69483"
+          }
+        },
+        {
+          "client_id": "843721625305-0tn58i1lt21nede58m1lph93l9r3nihn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkkaJuwdjXygSOaE2fV1ZauRY2EtnGjYc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "843721625305-0tn58i1lt21nede58m1lph93l9r3nihn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
