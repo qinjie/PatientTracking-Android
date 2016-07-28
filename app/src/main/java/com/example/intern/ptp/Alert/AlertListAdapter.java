@@ -18,13 +18,13 @@ import com.example.intern.ptp.R;
 import java.util.List;
 
 public class AlertListAdapter extends ArrayAdapter<Alert> {
-    private final Activity context;
+    private final Activity activity;
     private final List<Alert> items;
 
-    public AlertListAdapter(Activity context,
+    public AlertListAdapter(Activity activity,
                             List<Alert> items) {
-        super(context, R.layout.item_alertlist, items);
-        this.context = context;
+        super(activity, R.layout.item_alertlist, items);
+        this.activity = activity;
         this.items = items;
     }
 
@@ -32,13 +32,13 @@ public class AlertListAdapter extends ArrayAdapter<Alert> {
     public View getView(int position, View view, ViewGroup parent) {
         ListRow row;
         if (view == null) {
-            row = new ListRow(context, null);
+            row = new ListRow(activity, null);
         } else {
             row = (ListRow) view;
         }
 
         boolean ok = !items.get(position).getOk().equalsIgnoreCase("0");
-        Drawable drawable = context.getDrawable(R.drawable.ic_sos);
+        Drawable drawable = activity.getDrawable(R.drawable.ic_sos);
         row.setImage(drawable);
         row.setImageBackgroundColor(ok ? Color.BLUE : Color.RED);
 

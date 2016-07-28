@@ -25,19 +25,21 @@ import java.util.List;
 
 public class MapListAdapter extends ArrayAdapter<Location> {
 
-    private final Activity context;
+    private final Activity activity;
     private final List<Location> items;
-    public MapListAdapter(Activity context,
-                         List<Location> items) {
-        super(context, R.layout.item_maplist, items);
-        this.context = context;
+
+    public MapListAdapter(Activity activity,
+                          List<Location> items) {
+        super(activity, R.layout.item_maplist, items);
+        this.activity = activity;
         this.items = items;
     }
+
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         ListRow row;
         if (view == null) {
-            row = new ListRow(context, null);
+            row = new ListRow(activity, null);
         } else {
             row = (ListRow) view;
         }
@@ -67,36 +69,40 @@ public class MapListAdapter extends ArrayAdapter<Location> {
         }
 
         public void setImage(String thumbnailUrl, final String imageUrl) {
-            Picasso.with(context)
-                .load(thumbnailUrl)
-                .priority(Picasso.Priority.HIGH)
-//                .networkPolicy(NetworkPolicy.NO_CACHE)
-//                .networkPolicy(NetworkPolicy.NO_STORE)
-//                .memoryPolicy(MemoryPolicy.NO_STORE)
-//                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .placeholder(R.drawable.loading_image)
-                .error(R.drawable.null_thumbnail)
-                .into(mImage);
+            Picasso.with(activity)
+                    .load(thumbnailUrl)
+                    .priority(Picasso.Priority.HIGH)
+//                    .networkPolicy(NetworkPolicy.NO_CACHE)
+//                    .networkPolicy(NetworkPolicy.NO_STORE)
+//                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                    .memoryPolicy(MemoryPolicy.NO_STORE)
+                    .placeholder(R.drawable.loading_image)
+                    .error(R.drawable.null_thumbnail)
+                    .into(mImage);
 
-        Picasso.with(context)
-                .load(imageUrl)
-                .priority(Picasso.Priority.HIGH)
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    }
+            Picasso.with(activity)
+                    .load(imageUrl)
+                    .priority(Picasso.Priority.HIGH)
+//                    .networkPolicy(NetworkPolicy.NO_CACHE)
+//                    .networkPolicy(NetworkPolicy.NO_STORE)
+//                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                    .memoryPolicy(MemoryPolicy.NO_STORE)
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        }
 
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                    }
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                        }
 
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    }
-                });
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        }
+                    });
         }
 
-        public void clear(){
+        public void clear() {
             mImage.setImageDrawable(null);
         }
     }

@@ -114,6 +114,7 @@ public class NearestFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
+        Preferences.checkFcmTokenStatus(activity);
         username = activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -152,9 +153,6 @@ public class NearestFragment extends Fragment {
             int id = item.getItemId();
 
             switch (id) {
-                case R.id.action_refresh_fragment_nearest:
-                    activity.recreate();
-                    return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
@@ -219,6 +217,11 @@ public class NearestFragment extends Fragment {
     @Override
     public void onDestroy() {
         Preferences.kill(activity, ":nearestservice");
+        try {
+            activity.unregisterReceiver(mMessageReceiver);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 

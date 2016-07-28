@@ -49,7 +49,7 @@ public class LocationFragment extends Fragment {
     private View myView;
     private ListView locationListView;
     private List<Location> locationList;
-    private Activity context;
+    private Activity activity;
     private ServerApi api;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -82,8 +82,8 @@ public class LocationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this.getActivity();
-        Preferences.checkFcmTokenStatus(context);
+        activity = this.getActivity();
+        Preferences.checkFcmTokenStatus(activity);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -100,7 +100,7 @@ public class LocationFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
             inflater.inflate(R.menu.menu_fragment_location, menu);
-            ActionBar actionBar = context.getActionBar();
+            ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_location));
@@ -121,7 +121,7 @@ public class LocationFragment extends Fragment {
 
             switch (id) {
                 case R.id.action_refresh_fragment_location:
-                    context.recreate();
+                    activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -140,33 +140,33 @@ public class LocationFragment extends Fragment {
         try {
             locationListView = (ListView) myView.findViewById(R.id.locationListView);
 
-            api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             Call<List<Location>> call = api.getFloor("all");
-            Preferences.showLoading(context);
+            Preferences.showLoading(activity);
             call.enqueue(new Callback<List<Location>>() {
                 @Override
                 public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
                     try {
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
                         locationList = response.body();
-                        LocationListAdapter adapter = new LocationListAdapter(context, locationList);
+                        LocationListAdapter adapter = new LocationListAdapter(activity, locationList);
                         locationListView.setAdapter(adapter);
                         locationListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
                                 Call<ResponseBody> call = api.getCheck();
-                                Preferences.showLoading(context);
+                                Preferences.showLoading(activity);
                                 final int pos = position;
                                 call.enqueue(new Callback<ResponseBody>() {
                                     @Override
@@ -174,16 +174,16 @@ public class LocationFragment extends Fragment {
                                         try {
                                             if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                 Preferences.dismissLoading();
-                                                Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                 return;
                                             }
                                             if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                Preferences.goLogin(context);
+                                                Preferences.goLogin(activity);
                                                 return;
                                             }
-                                            Intent intent = new Intent(context, LocationActivity.class);
+                                            Intent intent = new Intent(activity, LocationActivity.class);
                                             intent.putExtra(Preferences.floor_idTag, locationList.get(pos).getId());
-                                            context.startActivity(intent);
+                                            activity.startActivity(intent);
                                         }catch (Exception e){
                                             e.printStackTrace();
                                         }
