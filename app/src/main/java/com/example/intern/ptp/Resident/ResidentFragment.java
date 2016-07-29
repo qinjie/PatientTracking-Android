@@ -152,7 +152,7 @@ public class ResidentFragment extends Fragment {
                                 tls[k].addView(trs[k]);
 
                             }
-                            tvs[1].setOnClickListener(new View.OnClickListener() {
+                            trs[1].setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
 
@@ -193,7 +193,7 @@ public class ResidentFragment extends Fragment {
                                 }
                             });
 
-                            tvs[2].setOnClickListener(new View.OnClickListener() {
+                            trs[2].setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     try {
