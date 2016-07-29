@@ -52,6 +52,10 @@ public class NavigationActivity extends Activity
             mNavigationDrawerFragment.setUp(
                     R.id.navigation_drawer,
                     (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
         }
     }
 

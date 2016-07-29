@@ -180,6 +180,8 @@ public class NavigationDrawerFragment extends Fragment {
 
                 getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
+
+
         };
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
@@ -196,6 +198,7 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 

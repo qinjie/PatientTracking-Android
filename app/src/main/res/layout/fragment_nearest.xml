@@ -25,40 +25,64 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_margin="1dp"
-                android:background="#0000ff"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                android:textSize="20dp"
                 android:text="Resident: "
-                android:textColor="@android:color/white" />
+                android:lines="2"
+                android:textColor="@android:color/darker_gray" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/darker_gray"
+                android:layout_weight="1"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_margin="1dp"
-                android:background="#0000ff"
+                android:gravity="center_vertical"
+                android:layout_margin="5dp"
+                android:lines="2"
+                android:textSize="20dp"
                 android:text="Distance (m): "
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/darker_gray" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="25"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvResident"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                android:textSize="20dp"
+                android:lines="2"
                 android:textColor="#0000ff" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="5dp"
+                android:background="@android:color/darker_gray"
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/tvDistance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="1dp"
+                android:gravity="center_vertical"
+                android:layout_margin="5dp"
+                android:textSize="20dp"
+                android:lines="2"
                 android:textColor="#0000ff" />
 
         </LinearLayout>

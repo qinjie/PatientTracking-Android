@@ -22,10 +22,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Preferences {
-    public static final String root = "http://172.18.202.19/advanced/api/web/"; //localhost
-    public static final String imageRoot = "http://172.18.202.19/advanced/backend/web/";
-//    public static final String root = "http://128.199.209.227/patient-tracking-web/api/web/"; //server
-//    public static final String imageRoot = "http://128.199.209.227/patient-tracking-web/backend/web/";
+//    public static final String root = "http://172.18.202.19/advanced/api/web/"; //localhost
+//    public static final String imageRoot = "http://172.18.202.19/advanced/backend/web/";
+    public static final String root = "http://128.199.209.227/patient-tracking-web/api/web/"; //server
+    public static final String imageRoot = "http://128.199.209.227/patient-tracking-web/backend/web/";
 
     public static final String SharedPreferencesTag = "PTP_Pref";
     public static final String resident_idTag = "id";
