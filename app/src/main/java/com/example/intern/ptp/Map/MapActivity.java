@@ -3,7 +3,6 @@ package com.example.intern.ptp.Map;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -33,7 +32,6 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-
 import java.util.List;
 
 public class MapActivity extends Activity {
@@ -44,11 +42,11 @@ public class MapActivity extends Activity {
     public static int delta = 1;
     private List<Resident> residentList;
     private PhotoViewAttacher mAttacher;
-        private RelativeLayout layout;
+    private RelativeLayout layout;
     private RectF rec;
     private Intent serviceIntent;
 
-    private String floorId, url;
+    private String floorId;
     private Activity activity = this;
 
     @Override
@@ -103,33 +101,44 @@ public class MapActivity extends Activity {
                     int pixely = Integer.parseInt(resident.getPixely());
                     int color = Integer.parseInt(resident.getColor());
 
-                    for (int i = pixelx - radius; i <= pixelx + radius; i += delta)
-                        for (int k = pixely - radius; k <= pixely + radius; k += delta)
-                            if (i >= 0 && i < mBitmap.getWidth() && k >= 0 && k < mBitmap.getHeight() && (i - pixelx) * (i - pixelx) + (k - pixely) * (k - pixely) <= radius * radius)
-                                mBitmap.setPixel(i, k, color);
-
-                    TextView textView = new TextView(activity);
-                    textView.setText(resident.getFirstname());
-                    textView.setTextColor(Color.RED);
-                    textView.setBackgroundColor(Color.LTGRAY);
-                    textView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-
-
-                    textView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                Intent intent = new Intent(activity, ResidentActivity.class);
-                                intent.putExtra(Preferences.resident_idTag, resident.getId());
-                                activity.startActivity(intent);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                    if (resident.getId().equalsIgnoreCase("-1")) {
+                        for (int i = pixelx - 2 * radius; i <= pixelx + 2 * radius; i += delta)
+                            for (int k = pixely - 2 * radius; k <= pixely + 2 * radius; k += delta) {
+                                int val = (i - pixelx) * (i - pixelx) + (k - pixely) * (k - pixely);
+                                if (i >= 0 && i < mBitmap.getWidth() && k >= 0 && k < mBitmap.getHeight() && (val <= 0.5 * radius * radius || (val >= 2 * radius * radius && val <= 4 * radius * radius)))
+                                    mBitmap.setPixel(i, k, color);
                             }
-                        }
-                    });
-                    rec = mAttacher.getDisplayRect();
-                    engage(textView, pixelx, pixely);
-                    layout.addView(textView);
+
+
+                    } else {
+                        for (int i = pixelx - radius; i <= pixelx + radius; i += delta)
+                            for (int k = pixely - radius; k <= pixely + radius; k += delta)
+                                if (i >= 0 && i < mBitmap.getWidth() && k >= 0 && k < mBitmap.getHeight() && (i - pixelx) * (i - pixelx) + (k - pixely) * (k - pixely) <= radius * radius)
+                                    mBitmap.setPixel(i, k, color);
+
+                        TextView textView = new TextView(activity);
+                        textView.setText(resident.getFirstname());
+                        textView.setTextColor(color);
+                        textView.setBackgroundColor(Color.LTGRAY);
+                        textView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+
+
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                try {
+                                    Intent intent = new Intent(activity, ResidentActivity.class);
+                                    intent.putExtra(Preferences.resident_idTag, resident.getId());
+                                    activity.startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        rec = mAttacher.getDisplayRect();
+                        engage(textView, pixelx, pixely);
+                        layout.addView(textView);
+                    }
                 }
             }
             mImageView.setResetable(false);
@@ -143,21 +152,20 @@ public class MapActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            Preferences.showLoading(activity);
             setContentView(R.layout.activity_map);
             layout = (RelativeLayout) findViewById(R.id.map_layout);
             mImageView = (PhotoView) findViewById(R.id.iv_photo);
 
             floorId = getIntent().getStringExtra(Preferences.floor_idTag);
-            url = Preferences.imageRoot + getIntent().getStringExtra(Preferences.floorFileParthTag);
+            String url = Preferences.imageRoot + getIntent().getStringExtra(Preferences.floorFileParthTag);
 
             Picasso.with(this)
                     .load(url)
                     .priority(Picasso.Priority.HIGH)
 //                    .networkPolicy(NetworkPolicy.NO_CACHE)
 //                    .networkPolicy(NetworkPolicy.NO_STORE)
-//                    .memoryPolicy(MemoryPolicy.NO_STORE)
 //                    .memoryPolicy(MemoryPolicy.NO_CACHE)
+//                    .memoryPolicy(MemoryPolicy.NO_STORE)
                     .into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -206,33 +214,12 @@ public class MapActivity extends Activity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            Preferences.dismissLoading();
                         }
                     });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-//    public void onResume() {
-//        super.onResume();
-//        try {
-////            Preferences.kill(activity, ":mapservice");
-////            activity.registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    protected void onPause() {
-//        super.onPause();
-//        try {
-////            activity.unregisterReceiver(mMessageReceiver);
-////            Preferences.kill(activity, ":mapservice");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private void engage(TextView tv, int pixelx, int pixely) {
 
@@ -280,15 +267,6 @@ public class MapActivity extends Activity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-//        MenuItem zoomToggle = menu.findItem(R.id.menu_zoom_toggle);
-//        assert null != zoomToggle;
-//        zoomToggle.setTitle(mAttacher.canZoom() ? R.string.menu_zoom_disable : R.string.menu_zoom_enable);
-//
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -299,64 +277,8 @@ public class MapActivity extends Activity {
 
             switch (id) {
                 case android.R.id.home:
-//                    Preferences.kill(activity, ":mapservice");
+                    Preferences.dismissLoading();
                     activity.finish();
-                    return true;
-                case R.id.action_refresh_map:
-                    activity.recreate();
-//                    Preferences.showLoading(activity);
-//                    Picasso.with(this)
-//                    .load(url)
-//                        .priority(Picasso.Priority.HIGH)
-//                        .networkPolicy(NetworkPolicy.NO_CACHE)
-//                        .networkPolicy(NetworkPolicy.NO_STORE)
-//                        .memoryPolicy(MemoryPolicy.NO_STORE)
-//                        .memoryPolicy(MemoryPolicy.NO_CACHE)
-//                        .into(new Target() {
-//                            @Override
-//                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                                try {
-//                                    sBitMap = bitmap;
-//
-//                                    mBitmap = bitmap;
-//                                    mBitmap = mBitmap.copy(mBitmap.getConfig() != null ? mBitmap.getConfig() : Bitmap.Config.ARGB_8888, true);
-//                                    mImageView.setResetable(true);
-//                                    mImageView.setImageBitmap(bitmap);
-//
-//                                    mAttacher = new PhotoViewAttacher(mImageView);
-//                                    mAttacher.setOnMatrixChangeListener(new MatrixChangeListener());
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                                Preferences.dismissLoading();
-//                            }
-//
-//                            @Override
-//                            public void onBitmapFailed(Drawable errorDrawable) {
-//                                try {
-//                                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
-//                                    mBitmap = mBitmap.copy(mBitmap.getConfig() != null ? mBitmap.getConfig() : Bitmap.Config.ARGB_8888, true);
-//                                    mImageView.setResetable(true);
-//                                    mImageView.setImageBitmap(mBitmap);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                                Preferences.dismissLoading();
-//                            }
-//
-//                            @Override
-//                            public void onPrepareLoad(Drawable placeHolderDrawable) {
-//                                try {
-//                                    mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
-//                                    mBitmap = mBitmap.copy(mBitmap.getConfig() != null ? mBitmap.getConfig() : Bitmap.Config.ARGB_8888, true);
-//                                    mImageView.setResetable(true);
-//                                    mImageView.setImageBitmap(mBitmap);
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                                Preferences.dismissLoading();
-//                            }
-//                        });
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -368,6 +290,7 @@ public class MapActivity extends Activity {
     }
 
     public void onBackPressed() {
+        Preferences.dismissLoading();
         try {
             activity.finish();
         } catch (Exception e) {

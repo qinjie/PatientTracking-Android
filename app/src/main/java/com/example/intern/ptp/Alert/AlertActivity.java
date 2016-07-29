@@ -28,7 +28,7 @@ public class AlertActivity extends Activity {
     private Button bt;
     private TextView mes, tv, resident;
     private ServerApi api;
-    private Activity context = this;
+    private Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +48,11 @@ public class AlertActivity extends Activity {
                     try {
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
                         final Alert alert = response.body().get(0);
@@ -63,21 +63,21 @@ public class AlertActivity extends Activity {
                                 try {
                                     api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
                                     Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(context);
+                                    Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             try {
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
-                                                    Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                    Preferences.goLogin(context);
+                                                    Preferences.goLogin(activity);
                                                     return;
                                                 }
-                                                Intent intent = new Intent(context, ResidentActivity.class);
+                                                Intent intent = new Intent(activity, ResidentActivity.class);
                                                 intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
                                                 startActivity(intent);
                                             } catch (Exception e) {
@@ -106,14 +106,14 @@ public class AlertActivity extends Activity {
                                     api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
                                     Call<String> call = api.setTakecare(alert.getId(), getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
-                                    Preferences.showLoading(context);
+                                    Preferences.showLoading(activity);
                                     call.enqueue(new Callback<String>() {
                                         @Override
                                         public void onResponse(Call<String> call, Response<String> response) {
                                             try {
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
-                                                    Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
@@ -214,7 +214,7 @@ public class AlertActivity extends Activity {
                     this.finish();
                     return true;
                 case R.id.action_refresh_alert:
-                    context.recreate();
+                    activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);

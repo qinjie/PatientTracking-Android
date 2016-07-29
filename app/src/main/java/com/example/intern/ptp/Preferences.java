@@ -152,4 +152,3 @@ public class Preferences {
                 .show();
     }
 }
-//TODO Barry Alien click

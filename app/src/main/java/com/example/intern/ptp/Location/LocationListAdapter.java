@@ -16,13 +16,13 @@ import java.util.List;
 
 public class LocationListAdapter extends ArrayAdapter<Location> {
 
-    private final Activity context;
+    private final Activity activity;
     private final List<Location> items;
 
-    public LocationListAdapter(Activity context,
+    public LocationListAdapter(Activity activity,
                                List<Location> items) {
-        super(context, R.layout.item_locationlist, items);
-        this.context = context;
+        super(activity, R.layout.item_locationlist, items);
+        this.activity = activity;
         this.items = items;
     }
 
@@ -30,7 +30,7 @@ public class LocationListAdapter extends ArrayAdapter<Location> {
     public View getView(int position, View view, ViewGroup parent) {
         ListRow row;
         if (view == null) {
-            row = new ListRow(context, null);
+            row = new ListRow(activity, null);
         } else {
             row = (ListRow) view;
         }

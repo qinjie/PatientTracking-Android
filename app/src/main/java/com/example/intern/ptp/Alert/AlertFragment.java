@@ -52,7 +52,7 @@ public class AlertFragment extends Fragment {
     private ListView alertListView;
     private List<Alert> alertList;
     private CheckBox redCheck;
-    private Activity context;
+    private Activity activity;
     private ServerApi api;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -85,8 +85,8 @@ public class AlertFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this.getActivity();
-        Preferences.checkFcmTokenStatus(context);
+        activity = this.getActivity();
+        Preferences.checkFcmTokenStatus(activity);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -103,7 +103,7 @@ public class AlertFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
             inflater.inflate(R.menu.menu_fragment_alert, menu);
-            ActionBar actionBar = context.getActionBar();
+            ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_alert));
@@ -124,7 +124,7 @@ public class AlertFragment extends Fragment {
 
             switch (id) {
                 case R.id.action_refresh_fragment_alert:
-                    context.recreate();
+                    activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -154,7 +154,7 @@ public class AlertFragment extends Fragment {
     }
 
     private void display(){
-        if(!context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")){
+        if(!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")){
             redCheck.setChecked(true);
             getData("all", "0");
         }else{
@@ -167,9 +167,9 @@ public class AlertFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 try {
-                    api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
                     Call<ResponseBody> call = api.getCheck();
-                    Preferences.showLoading(context);
+                    Preferences.showLoading(activity);
                     final boolean isC = isChecked;
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override
@@ -177,14 +177,14 @@ public class AlertFragment extends Fragment {
                             try {
                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                     Preferences.dismissLoading();
-                                    Preferences.showDialog(context, "Server Error", "Please try again !");
+                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
                                     return;
                                 }
                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                    Preferences.goLogin(context);
+                                    Preferences.goLogin(activity);
                                     return;
                                 }
-                                context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("red_only", isC ? "1" : "0").apply();
+                                activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("red_only", isC ? "1" : "0").apply();
                                 if (isC) {
                                     getData("all", "0");
                                 } else {
@@ -213,33 +213,33 @@ public class AlertFragment extends Fragment {
 
     private void getData(String id, String ok){
         try {
-            api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             Call<List<Alert>> call = api.getAlerts(id, ok);
-            Preferences.showLoading(context);
+            Preferences.showLoading(activity);
             call.enqueue(new Callback<List<Alert>>() {
                 @Override
                 public void onResponse(Call<List<Alert>> call, Response<List<Alert>> response) {
                     try {
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
                         alertList = response.body();
-                        AlertListAdapter adapter = new AlertListAdapter(context, alertList);
+                        AlertListAdapter adapter = new AlertListAdapter(activity, alertList);
                         alertListView.setAdapter(adapter);
                         alertListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 try {
-                                    api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
                                     Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(context);
+                                    Preferences.showLoading(activity);
                                     final int pos = position;
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
@@ -247,16 +247,16 @@ public class AlertFragment extends Fragment {
                                             try {
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
-                                                    Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                    Preferences.goLogin(context);
+                                                    Preferences.goLogin(activity);
                                                     return;
                                                 }
-                                                Intent intent = new Intent(context, AlertActivity.class);
+                                                Intent intent = new Intent(activity, AlertActivity.class);
                                                 intent.putExtra(Preferences.notify_Tag, alertList.get(pos).getId());
-                                                context.startActivity(intent);
+                                                activity.startActivity(intent);
                                             }catch (Exception e){
                                                 e.printStackTrace();
                                             }

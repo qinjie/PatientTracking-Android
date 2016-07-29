@@ -23,7 +23,7 @@ public class LocationActivity extends Activity {
     private String mID, mLabel, mDescription, mWidth, mHeight, mCount;
 
     private ServerApi api;
-    private Activity context = this;
+    private Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +47,11 @@ public class LocationActivity extends Activity {
                     try {
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
                         List<Location> res = response.body();
@@ -115,7 +115,7 @@ public class LocationActivity extends Activity {
                     this.finish();
                     return true;
                 case R.id.action_refresh_location:
-                    context.recreate();
+                    activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);

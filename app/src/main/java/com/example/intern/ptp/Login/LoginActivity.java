@@ -35,11 +35,10 @@ public class LoginActivity extends Activity {
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private ServerApi api;
-    private Activity context = this;
+    private Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        Preferences.kill(context, ":mapservice");
         super.onCreate(savedInstanceState);
         try {
             checkPlayServices();
@@ -50,13 +49,13 @@ public class LoginActivity extends Activity {
 
                 api = ServiceGenerator.createService(ServerApi.class, this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
                 Call<ResponseBody> call = api.getCheck();
-                Preferences.showLoading(context);
+                Preferences.showLoading(activity);
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         try {
                             if (response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                Intent intent = new Intent(context, NavigationActivity.class);
+                                Intent intent = new Intent(activity, NavigationActivity.class);
                                 startActivity(intent);
                             } else {
                                 Preferences.dismissLoading();
@@ -115,17 +114,17 @@ public class LoginActivity extends Activity {
 
             username = mUsernameView.getText().toString();
             if(username.isEmpty()){
-                Preferences.showDialog(context, null, "Please enter your username!");
+                Preferences.showDialog(activity, null, "Please enter your username!");
                 return;
             }
             password = mPasswordView.getText().toString();
             if(password.isEmpty()){
-                Preferences.showDialog(context, null, "Please enter your password!");
+                Preferences.showDialog(activity, null, "Please enter your password!");
                 return;
             }
 
             Call<LoginResult> call = api.getLogin(new LoginInfo(username, password, MAC));
-            Preferences.showLoading(context);
+            Preferences.showLoading(activity);
 
             call.enqueue(new Callback<LoginResult>() {
                 @Override
@@ -133,20 +132,20 @@ public class LoginActivity extends Activity {
                     try {
                         LoginResult res = response.body();
                         if (res.getResult().equalsIgnoreCase("correct")) {
-                            editor = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit();
+                            editor = activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit();
                             editor.putString("token", res.getToken());
                             editor.putString("username", username);
                             editor.putString("password", password);
                             editor.apply();
 
-                            Intent intent = new Intent(context, NavigationActivity.class);
+                            Intent intent = new Intent(activity, NavigationActivity.class);
                             startActivity(intent);
                         } else if (res.getResult().equalsIgnoreCase("wrong")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, null, "Wrong username or password!");
+                            Preferences.showDialog(activity, null, "Wrong username or password!");
                         }else{
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again!");
+                            Preferences.showDialog(activity, "Server Error", "Please try again!");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -158,7 +157,7 @@ public class LoginActivity extends Activity {
                     try {
                         Preferences.dismissLoading();
                         t.printStackTrace();
-                        Preferences.showDialog(context, "Login Result", t.getMessage());
+                        Preferences.showDialog(activity, "Login Result", t.getMessage());
                     } catch (Exception e) {
                         Preferences.dismissLoading();
                         e.printStackTrace();
@@ -175,7 +174,7 @@ public class LoginActivity extends Activity {
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(context, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
             } else {
                 this.finish();

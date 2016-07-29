@@ -32,9 +32,9 @@ public class ResidentActivity extends Activity {
     private String mID, mFirstName, mLastName, mNric, mGender, mBirthday, mContact, mRemark;
     private String nID, nFirstName, nLastName, nNric, nContact, nEmail, nRemark, nRelation;
     private ServerApi api;
-    private Activity context = this;
+    private Activity activity = this;
     private int getPx(int dp) {
-        final float scale = context.getResources().getDisplayMetrics().density;
+        final float scale = activity.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
     private void doit(int i, String text, int k){
@@ -43,27 +43,26 @@ public class ResidentActivity extends Activity {
             param.weight = 1;
             if (text == null)
                 text = "";
-            TextView tv = new TextView(context);
+            TextView tv = new TextView(activity);
             final String old = text;
             text = text.replace('\n', ' ');
             tv.setText(text);
             tv.setTextColor(Color.BLUE);
             tv.setPadding(getPx(10), getPx(5), getPx(0), getPx(5));
-            tv.setOnLongClickListener(new View.OnLongClickListener() {
+            tv.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
+                public void onClick(View v) {
                     try {
-                        new AlertDialog.Builder(context, R.style.MyDialogStyle)
+                        new AlertDialog.Builder(activity, R.style.MyDialogStyle)
                                 .setMessage(old)
                                 .show();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    return true;
                 }
             });
 
-            TableRow tr = new TableRow(context);
+            TableRow tr = new TableRow(activity);
             if (k % 2 == 0)
                 tr.setBackgroundColor(Color.WHITE);
             else
@@ -101,7 +100,7 @@ public class ResidentActivity extends Activity {
             tvContact = (TextView) findViewById(R.id.contact);
             tvRemark = (TextView) findViewById(R.id.remark);
 
-            api = ServiceGenerator.createService(ServerApi.class, this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             Call<Resident> call = api.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
             call.enqueue(new Callback<Resident>() {
@@ -110,11 +109,11 @@ public class ResidentActivity extends Activity {
                     try {
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
                         Resident resident = response.body();
@@ -206,7 +205,7 @@ public class ResidentActivity extends Activity {
                     this.finish();
                     return true;
                 case R.id.action_refresh_resident:
-                    context.recreate();
+                    activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);

@@ -43,10 +43,6 @@ public class MapService extends IntentService {
                                 Intent intent = new Intent(Preferences.map_broadcastTag + floorId);
                                 intent.putExtra(Preferences.map_resultTag, response.headers().get("result"));
                                 ArrayList<Resident> res = (ArrayList<Resident>) response.body();
-                                for (int i = 0; i < res.size(); i++) {
-                                    if(!res.get(i).getId().equalsIgnoreCase("-1"))
-                                        res.get(i).setColor(i % 2 == 0 ? ("" + Color.RED) : ("" + Color.BLUE));
-                                }
                                 intent.putParcelableArrayListExtra(Preferences.map_pointsTag, res);
                                 MapService.this.sendBroadcast(intent);
                             } catch (Exception e) {
