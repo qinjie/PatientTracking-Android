@@ -29,9 +29,14 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
     private void sendNotification(String message) {
         try {
+            String username = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
+            if(username.equalsIgnoreCase("")){
+                return;
+            }
             Gson gson = new Gson();
             Alert alert = gson.fromJson(message, Alert.class);
             int resident_id = Integer.parseInt(alert.getResidentId());
+            int notification_id = Integer.parseInt(alert.getId());
 
             String name = alert.getFirstname();
 
@@ -47,13 +52,13 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             intent.putExtra(Preferences.notify_Tag, alert.getId());
 
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, Preferences.requestCode++ , intent,
+            PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notification_id , intent,
                     PendingIntent.FLAG_ONE_SHOT);
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
                     .setSmallIcon(R.drawable.ic_sos)
-                    .setContentTitle("PTP Alert " + resident_id)
+                    .setContentTitle("Resident Tracking - Alert " + resident_id)
                     .setColor(ok ? Color.BLUE : Color.RED)
                     .setContentText(content)
                     .setAutoCancel(true)

@@ -13,11 +13,15 @@ public class ChangeInfo {
     @SerializedName("new_password")
     @Expose
     private String newPassword;
+    @SerializedName("mac_address")
+    @Expose
+    private String macAddress;
 
-    public ChangeInfo(String username, String currentPassword, String newPassword) {
+    public ChangeInfo(String username, String currentPassword, String newPassword, String macAddress) {
         this.username = username;
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
+        this.macAddress = macAddress;
     }
 
     /**
@@ -73,5 +77,22 @@ public class ChangeInfo {
      */
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+    /**
+     *
+     * @return
+     * The macAddress
+     */
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    /**
+     *
+     * @param macAddress
+     * The mac_address
+     */
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
     }
 }

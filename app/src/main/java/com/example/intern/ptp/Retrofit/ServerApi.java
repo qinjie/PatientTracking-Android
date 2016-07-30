@@ -52,6 +52,9 @@ public interface ServerApi {
     @POST("user/alerts")
     Call<List<Alert>> getAlerts(@Query("id") String id, @Query("ok") String ok);
 
+    @POST("user/alertuntakencare")
+    Call<String> notifyUntakenCareAlerts(@Query("mac_address") String macAddress);
+
     @POST("user/takecare")
     Call<String> setTakecare(@Query("id") String id, @Query("username") String username);
 

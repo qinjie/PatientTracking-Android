@@ -4,8 +4,11 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -166,9 +169,12 @@ public class ChangeFragment extends Fragment {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     try {
+                                        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+                                        WifiInfo wInfo = wifiManager.getConnectionInfo();
+                                        final String macAddress = wInfo.getMacAddress();
                                         Preferences.showLoading(context);
                                         api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-                                        Call<String> call = api.setPassword(new ChangeInfo(username, currentPassword, newPassword));
+                                        Call<String> call = api.setPassword(new ChangeInfo(username, currentPassword, newPassword, macAddress));
                                         call.enqueue(new Callback<String>() {
                                             @Override
                                             public void onResponse(Call<String> call, Response<String> response) {
@@ -215,7 +221,7 @@ public class ChangeFragment extends Fragment {
                             .show();
 
                 }else{
-                    Preferences.showDialog(context, "New and Confirm Password do not match", "Please try again !");
+                    Preferences.showDialog(context, null, "New and Confirm Password do not match. Please try again!");
                 }
             }
         });

@@ -3,6 +3,7 @@ package com.example.intern.ptp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,8 +45,8 @@ public class Preferences {
     public static ProgressDialog loading;
     public static boolean isShownLoading = false;
 
-    public static int requestCode = 0;
-    public static void goLogin(final Context context){
+    //    public static int requestCode = 0;
+    public static void goLogin(final Context context) {
         try {
             String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("fcm_token", "");
             boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean("fcm_token_status", false);
@@ -55,6 +56,11 @@ public class Preferences {
             context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("fcm_token", fcmToken).apply();
             context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_status", fcmTokenStatus).apply();
 
+            NotificationManager notificationManager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            notificationManager.cancelAll();
+
             if (isShownLoading) {
                 isShownLoading = false;
                 loading.dismiss();
@@ -63,30 +69,33 @@ public class Preferences {
             Intent intent = new Intent(context, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             context.startActivity(intent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public static void showLoading(final Context context){
+
+    public static void showLoading(final Context context) {
         try {
             if (!isShownLoading) {
                 isShownLoading = true;
                 loading = ProgressDialog.show(context, context.getString(R.string.loading_title), context.getString(R.string.loading_message));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public static void dismissLoading(){
+
+    public static void dismissLoading() {
         try {
             if (isShownLoading) {
                 isShownLoading = false;
                 loading.dismiss();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public static void kill(final Context context, String serviceName) {
         try {
             ActivityManager am = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
@@ -100,18 +109,25 @@ public class Preferences {
                     break;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public static void checkFcmTokenStatus(final Context context){
+
+    public static void checkFcmTokenStatus(final Context context) {
         try {
             boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean("fcm_token_status", false);
             String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("fcm_token", "");
-            if (!fcmTokenStatus && !fcmToken.equalsIgnoreCase("")) {
+
+            if (!fcmToken.equalsIgnoreCase("")) {
                 WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wInfo = wifiManager.getConnectionInfo();
-                String macAddress = wInfo.getMacAddress();
+                final String macAddress = wInfo.getMacAddress();
+
+                if (fcmTokenStatus) {
+                    notifyUntakenCareAlerts(context, macAddress);
+                    return;
+                }
 
                 ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
@@ -122,7 +138,8 @@ public class Preferences {
                     public void onResponse(Call<String> call, Response<String> response) {
                         try {
                             if (response.body().equalsIgnoreCase("success")) {
-                                context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_status", true).apply();
+                                context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_status", true).apply();
+                                notifyUntakenCareAlerts(context, macAddress);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -135,11 +152,12 @@ public class Preferences {
                     }
                 });
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    public static void showDialog(final Context context, String title, String message){
+
+    public static void showDialog(final Context context, String title, String message) {
         new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
@@ -150,5 +168,32 @@ public class Preferences {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+    }
+
+    private static void notifyUntakenCareAlerts(final Context context, String macAddress) {
+        try {
+            boolean firstLoginAlertStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean("first_login_alert_status", false);
+            if (firstLoginAlertStatus)
+                return;
+
+            ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+            Call<String> call = api.notifyUntakenCareAlerts(macAddress);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.body().equalsIgnoreCase("success")) {
+                        context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("first_login_alert_status", true).apply();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

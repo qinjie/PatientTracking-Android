@@ -32,8 +32,8 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
      */
     private void saveToken(String token) {
         try {
-            this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("fcm_token", token).apply();
-            this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_registered", false).apply();
+            this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("fcm_token", token).apply();
+            this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_registered", false).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }

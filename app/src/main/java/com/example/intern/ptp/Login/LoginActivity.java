@@ -157,7 +157,7 @@ public class LoginActivity extends Activity {
                     try {
                         Preferences.dismissLoading();
                         t.printStackTrace();
-                        Preferences.showDialog(activity, "Login Result", t.getMessage());
+                        Preferences.showDialog(activity, "Connection Failure", "Please check your network!");
                     } catch (Exception e) {
                         Preferences.dismissLoading();
                         e.printStackTrace();
