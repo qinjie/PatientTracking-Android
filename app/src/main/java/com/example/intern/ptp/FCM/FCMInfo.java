@@ -46,7 +46,7 @@ public class FCMInfo {
     /**
      *
      * @param fcmToken
-     * The gcm_token
+     * The fcm_token
      */
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;

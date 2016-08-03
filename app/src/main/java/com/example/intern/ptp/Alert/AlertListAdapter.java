@@ -42,7 +42,7 @@ public class AlertListAdapter extends ArrayAdapter<Alert> {
         row.setImage(drawable);
         row.setImageBackgroundColor(ok ? Color.BLUE : Color.RED);
 
-        row.setTitle("PTP Alert " + items.get(position).getResidentId());
+        row.setTitle("Resident Tracking - Alert " + items.get(position).getResidentId());
 
         row.setContent("Resident " + items.get(position).getFirstname() + (ok ? " has been taken care of." : " needs you help now!"));
         row.setContentColor(ok ? Color.BLUE : Color.RED);

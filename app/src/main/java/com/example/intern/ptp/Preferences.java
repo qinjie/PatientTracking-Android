@@ -28,33 +28,43 @@ public class Preferences {
     public static final String root = "http://128.199.209.227/patient-tracking-web/api/web/"; //server
     public static final String imageRoot = "http://128.199.209.227/patient-tracking-web/backend/web/";
 
-    public static final String SharedPreferencesTag = "PTP_Pref";
-    public static final String resident_idTag = "id";
-    public static final String floor_idTag = "floor_id";
-    public static final String floorFileParthTag = "floor_file_path";
-    public static final String nearest_broadcastTag = "com.example.intern.ptp.intent.NEAREST";
-    public static final String nearest_residentTag = "com.example.intern.ptp.intent.nearest_resident";
-    public static final String nearest_resultTag = "com.example.intern.ptp.intent.nearest_result";
-    public static final String map_broadcastTag = "com.example.intern.ptp.intent.MAP";
-    public static final String map_pointsTag = "com.example.intern.ptp.intent.map_points";
-    public static final String map_resultTag = "com.example.intern.ptp.intent.map_result";
-    public static final String notify_Tag = "com.example.intern.ptp.intent.PTP_notification";
-    public static final int map_request_period = 2000;
+    public static final String SharedPreferencesTag = "Resident_Tracking_Preferences";
     public static final int SharedPreferences_ModeTag = Context.MODE_PRIVATE;
+
+    public static final String FCMtokenTag = "Resident_Tracking.FCM_token";
+    public static final String FCMtoken_statusTag = "Resident_Tracking.FCM_token_status";
+
+    public static final String resident_idTag = "Resident_Tracking.id";
+    public static final String notify_Tag = "Resident_Tracking_notification";
+
+    public static final String floor_idTag = "Resident_Tracking.floor_id";
+    public static final String floor_labelTag = "Resident_Tracking.floor_label";
+    public static final String floorFileParthTag = "Resident_Tracking.floor_file_path";
+
+    public static final String nearest_broadcastTag = "Resident_Tracking.NEAREST";
+    public static final String nearest_residentTag = "Resident_Tracking.nearest_resident";
+    public static final String nearest_resultTag = "Resident_Tracking.nearest_result";
+    public static final int nearest_request_period = 2000;
+
+    public static final String map_broadcastTag = "Resident_Tracking.MAP";
+    public static final String map_pointsTag = "Resident_Tracking.map_points";
+    public static final String map_resultTag = "Resident_Tracking.map_result";
+    public static final int map_request_period = 2000;
+
+    public static final String first_login_alert_statusTag = "Resident_Tracking.first_login_alert_status";
 
     public static ProgressDialog loading;
     public static boolean isShownLoading = false;
 
-    //    public static int requestCode = 0;
     public static void goLogin(final Context context) {
         try {
-            String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("fcm_token", "");
-            boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean("fcm_token_status", false);
+            String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString(Preferences.FCMtokenTag, "");
+            boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean(Preferences.FCMtoken_statusTag, false);
 
             context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().clear().apply();
 
-            context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("fcm_token", fcmToken).apply();
-            context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_status", fcmTokenStatus).apply();
+            context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString(Preferences.FCMtokenTag, fcmToken).apply();
+            context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean(Preferences.FCMtoken_statusTag, fcmTokenStatus).apply();
 
             NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -116,8 +126,8 @@ public class Preferences {
 
     public static void checkFcmTokenStatus(final Context context) {
         try {
-            boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean("fcm_token_status", false);
-            String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("fcm_token", "");
+            String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString(Preferences.FCMtokenTag, "");
+            boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean(Preferences.FCMtoken_statusTag, false);
 
             if (!fcmToken.equalsIgnoreCase("")) {
                 WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -138,7 +148,7 @@ public class Preferences {
                     public void onResponse(Call<String> call, Response<String> response) {
                         try {
                             if (response.body().equalsIgnoreCase("success")) {
-                                context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("fcm_token_status", true).apply();
+                                context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean(Preferences.FCMtoken_statusTag, true).apply();
                                 notifyUntakenCareAlerts(context, macAddress);
                             }
                         } catch (Exception e) {
@@ -172,7 +182,7 @@ public class Preferences {
 
     private static void notifyUntakenCareAlerts(final Context context, String macAddress) {
         try {
-            boolean firstLoginAlertStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean("first_login_alert_status", false);
+            boolean firstLoginAlertStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean(Preferences.first_login_alert_statusTag, false);
             if (firstLoginAlertStatus)
                 return;
 
@@ -183,7 +193,7 @@ public class Preferences {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.body().equalsIgnoreCase("success")) {
-                        context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean("first_login_alert_status", true).apply();
+                        context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean(Preferences.first_login_alert_statusTag, true).apply();
                     }
                 }
 

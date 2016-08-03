@@ -119,7 +119,7 @@ public class MapActivity extends Activity {
                         TextView textView = new TextView(activity);
                         textView.setText(resident.getFirstname());
                         textView.setTextColor(color);
-                        textView.setBackgroundColor(Color.LTGRAY);
+                        textView.setBackgroundColor(Color.TRANSPARENT);
                         textView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
 
 
@@ -157,6 +157,7 @@ public class MapActivity extends Activity {
             mImageView = (PhotoView) findViewById(R.id.iv_photo);
 
             floorId = getIntent().getStringExtra(Preferences.floor_idTag);
+            activity.setTitle("Map - " + getIntent().getStringExtra(Preferences.floor_labelTag));
             String url = Preferences.imageRoot + getIntent().getStringExtra(Preferences.floorFileParthTag);
 
             Picasso.with(this)

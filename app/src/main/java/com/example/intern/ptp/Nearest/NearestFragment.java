@@ -21,9 +21,11 @@ import android.widget.TextView;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.Resident;
+import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,6 +46,7 @@ public class NearestFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private Activity activity;
+    private ServerApi api;
     private View myView;
     private String username;
     private TextView tvResident, tvDistance;
@@ -63,9 +66,52 @@ public class NearestFragment extends Fragment {
                     Preferences.goLogin(context);
                     return;
                 }
-                Resident resident = intent.getParcelableExtra(Preferences.nearest_residentTag);
+                final Resident resident = intent.getParcelableExtra(Preferences.nearest_residentTag);
                 if (resident != null) {
                     tvResident.setText(resident.getFirstname() + " " + resident.getLastname());
+                    if(resident.getId() != null){
+                        tvResident.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                try {
+                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                    Call<ResponseBody> call = api.getCheck();
+                                    Preferences.showLoading(activity);
+                                    call.enqueue(new Callback<ResponseBody>() {
+                                        @Override
+                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                            try {
+                                                if (response.headers().get("result").equalsIgnoreCase("failed")) {
+                                                    Preferences.dismissLoading();
+                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
+                                                    return;
+                                                }
+                                                if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
+                                                    Preferences.goLogin(activity);
+                                                    return;
+                                                }
+                                                Intent intent = new Intent(activity, ResidentActivity.class);
+                                                intent.putExtra(Preferences.resident_idTag, resident.getId());
+                                                startActivity(intent);
+                                            } catch (Exception e) {
+                                                Preferences.dismissLoading();
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                            Preferences.dismissLoading();
+                                            t.printStackTrace();
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    Preferences.dismissLoading();
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
                     tvDistance.setText(resident.getDistance());
                     if(red){
                         tvResident.setTextColor(Color.RED);

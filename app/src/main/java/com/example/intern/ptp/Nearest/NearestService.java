@@ -57,7 +57,7 @@ public class NearestService extends IntentService {
                             t.printStackTrace();
                         }
                     });
-                    Thread.sleep(Preferences.map_request_period);
+                    Thread.sleep(Preferences.nearest_request_period);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

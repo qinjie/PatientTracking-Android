@@ -40,7 +40,7 @@ public class AlertActivity extends Activity {
         tv = (TextView) findViewById(R.id.addition);
 
         try {
-            api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
             Call<List<Alert>> call = api.getAlerts(this.getIntent().getStringExtra(Preferences.notify_Tag), "all");
             call.enqueue(new Callback<List<Alert>>() {
                 @Override
@@ -61,7 +61,7 @@ public class AlertActivity extends Activity {
                             @Override
                             public void onClick(View v) {
                                 try {
-                                    api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
                                     Call<ResponseBody> call = api.getCheck();
                                     Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
@@ -103,9 +103,9 @@ public class AlertActivity extends Activity {
                             public void onClick(View v) {
                                 try {
 
-                                    api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
-                                    Call<String> call = api.setTakecare(alert.getId(), getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
+                                    Call<String> call = api.setTakecare(alert.getId(), activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
                                     Preferences.showLoading(activity);
                                     call.enqueue(new Callback<String>() {
                                         @Override
@@ -120,17 +120,18 @@ public class AlertActivity extends Activity {
                                                     Preferences.goLogin(AlertActivity.this);
                                                     return;
                                                 }
-                                                if (response.body().equalsIgnoreCase("success")) {
+                                                String res = response.body();
+                                                if (res.equalsIgnoreCase("success")) {
                                                     bt.setEnabled(false);
                                                     mes.setText("HAS BEEN TAKEN CARE OF");
                                                     mes.setTextColor(Color.BLUE);
-                                                    tv.setText("By " + getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
+                                                    tv.setText("By " + activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
                                                 } else {
-                                                    if (!response.body().equalsIgnoreCase("failed")) {
+                                                    if (!res.equalsIgnoreCase("failed")) {
                                                         bt.setEnabled(false);
                                                         mes.setText("HAS BEEN TAKEN CARE OF");
                                                         mes.setTextColor(Color.BLUE);
-                                                        tv.setText("By " + AlertActivity.this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
+                                                        tv.setText("By " + res);
                                                     }
                                                 }
                                             } catch (Exception e) {

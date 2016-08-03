@@ -188,6 +188,7 @@ public class MapFragment extends Fragment {
                                             Intent intent = new Intent(activity, MapActivity.class);
                                             intent.putExtra(Preferences.floorFileParthTag, mapList.get(pos).getFilePath());
                                             intent.putExtra(Preferences.floor_idTag, mapList.get(pos).getId());
+                                            intent.putExtra(Preferences.floor_labelTag, mapList.get(pos).getLabel());
                                             activity.startActivity(intent);
                                         }catch (Exception e){
                                             e.printStackTrace();

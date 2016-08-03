@@ -18,6 +18,8 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -135,7 +137,10 @@ public class ResidentActivity extends Activity {
                         tvLastName.setText(mLastName);
                         tvNric.setText(mNric);
                         tvGender.setText(mGender);
-                        tvBirthday.setText(mBirthday);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date d = sdf.parse(mBirthday);
+                        sdf.applyPattern("MMM dd, yyyy");
+                        tvBirthday.setText(sdf.format(d));
                         tvContact.setText(mContact);
                         tvRemark.setText(mRemark);
 
