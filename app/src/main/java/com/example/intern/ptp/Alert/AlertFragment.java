@@ -3,11 +3,8 @@ package com.example.intern.ptp.Alert;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,14 +17,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 
-import com.example.intern.ptp.Location.LocationFragment;
-import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -35,64 +29,27 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LocationFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LocationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AlertFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private View myView;
     private ListView alertListView;
     private List<Alert> alertList;
     private CheckBox redCheck;
     private Activity activity;
     private ServerApi api;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
 
     public AlertFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LocationFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AlertFragment newInstance(String param1, String param2) {
-        AlertFragment fragment = new AlertFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
-        Preferences.checkFcmTokenStatus(activity);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        // check whether the device has successfully sent a registered FCM token to server, if not and a FCM token is available then send it
+        Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -106,10 +63,11 @@ public class AlertFragment extends Fragment {
             inflater.inflate(R.menu.menu_fragment_alert, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
+                // set title for action bar and display it
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_alert));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -124,13 +82,14 @@ public class AlertFragment extends Fragment {
             int id = item.getItemId();
 
             switch (id) {
+                // reload fragment
                 case R.id.action_refresh_fragment_alert:
                     activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -140,10 +99,11 @@ public class AlertFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        myView = inflater.inflate(R.layout.fragment_alert, container, false);
-        alertListView = (ListView)myView.findViewById(R.id.nListView);
+        View myView = inflater.inflate(R.layout.fragment_alert, container, false);
+        alertListView = (ListView) myView.findViewById(R.id.nListView);
         redCheck = (CheckBox) myView.findViewById(R.id.redCheck);
 
+        // display a list of notification basing on checked status of the above check box
         display();
         return myView;
     }
@@ -151,24 +111,35 @@ public class AlertFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        // refresh the notification list after coming back from AlertActivity
         display();
     }
 
-    private void display(){
-        if(!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")){
+    /**
+     * retrieve status of RED only checkbox from Shared Preferences in order to display user's preferred data
+     */
+    private void display() {
+
+        // check whether user prefers only untaken care notificaiotns
+        if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
             redCheck.setChecked(true);
-            getData("all", "0");
-        }else{
+            getData("0");
+        } else {
             redCheck.setChecked(false);
-            getData("all", "all");
+            getData("all");
         }
 
 
+        // handle check event of the RED only check box
         redCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 try {
+                    // create an API service and set session token to request header
                     api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                    // create request object to check session time out
                     Call<ResponseBody> call = api.getCheck();
                     Preferences.showLoading(activity);
                     final boolean isC = isChecked;
@@ -176,20 +147,27 @@ public class AlertFragment extends Fragment {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             try {
+                                // if exception occurs or inconsistent database in server
                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                     Preferences.dismissLoading();
                                     Preferences.showDialog(activity, "Server Error", "Please try again !");
                                     return;
                                 }
+
+                                // if session is expired
                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                                     Preferences.goLogin(activity);
                                     return;
                                 }
+
+                                // save status of RED only checkbox to Shared Preferences
                                 activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("red_only", isC ? "1" : "0").apply();
+
+                                // display preferred data
                                 if (isC) {
-                                    getData("all", "0");
+                                    getData("0");
                                 } else {
-                                    getData("all", "all");
+                                    getData("all");
                                 }
                             } catch (Exception e) {
                                 Preferences.dismissLoading();
@@ -201,6 +179,7 @@ public class AlertFragment extends Fragment {
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                             Preferences.dismissLoading();
                             t.printStackTrace();
+                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                         }
                     });
                 } catch (Exception e) {
@@ -212,33 +191,54 @@ public class AlertFragment extends Fragment {
         });
     }
 
-    private void getData(String id, String ok){
+
+    /**
+     * display notifications on list view basing on 'ok' parameter
+     *
+     * @param ok 1. "all": get all notifications from database and display on list view
+     *           2. otherwise get untaken care notifications from database and display on list view
+     */
+    private void getData(String ok) {
         try {
+            // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
-            Call<List<Alert>> call = api.getAlerts(id, ok);
+            // create request object to get notification information
+            Call<List<Alert>> call = api.getAlerts("all", ok);
             Preferences.showLoading(activity);
             call.enqueue(new Callback<List<Alert>>() {
                 @Override
                 public void onResponse(Call<List<Alert>> call, Response<List<Alert>> response) {
                     try {
+                        // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
                             Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
+
+                        // if session is expired
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                             Preferences.goLogin(activity);
                             return;
                         }
+
+                        // get list of Alerts from response
                         alertList = response.body();
+
+                        // assign data contained in alertList to alertListView
                         AlertListAdapter adapter = new AlertListAdapter(activity, alertList);
                         alertListView.setAdapter(adapter);
+
+                        // handle click event on each list view item
                         alertListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                 try {
+                                    // create an API service and set session token to request header
                                     api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                    // create request object to check session timeout
                                     Call<ResponseBody> call = api.getCheck();
                                     Preferences.showLoading(activity);
                                     final int pos = position;
@@ -246,19 +246,28 @@ public class AlertFragment extends Fragment {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             try {
+                                                // if exception occurs or inconsistent database in server
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
                                                     Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
+
+                                                // if session is expired
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                                                     Preferences.goLogin(activity);
                                                     return;
                                                 }
+
+                                                // create a new intent related to AlertActivity
                                                 Intent intent = new Intent(activity, AlertActivity.class);
-                                                intent.putExtra(Preferences.notify_Tag, alertList.get(pos).getId());
+
+                                                // put alert id of the notification as an extra in the above created intent
+                                                intent.putExtra(Preferences.notify_idTag, alertList.get(pos).getId());
+
+                                                // start a new AlertActivity with the intent
                                                 activity.startActivity(intent);
-                                            }catch (Exception e){
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
                                         }
@@ -276,18 +285,20 @@ public class AlertFragment extends Fragment {
 
                             }
                         });
+
+                        // free resources associated to Views placed in the RecycleBin
                         alertListView.setRecyclerListener(new AbsListView.RecyclerListener() {
                             @Override
                             public void onMovedToScrapHeap(View view) {
                                 try {
                                     AlertListAdapter.ListRow row = (AlertListAdapter.ListRow) view;
-                                    row.setImage(null);
+                                    row.clear();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     Preferences.dismissLoading();
@@ -299,49 +310,9 @@ public class AlertFragment extends Fragment {
                     t.printStackTrace();
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             Preferences.dismissLoading();
             e.printStackTrace();
         }
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
 }

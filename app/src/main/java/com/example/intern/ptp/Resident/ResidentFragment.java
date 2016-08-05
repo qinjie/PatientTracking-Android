@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,21 +35,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ResidentFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ResidentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ResidentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private SearchView sv;
     private TableLayout[] tls;
     private TextView[] headers;
@@ -59,87 +45,86 @@ public class ResidentFragment extends Fragment {
     private int sortIndex = -1;
     private String[] colName = {"id", "name", "floor_id"};
     private boolean asc[] = {true, true, true};
-    private Activity context;
+    private Activity activity;
     private View myView;
     private ServerApi api;
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-    private OnFragmentInteractionListener mListener;
 
     public ResidentFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ResidentFragment.
+     * convert dp to px
      */
-    // TODO: Rename and change types and number of parameters
-    public static ResidentFragment newInstance(String param1, String param2) {
-        ResidentFragment fragment = new ResidentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     private int getPx(int dp) {
-        final float scale = context.getResources().getDisplayMetrics().density;
+        final float scale = activity.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
 
-
+    /**
+     * search resident by a SearchParam and display result on a table namely resident list table
+     */
     public void display(SearchParam param) {
         try {
-            api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            // create an API service and set session token to request header
+            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
+            // create request object to get list of residents detected by the system within location timeout from server
             Call<List<Resident>> call = api.getSearch(param);
             call.enqueue(new Callback<List<Resident>>() {
                 @Override
                 public void onResponse(final Call<List<Resident>> call, Response<List<Resident>> response) {
                     try {
+                        // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
+
+                        // if session is expired
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
+
+                        // clear the resident list table
                         for (TableLayout tl : tls) {
                             tl.removeAllViews();
                         }
 
+                        // get list of Residents from response
                         List<Resident> res = response.body();
 
                         for (int i = 0; i < res.size(); i++) {
+
+                            // get current resident element in for loop
                             Resident r = res.get(i);
+
+                            // values contains displayed text in a table row
                             List<String> values = new ArrayList<>();
                             final String resId = r.getId();
                             final String flId = r.getFloorId();
                             values.add(resId);
                             values.add(r.getFirstname() + " " + r.getLastname());
                             values.add(r.getLabel());
+
+                            // create 3 table rows for the resident list table
                             TableRow[] trs = new TableRow[3];
+
+                            // create 3 text views for the above 3 table rows
                             TextView[] tvs = new TextView[3];
+
                             for (int k = 0; k < 3; k++) {
-                                try {
-                                    tvs[k] = new TextView(context);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+
+                                // add text for each above text view
+                                tvs[k] = new TextView(activity);
                                 tvs[k].setText(values.get(k));
                                 tvs[k].setTextColor(Color.BLUE);
                                 tvs[k].setPadding(getPx(10), getPx(5), getPx(0), getPx(5));
 
-                                trs[k] = new TableRow(context);
+                                // design each above table row
+                                trs[k] = new TableRow(activity);
                                 if (i % 2 == 0)
                                     trs[k].setBackgroundColor(Color.WHITE);
                                 else
@@ -148,35 +133,52 @@ public class ResidentFragment extends Fragment {
                                         ViewGroup.LayoutParams.MATCH_PARENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT));
 
+                                // add text view to table row
                                 trs[k].addView(tvs[k]);
+
+                                // add table row to table layout
                                 tls[k].addView(trs[k]);
 
                             }
+
+                            // set click event for each cell in the 'Name' column in resident list table
                             trs[1].setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
 
                                     try {
-                                        api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                        // create an API service and set session token to request header
+                                        api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                        // create request object to check session timeout
                                         Call<ResponseBody> call = api.getCheck();
-                                        Preferences.showLoading(context);
+                                        Preferences.showLoading(activity);
                                         call.enqueue(new Callback<ResponseBody>() {
                                             @Override
                                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                                 try {
+                                                    // if exception occurs or inconsistent database in server
                                                     if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                         Preferences.dismissLoading();
-                                                        Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                        Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                         return;
                                                     }
+
+                                                    // if session is expired
                                                     if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                        Preferences.goLogin(context);
+                                                        Preferences.goLogin(activity);
                                                         return;
                                                     }
-                                                    Intent intent = new Intent(context, ResidentActivity.class);
+
+                                                    // create a new intent related to ResidentActivity
+                                                    Intent intent = new Intent(activity, ResidentActivity.class);
+
+                                                    // put resident id of the resident as an extra in the above created intent
                                                     intent.putExtra(Preferences.resident_idTag, resId);
-                                                    context.startActivity(intent);
-                                                }catch (Exception e){
+
+                                                    // start a new ResidentActivity with the intent
+                                                    activity.startActivity(intent);
+                                                } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
                                             }
@@ -185,38 +187,52 @@ public class ResidentFragment extends Fragment {
                                             public void onFailure(Call<ResponseBody> call, Throwable t) {
                                                 Preferences.dismissLoading();
                                                 t.printStackTrace();
+                                                Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                             }
                                         });
-                                    }catch (Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
                             });
 
+                            // set click event for each cell in the 'Location' column in resident list table
                             trs[2].setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     try {
-                                        api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                        // create an API service and set session token to request header
+                                        api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                        // create request object to check session timeout
                                         Call<ResponseBody> call = api.getCheck();
-                                        Preferences.showLoading(context);
+                                        Preferences.showLoading(activity);
                                         call.enqueue(new Callback<ResponseBody>() {
                                             @Override
                                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                                 try {
+                                                    // if exception occurs or inconsistent database in server
                                                     if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                         Preferences.dismissLoading();
-                                                        Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                        Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                         return;
                                                     }
+
+                                                    // if session is expired
                                                     if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                        Preferences.goLogin(context);
+                                                        Preferences.goLogin(activity);
                                                         return;
                                                     }
-                                                    Intent intent = new Intent(context, LocationActivity.class);
+
+                                                    // create a new intent related to LocationActivity
+                                                    Intent intent = new Intent(activity, LocationActivity.class);
+
+                                                    // put floor id of the location as an extra in the above created intent
                                                     intent.putExtra(Preferences.floor_idTag, flId);
-                                                    context.startActivity(intent);
-                                                }catch (Exception e){
+
+                                                    // start a new LocationActivity with the intent
+                                                    activity.startActivity(intent);
+                                                } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
                                             }
@@ -225,9 +241,10 @@ public class ResidentFragment extends Fragment {
                                             public void onFailure(Call<ResponseBody> call, Throwable t) {
                                                 Preferences.dismissLoading();
                                                 t.printStackTrace();
+                                                Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                             }
                                         });
-                                    }catch (Exception e){
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -244,6 +261,7 @@ public class ResidentFragment extends Fragment {
                 public void onFailure(Call<List<Resident>> call, Throwable t) {
                     Preferences.dismissLoading();
                     t.printStackTrace();
+                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                 }
 
             });
@@ -256,12 +274,10 @@ public class ResidentFragment extends Fragment {
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this.getActivity();
-        Preferences.checkFcmTokenStatus(context);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        activity = this.getActivity();
+
+        // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
+        Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
     }
 
     @Override
@@ -276,37 +292,48 @@ public class ResidentFragment extends Fragment {
         try {
             inflater.inflate(R.menu.menu_fragment_resident, menu);
             ActionBar actionBar = getActivity().getActionBar();
-            if(actionBar != null){
+            if (actionBar != null) {
+                // set title for action bar and display it
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_resident));
             }
 
+            // get SearchView in action bar
             sv = (SearchView) menu.findItem(R.id.search).getActionView();
 
+            // set hint for the SearchView
             sv.setQueryHint(getString(R.string.search_hint));
 
-
+            // handle search event of the SearchView
             sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(final String query) {
 
                     try {
-                        api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                        // create an API service and set session token to request header
+                        api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                        // create request object to check session timeout
                         Call<ResponseBody> call = api.getCheck();
-                        Preferences.showLoading(context);
+                        Preferences.showLoading(activity);
                         call.enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 try {
+                                    // if exception occurs or inconsistent database in server
                                     if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                         Preferences.dismissLoading();
-                                        Preferences.showDialog(context, "Server Error", "Please try again !");
+                                        Preferences.showDialog(activity, "Server Error", "Please try again !");
                                         return;
                                     }
+
+                                    // if session is expired
                                     if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                        Preferences.goLogin(context);
+                                        Preferences.goLogin(activity);
                                         return;
                                     }
+
+                                    // call display function to search and display result in the increasing order of resident id by default
                                     display(new SearchParam(query.trim(), ((Location) spinner.getSelectedItem()).getId(), "id", "asc"));
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -318,9 +345,10 @@ public class ResidentFragment extends Fragment {
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
                                 t.printStackTrace();
                                 Preferences.dismissLoading();
+                                Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -347,8 +375,9 @@ public class ResidentFragment extends Fragment {
         int id = item.getItemId();
 
         switch (id) {
+            // reload fragment
             case R.id.action_refresh_fragment_resident:
-                context.recreate();
+                activity.recreate();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -362,50 +391,71 @@ public class ResidentFragment extends Fragment {
         myView = inflater.inflate(R.layout.fragment_resident, container, false);
 
         try {
-
             spinner = (Spinner) myView.findViewById(R.id.spinner);
 
-            api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            // create an API service and set session token to request header
+            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+            // create request object to get all floors' basic information
             Call<List<Location>> call = api.getFloors();
-            Preferences.showLoading(context);
+            Preferences.showLoading(activity);
             call.enqueue(new Callback<List<Location>>() {
                 @Override
                 public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
                     try {
+                        // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
-                            Preferences.showDialog(context, "Server Error", "Please try again !");
+                            Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
+
+                        // if session is expired
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(context);
+                            Preferences.goLogin(activity);
                             return;
                         }
+
+                        // get list of Locations from response
                         locationList = response.body();
+
+                        // add a special floor as a representative of all locations
                         locationList.add(0, new Location("all", "All floors"));
-                        ArrayAdapter<Location> adapter = new ArrayAdapter<>(context, R.layout.item_spinner, locationList);
+
+                        // assign data contained in locationList to spinner
+                        ArrayAdapter<Location> adapter = new ArrayAdapter<>(activity, R.layout.item_spinner, locationList);
                         spinner.setAdapter(adapter);
+
+                        // handle click event on each item in the spinner
                         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 try {
-                                    api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                    // create an API service and set session token to request header
+                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                    // create request object to check session timeout
                                     Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(context);
+                                    Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                            // if exception occurs or inconsistent database in server
                                             if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                 Preferences.dismissLoading();
-                                                Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                 return;
                                             }
+
+                                            // if session is expired
                                             if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                Preferences.goLogin(context);
+                                                Preferences.goLogin(activity);
                                                 return;
                                             }
+
+                                            // display sorted resident list as user's expectation basing on the order that user clicks the 3 headers: 'ID', 'Name', 'Location' in the resident list table
                                             display(new SearchParam(sv.getQuery().toString().trim(), ((Location) spinner.getSelectedItem()).getId(), colName[sortIndex == -1 ? 0 : sortIndex], (sortIndex == -1 || !asc[sortIndex]) ? "asc" : "desc"));
-                                            if(sortIndex == -1){
+                                            if (sortIndex == -1) {
                                                 sortIndex = 0;
                                                 asc[0] = false;
                                             }
@@ -415,6 +465,7 @@ public class ResidentFragment extends Fragment {
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                                             Preferences.dismissLoading();
                                             t.printStackTrace();
+                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                         }
                                     });
 
@@ -444,26 +495,34 @@ public class ResidentFragment extends Fragment {
                             headers[i].setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    api = ServiceGenerator.createService(ServerApi.class, context.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                    // create an API service and set session token to request header
+                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                    // create request object to check session timeout
                                     Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(context);
+                                    Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             try {
+                                                // if exception occurs or inconsistent database in server
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
-                                                    Preferences.showDialog(context, "Server Error", "Please try again !");
+                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
+
+                                                // if session is expired
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                    Preferences.goLogin(context);
+                                                    Preferences.goLogin(activity);
                                                     return;
                                                 }
+
+                                                // display sorted resident list as user's expectation basing on the table header user clicks
                                                 display(new SearchParam(sv.getQuery().toString().trim(), ((Location) spinner.getSelectedItem()).getId(), colName[k], asc[k] ? "asc" : "desc"));
                                                 asc[k] = !asc[k];
                                                 sortIndex = k;
-                                            }catch (Exception e){
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
                                         }
@@ -472,13 +531,14 @@ public class ResidentFragment extends Fragment {
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                                             Preferences.dismissLoading();
                                             t.printStackTrace();
+                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                         }
                                     });
                                 }
                             });
                         }
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -488,6 +548,7 @@ public class ResidentFragment extends Fragment {
                 public void onFailure(Call<List<Location>> call, Throwable t) {
                     Preferences.dismissLoading();
                     t.printStackTrace();
+                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                 }
             });
         } catch (Exception e) {
@@ -495,45 +556,4 @@ public class ResidentFragment extends Fragment {
         }
         return myView;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
-
 }

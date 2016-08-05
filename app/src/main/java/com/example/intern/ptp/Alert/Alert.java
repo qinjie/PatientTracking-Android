@@ -42,144 +42,112 @@ public class Alert {
     }
 
     /**
-     *
-     * @return
-     * The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     *
-     * @param id
-     * The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     *
-     * @return
-     * The residentId
+     * @return The residentId
      */
     public String getResidentId() {
         return residentId;
     }
 
     /**
-     *
-     * @param residentId
-     * The resident_id
+     * @param residentId The resident_id
      */
     public void setResidentId(String residentId) {
         this.residentId = residentId;
     }
 
     /**
-     *
-     * @return
-     * The firstname
+     * @return The firstname
      */
     public String getFirstname() {
         return firstname;
     }
 
     /**
-     *
-     * @param firstname
-     * The firstname
+     * @param firstname The firstname
      */
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 
     /**
-     *
-     * @return
-     * The lastname
+     * @return The lastname
      */
     public String getLastname() {
         return lastname;
     }
 
     /**
-     *
-     * @param lastname
-     * The lastname
+     * @param lastname The lastname
      */
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
 
     /**
-     *
-     * @return
-     * The lastPosition
+     * @return The lastPosition
      */
     public String getLastPosition() {
         return lastPosition;
     }
 
     /**
-     *
-     * @param lastPosition
-     * The last_position
+     * @param lastPosition The last_position
      */
     public void setLastPosition(String lastPosition) {
         this.lastPosition = lastPosition;
     }
 
     /**
-     *
-     * @return
-     * The userId
+     * @return The userId
      */
     public String getUserId() {
         return userId;
     }
 
     /**
-     *
-     * @param userId
-     * The user_id
+     * @param userId The user_id
      */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
     /**
-     *
-     * @return
-     * The username
+     * @return The username
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     *
-     * @param username
-     * The username
+     * @param username The username
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     *
-     * @return
-     * The ok
+     * @return The ok
      */
     public String getOk() {
         return ok;
     }
 
     /**
-     *
-     * @param ok
-     * The ok
+     * @param ok The ok
      */
     public void setOk(String ok) {
         this.ok = ok;

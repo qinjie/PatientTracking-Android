@@ -25,72 +25,56 @@ public class SearchParam {
     }
 
     /**
-     *
-     * @return
-     * The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
-     * @param name
-     * The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     *
-     * @return
-     * The location
+     * @return The location
      */
     public String getLocation() {
         return location;
     }
 
     /**
-     *
-     * @param location
-     * The location
+     * @param location The location
      */
     public void setLocation(String location) {
         this.location = location;
     }
 
     /**
-     *
-     * @return
-     * The sort
+     * @return The sort
      */
     public String getSort() {
         return sort;
     }
 
     /**
-     *
-     * @param sort
-     * The sort
+     * @param sort The sort
      */
     public void setSort(String sort) {
         this.sort = sort;
     }
 
     /**
-     *
-     * @return
-     * The drec
+     * @return The drec
      */
     public String getDrec() {
         return drec;
     }
 
     /**
-     *
-     * @param drec
-     * The drec
+     * @param drec The drec
      */
     public void setDrec(String drec) {
         this.drec = drec;

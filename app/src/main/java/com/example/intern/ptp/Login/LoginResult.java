@@ -12,36 +12,28 @@ public class LoginResult {
     private String token;
 
     /**
-     *
-     * @return
-     * The result
+     * @return The result
      */
     public String getResult() {
         return result;
     }
 
     /**
-     *
-     * @param result
-     * The result
+     * @param result The result
      */
     public void setResult(String result) {
         this.result = result;
     }
 
     /**
-     *
-     * @return
-     * The token
+     * @return The token
      */
     public String getToken() {
         return token;
     }
 
     /**
-     *
-     * @param token
-     * The token
+     * @param token The token
      */
     public void setToken(String token) {
         this.token = token;

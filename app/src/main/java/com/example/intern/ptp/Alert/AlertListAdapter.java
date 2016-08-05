@@ -28,6 +28,9 @@ public class AlertListAdapter extends ArrayAdapter<Alert> {
         this.items = items;
     }
 
+    /**
+     * define layout for each item in the list view
+     */
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         ListRow row;
@@ -37,20 +40,34 @@ public class AlertListAdapter extends ArrayAdapter<Alert> {
             row = (ListRow) view;
         }
 
+        // status that whether the alert has been taken care of or not
         boolean ok = !items.get(position).getOk().equalsIgnoreCase("0");
+
+        // get alert icon from resource as a Drawable object
         Drawable drawable = activity.getDrawable(R.drawable.ic_sos);
+
+        // set alert icon for the item
         row.setImage(drawable);
+
+        // set background color for the item depending on the above takencare status
         row.setImageBackgroundColor(ok ? Color.BLUE : Color.RED);
 
-        row.setTitle("Resident Tracking - Alert " + items.get(position).getResidentId());
+        // set title for the item
+        row.setTitle("Resident - " + items.get(position).getFirstname());
 
+        // set content for the item
         row.setContent("Resident " + items.get(position).getFirstname() + (ok ? " has been taken care of." : " needs you help now!"));
+
+        // set color for the content depending on the above takencare status
         row.setContentColor(ok ? Color.BLUE : Color.RED);
 
         return row;
 
     }
 
+    /**
+     * make the list view more smoothly when scrolling
+     */
     public class ListRow extends RelativeLayout {
         private ImageView mImage;
         private TextView mTitle;
@@ -83,6 +100,10 @@ public class AlertListAdapter extends ArrayAdapter<Alert> {
 
         public void setContentColor(int color) {
             mContent.setTextColor(color);
+        }
+
+        public void clear() {
+            mImage.setImageDrawable(null);
         }
     }
 }

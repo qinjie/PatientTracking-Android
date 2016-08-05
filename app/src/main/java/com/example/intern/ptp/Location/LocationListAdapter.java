@@ -26,6 +26,9 @@ public class LocationListAdapter extends ArrayAdapter<Location> {
         this.items = items;
     }
 
+    /**
+     * define layout for each item in the list view
+     */
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         ListRow row;
@@ -35,13 +38,19 @@ public class LocationListAdapter extends ArrayAdapter<Location> {
             row = (ListRow) view;
         }
 
+        // set title for the item
         row.setTitle(items.get(position).getLabel());
+
+        // set content for the item
         row.setContent(items.get(position).getCount());
 
         return row;
 
     }
 
+    /**
+     * make the list view more smoothly when scrolling
+     */
     public class ListRow extends RelativeLayout {
         private TextView mTitle;
         private TextView mContent;

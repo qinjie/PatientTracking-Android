@@ -25,72 +25,56 @@ public class ChangeInfo {
     }
 
     /**
-
-     *
-     * @return
-     * The username
+     * @return The username
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     *
-     * @param username
-     * The username
+     * @param username The username
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     *
-     * @return
-     * The currentPassword
+     * @return The currentPassword
      */
     public String getCurrentPassword() {
         return currentPassword;
     }
 
     /**
-     *
-     * @param currentPassword
-     * The current_password
+     * @param currentPassword The current_password
      */
     public void setCurrentPassword(String currentPassword) {
         this.currentPassword = currentPassword;
     }
 
     /**
-     *
-     * @return
-     * The newPassword
+     * @return The newPassword
      */
     public String getNewPassword() {
         return newPassword;
     }
 
     /**
-     *
-     * @param newPassword
-     * The new_password
+     * @param newPassword The new_password
      */
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
     }
+
     /**
-     *
-     * @return
-     * The macAddress
+     * @return The macAddress
      */
     public String getMacAddress() {
         return macAddress;
     }
 
     /**
-     *
-     * @param macAddress
-     * The mac_address
+     * @param macAddress The mac_address
      */
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;

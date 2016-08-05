@@ -21,53 +21,42 @@ public class LoginInfo {
     }
 
     /**
-     *
-     * @return
-     * The username
+     * @return The username
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     *
-     * @param username
-     * The username
+     * @param username The username
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     *
-     * @return
-     * The password
+     * @return The password
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     *
-     * @param password
-     * The password
+     * @param password The password
      */
     public void setPassword(String password) {
         this.password = password;
     }
+
     /**
-     *
-     * @return
-     * The macAddress
+     * @return The macAddress
      */
     public String getMacAddress() {
         return macAddress;
     }
 
     /**
-     *
-     * @param macAddress
-     * The MAC
+     * @param macAddress The MAC
      */
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;

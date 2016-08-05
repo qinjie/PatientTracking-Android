@@ -17,36 +17,28 @@ public class FCMInfo {
     }
 
     /**
-     *
-     * @return
-     * The macAddress
+     * @return The macAddress
      */
     public String getMacAddress() {
         return macAddress;
     }
 
     /**
-     *
-     * @param macAddress
-     * The MAC
+     * @param macAddress The MAC
      */
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
     }
 
     /**
-     *
-     * @return
-     * The fcmToken
+     * @return The fcmToken
      */
     public String getFcmToken() {
         return fcmToken;
     }
 
     /**
-     *
-     * @param fcmToken
-     * The fcm_token
+     * @param fcmToken The fcm_token
      */
     public void setFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;

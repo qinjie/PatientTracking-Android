@@ -16,8 +16,6 @@ import android.widget.TextView;
 import com.example.intern.ptp.Location.Location;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 

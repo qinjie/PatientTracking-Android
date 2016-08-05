@@ -18,15 +18,22 @@ public class ServiceGenerator {
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
+    // build base URL for the API service and add converter factory for serialization and deserialization of objects
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
                     .baseUrl(API_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
 
+    /**
+     * create an API service related to an API interface
+     */
     public static <S> S createService(Class<S> serviceClass) {
         return createService(serviceClass, null);
     }
 
+    /**
+     * create an API service related to an API interface and set "token" header for requests
+     */
     public static <S> S createService(Class<S> serviceClass, final String token) {
         if (token != null) {
             httpClient.addInterceptor(new Interceptor() {

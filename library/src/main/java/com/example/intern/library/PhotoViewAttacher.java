@@ -50,10 +50,6 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         OnGestureListener,
         ViewTreeObserver.OnGlobalLayoutListener {
 
-//    public List<TextView> tvList = new ArrayList<>();
-//    public ArrayList<Float> rLocx = new ArrayList<>(), rLocy = new ArrayList<>();
-//    public Bitmap mBitmap;
-
     private static final String LOG_TAG = "PhotoViewAttacher";
 
     // let debug flag be dynamic, but still Proguard can be used to remove from
@@ -1055,7 +1051,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
         /**
          * A simple callback where out of photo happened;
-         * */
+         */
         void onOutsidePhotoTap();
     }
 

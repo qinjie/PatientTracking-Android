@@ -2,14 +2,13 @@ package com.example.intern.ptp.Nearest;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,24 +29,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link NearestFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link NearestFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NearestFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     private Activity activity;
     private ServerApi api;
-    private View myView;
     private String username;
     private TextView tvResident, tvDistance;
     private boolean red = true;
@@ -56,42 +41,68 @@ public class NearestFragment extends Fragment {
         public void onReceive(final Context context, Intent intent) {
 
             try {
+                // get result with Preferences.nearest_resultTag from NearestService's broadcast intent
                 String result = intent.getStringExtra(Preferences.nearest_resultTag);
-                if(result.equalsIgnoreCase("failed")){
+
+                // if exception occurs or inconsistent database in server
+                if (result.equalsIgnoreCase("failed")) {
                     Preferences.kill(activity, ":nearestservice");
                     Preferences.showDialog(context, "Server Error", "Please try again!");
                     return;
                 }
-                if(!result.equalsIgnoreCase("isNotExpired")){
+
+                // if connection is failed
+                if (result.equalsIgnoreCase("connection_failure")) {
+                    Preferences.kill(activity, ":nearestservice");
+                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
+                    return;
+                }
+
+                // if session is expired
+                if (!result.equalsIgnoreCase("isNotExpired")) {
                     Preferences.goLogin(context);
                     return;
                 }
+
+                // if successfully receive the nearest resident from server
                 final Resident resident = intent.getParcelableExtra(Preferences.nearest_residentTag);
                 if (resident != null) {
                     tvResident.setText(resident.getFirstname() + " " + resident.getLastname());
-                    if(resident.getId() != null){
+                    if (resident.getId() != null) {
                         tvResident.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 try {
+                                    // create an API service and set session token to request header
                                     api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                    // create request object to check session timeout
                                     Call<ResponseBody> call = api.getCheck();
                                     Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             try {
+                                                // if exception occurs or inconsistent database in server
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
                                                     Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
+
+                                                // if session is expired
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                                                     Preferences.goLogin(activity);
                                                     return;
                                                 }
+
+                                                // create a new intent related to ResidentActivity
                                                 Intent intent = new Intent(activity, ResidentActivity.class);
+
+                                                // put resident id as an extra in the above created intent
                                                 intent.putExtra(Preferences.resident_idTag, resident.getId());
+
+                                                // start a new ResidentActivity with the intent
                                                 startActivity(intent);
                                             } catch (Exception e) {
                                                 Preferences.dismissLoading();
@@ -103,6 +114,7 @@ public class NearestFragment extends Fragment {
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                                             Preferences.dismissLoading();
                                             t.printStackTrace();
+                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                         }
                                     });
                                 } catch (Exception e) {
@@ -113,10 +125,10 @@ public class NearestFragment extends Fragment {
                         });
                     }
                     tvDistance.setText(resident.getDistance());
-                    if(red){
+                    if (red) {
                         tvResident.setTextColor(Color.RED);
                         tvDistance.setTextColor(Color.RED);
-                    }else{
+                    } else {
                         tvResident.setTextColor(Color.BLUE);
                         tvDistance.setTextColor(Color.BLUE);
                     }
@@ -128,30 +140,6 @@ public class NearestFragment extends Fragment {
         }
     };
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment NearestFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static NearestFragment newInstance(String param1, String param2) {
-        NearestFragment fragment = new NearestFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public NearestFragment() {
         // Required empty public constructor
     }
@@ -160,12 +148,10 @@ public class NearestFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
-        Preferences.checkFcmTokenStatus(activity);
+
+        // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
+        Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
         username = activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -181,6 +167,7 @@ public class NearestFragment extends Fragment {
             inflater.inflate(R.menu.menu_fragment_nearest, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
+                // set title for action bar and display it
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_neasrest_resident));
             }
@@ -212,13 +199,16 @@ public class NearestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        myView = inflater.inflate(R.layout.fragment_nearest, container, false);
+        View myView = inflater.inflate(R.layout.fragment_nearest, container, false);
         tvResident = (TextView) myView.findViewById(R.id.tvResident);
         tvDistance = (TextView) myView.findViewById(R.id.tvDistance);
         try {
+            // register a broadcast receiver with the tag equals "Preferences.nearest_broadcastTag + username"
             activity.registerReceiver(mMessageReceiver, new IntentFilter(Preferences.nearest_broadcastTag + username));
+
+            // start a new NearestService
             activity.startService(new Intent(activity, NearestService.class));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return myView;
@@ -237,26 +227,8 @@ public class NearestFragment extends Fragment {
         super.onPause();
         try {
             activity.unregisterReceiver(mMessageReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -265,7 +237,7 @@ public class NearestFragment extends Fragment {
         Preferences.kill(activity, ":nearestservice");
         try {
             activity.unregisterReceiver(mMessageReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.onDestroy();
@@ -275,27 +247,11 @@ public class NearestFragment extends Fragment {
     public void onDetach() {
         try {
             activity.unregisterReceiver(mMessageReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         Preferences.kill(activity, ":nearestservice");
         super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
     }
 
 }

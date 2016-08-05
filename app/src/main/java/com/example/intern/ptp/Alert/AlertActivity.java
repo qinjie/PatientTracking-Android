@@ -40,17 +40,23 @@ public class AlertActivity extends Activity {
         tv = (TextView) findViewById(R.id.addition);
 
         try {
+            // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-            Call<List<Alert>> call = api.getAlerts(this.getIntent().getStringExtra(Preferences.notify_Tag), "all");
+
+            // create request object to get notification information
+            Call<List<Alert>> call = api.getAlerts(activity.getIntent().getStringExtra(Preferences.notify_idTag), "all");
             call.enqueue(new Callback<List<Alert>>() {
                 @Override
                 public void onResponse(Call<List<Alert>> call, Response<List<Alert>> response) {
                     try {
+                        // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
                             Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
+
+                        // if session is expired
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                             Preferences.goLogin(activity);
                             return;
@@ -61,24 +67,36 @@ public class AlertActivity extends Activity {
                             @Override
                             public void onClick(View v) {
                                 try {
+                                    // create an API service and set session token to request header
                                     api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                                    // create request object to check session timeout
                                     Call<ResponseBody> call = api.getCheck();
                                     Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             try {
+                                                // if exception occurs or inconsistent database in server
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
                                                     Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
+
+                                                // if session is expired
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                                                     Preferences.goLogin(activity);
                                                     return;
                                                 }
+
+                                                // create a new intent related to ResidentActivity
                                                 Intent intent = new Intent(activity, ResidentActivity.class);
+
+                                                // put resident id of the notification as an extra in the above created intent
                                                 intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
+
+                                                // start a new ResidentActivity with the intent
                                                 startActivity(intent);
                                             } catch (Exception e) {
                                                 Preferences.dismissLoading();
@@ -90,6 +108,7 @@ public class AlertActivity extends Activity {
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                                             Preferences.dismissLoading();
                                             t.printStackTrace();
+                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                         }
                                     });
                                 } catch (Exception e) {
@@ -102,31 +121,40 @@ public class AlertActivity extends Activity {
                             @Override
                             public void onClick(View v) {
                                 try {
-
+                                    // create an API service and set session token to request header
                                     api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
+                                    // create request object to send a take-care-action request to server
                                     Call<String> call = api.setTakecare(alert.getId(), activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
                                     Preferences.showLoading(activity);
                                     call.enqueue(new Callback<String>() {
                                         @Override
                                         public void onResponse(Call<String> call, Response<String> response) {
                                             try {
+                                                // if exception occurs or inconsistent database in server
                                                 if (response.headers().get("result").equalsIgnoreCase("failed")) {
                                                     Preferences.dismissLoading();
                                                     Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                     return;
                                                 }
+
+                                                // if session is expired
                                                 if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                    Preferences.goLogin(AlertActivity.this);
+                                                    Preferences.goLogin(activity);
                                                     return;
                                                 }
+
+                                                // get response from server
                                                 String res = response.body();
+
+                                                // if successfully sent take-care-action request to server
                                                 if (res.equalsIgnoreCase("success")) {
                                                     bt.setEnabled(false);
                                                     mes.setText("HAS BEEN TAKEN CARE OF");
                                                     mes.setTextColor(Color.BLUE);
                                                     tv.setText("By " + activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
                                                 } else {
+                                                    // if the notification is already taken care of by another user
                                                     if (!res.equalsIgnoreCase("failed")) {
                                                         bt.setEnabled(false);
                                                         mes.setText("HAS BEEN TAKEN CARE OF");
@@ -144,6 +172,7 @@ public class AlertActivity extends Activity {
                                         public void onFailure(Call<String> call, Throwable t) {
                                             Preferences.dismissLoading();
                                             t.printStackTrace();
+                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                         }
                                     });
                                 } catch (Exception e) {
@@ -152,6 +181,7 @@ public class AlertActivity extends Activity {
                                 }
                             }
                         });
+                        // check whether the notification has been taken care of or not to display suitable information
                         if (alert.getOk().equalsIgnoreCase("0")) {
                             bt.setEnabled(true);
                             mes.setText("NEEDS YOUR HELP NOW!");
@@ -174,6 +204,7 @@ public class AlertActivity extends Activity {
                 public void onFailure(Call<List<Alert>> call, Throwable t) {
                     Preferences.dismissLoading();
                     t.printStackTrace();
+                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                 }
             });
 
@@ -192,10 +223,13 @@ public class AlertActivity extends Activity {
             getMenuInflater().inflate(R.menu.menu_activity_alert, menu);
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
+                // display predefined title for action bar
                 actionBar.setDisplayShowTitleEnabled(true);
+
+                // display go-back-home arrow at the left most of the action bar
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
@@ -212,15 +246,17 @@ public class AlertActivity extends Activity {
             switch (id) {
                 case android.R.id.home:
                     // app icon in action bar clicked; goto parent activity.
-                    this.finish();
+                    activity.finish();
                     return true;
+
+                // reload activity
                 case R.id.action_refresh_alert:
                     activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

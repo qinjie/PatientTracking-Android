@@ -13,14 +13,15 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,28 +30,37 @@ import retrofit2.Response;
 public class ResidentActivity extends Activity {
 
     private TextView tvID, tvFirstName, tvLastName, tvNric, tvGender, tvBirthday, tvContact, tvRemark;
-    private TableLayout[] tableLayout;
+    private TableLayout[] tableLayouts;
     private LinearLayout layout;
     private String mID, mFirstName, mLastName, mNric, mGender, mBirthday, mContact, mRemark;
     private String nID, nFirstName, nLastName, nNric, nContact, nEmail, nRemark, nRelation;
     private ServerApi api;
     private Activity activity = this;
+
     private int getPx(int dp) {
         final float scale = activity.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
     }
-    private void doit(int i, String text, int k){
+
+    /**
+     * add table cell with text param into i-th column of the next-of-kin table (0-based index)
+     * use k to make the table more readable
+     */
+    private void addTableCell(int i, String text, int k) {
         try {
             LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            param.weight = 1;
             if (text == null)
                 text = "";
             TextView tv = new TextView(activity);
             final String old = text;
+
+            // modify text in order to display the text in only 1 line in the table
             text = text.replace('\n', ' ');
             tv.setText(text);
             tv.setTextColor(Color.BLUE);
             tv.setPadding(getPx(10), getPx(5), getPx(0), getPx(5));
+
+            // display full text as a dialog when user licks the table cell containing the modified text
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -65,33 +75,39 @@ public class ResidentActivity extends Activity {
             });
 
             TableRow tr = new TableRow(activity);
+
+            // make the table more readable
             if (k % 2 == 0)
                 tr.setBackgroundColor(Color.WHITE);
             else
                 tr.setBackgroundColor(Color.TRANSPARENT);
             tr.setLayoutParams(param);
 
+            // add text view to table row
             tr.addView(tv);
-            tableLayout[i].addView(tr);
-        }catch (Exception e){
+
+            // add table row to i-th table layout in tableLayouts array
+            tableLayouts[i].addView(tr);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_resident);
             layout = (TableLayout) findViewById(R.id.layout);
-            tableLayout = new TableLayout[8];
-            tableLayout[0] = (TableLayout) findViewById(R.id.tbID);
-            tableLayout[1] = (TableLayout) findViewById(R.id.tbFirstname);
-            tableLayout[2] = (TableLayout) findViewById(R.id.tbLastname);
-            tableLayout[3] = (TableLayout) findViewById(R.id.tbNRIC);
-            tableLayout[4] = (TableLayout) findViewById(R.id.tbContact);
-            tableLayout[5] = (TableLayout) findViewById(R.id.tbEmail);
-            tableLayout[6] = (TableLayout) findViewById(R.id.tbRemark);
-            tableLayout[7] = (TableLayout) findViewById(R.id.tbRelation);
+            tableLayouts = new TableLayout[8];
+            tableLayouts[0] = (TableLayout) findViewById(R.id.tbID);
+            tableLayouts[1] = (TableLayout) findViewById(R.id.tbFirstname);
+            tableLayouts[2] = (TableLayout) findViewById(R.id.tbLastname);
+            tableLayouts[3] = (TableLayout) findViewById(R.id.tbNRIC);
+            tableLayouts[4] = (TableLayout) findViewById(R.id.tbContact);
+            tableLayouts[5] = (TableLayout) findViewById(R.id.tbEmail);
+            tableLayouts[6] = (TableLayout) findViewById(R.id.tbRemark);
+            tableLayouts[7] = (TableLayout) findViewById(R.id.tbRelation);
 
             tvID = (TextView) findViewById(R.id.ID);
             tvFirstName = (TextView) findViewById(R.id.firstname);
@@ -102,28 +118,42 @@ public class ResidentActivity extends Activity {
             tvContact = (TextView) findViewById(R.id.contact);
             tvRemark = (TextView) findViewById(R.id.remark);
 
+            // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
+            // create request object to get a resident's information
             Call<Resident> call = api.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
             call.enqueue(new Callback<Resident>() {
                 @Override
                 public void onResponse(Call<Resident> call, Response<Resident> response) {
                     try {
+                        // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
                             Preferences.dismissLoading();
                             Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
+
+                        // if session is expired
                         if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
                             Preferences.goLogin(activity);
                             return;
                         }
+
+                        // get response data from server
                         Resident resident = response.body();
+
+                        // get list of the resident's next-of-kins
                         List<NextOfKin> nextOfKinList = resident.getNextofkin();
+
+                        // hide the next-of-kin table when there is no next-of-kin in the list
                         if (nextOfKinList.size() > 0) {
                             layout.setVisibility(View.VISIBLE);
+                        } else {
+                            layout.setVisibility(View.INVISIBLE);
                         }
 
+                        // get resident's information
                         mID = resident.getId();
                         mFirstName = resident.getFirstname();
                         mLastName = resident.getLastname();
@@ -132,38 +162,41 @@ public class ResidentActivity extends Activity {
                         mBirthday = resident.getBirthday();
                         mContact = resident.getContact();
                         mRemark = resident.getRemark();
+
+                        // display resident's information
                         tvID.setText(mID);
                         tvFirstName.setText(mFirstName);
                         tvLastName.setText(mLastName);
                         tvNric.setText(mNric);
                         tvGender.setText(mGender);
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                         Date d = sdf.parse(mBirthday);
                         sdf.applyPattern("MMM dd, yyyy");
                         tvBirthday.setText(sdf.format(d));
                         tvContact.setText(mContact);
                         tvRemark.setText(mRemark);
 
+                        // display next-of-kin information in each table cell
                         for (int i = 0; i < nextOfKinList.size(); i++) {
                             NextOfKin nextOfKin = nextOfKinList.get(i);
                             nID = nextOfKin.getId();
-                            doit(0, nID, i);
+                            addTableCell(0, nID, i);
                             nFirstName = nextOfKin.getFirstName();
-                            doit(1, nFirstName, i);
+                            addTableCell(1, nFirstName, i);
                             nLastName = nextOfKin.getLastName();
-                            doit(2, nLastName, i);
+                            addTableCell(2, nLastName, i);
                             nNric = nextOfKin.getNric();
-                            doit(3, nNric, i);
+                            addTableCell(3, nNric, i);
                             nContact = nextOfKin.getContact();
-                            doit(4, nContact, i);
+                            addTableCell(4, nContact, i);
                             nEmail = nextOfKin.getEmail();
-                            doit(5, nEmail, i);
+                            addTableCell(5, nEmail, i);
                             nRemark = nextOfKin.getRemark();
-                            doit(6, nRemark, i);
+                            addTableCell(6, nRemark, i);
                             nRelation = nextOfKin.getRelation();
-                            doit(7, nRelation, i);
+                            addTableCell(7, nRelation, i);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     Preferences.dismissLoading();
@@ -173,9 +206,10 @@ public class ResidentActivity extends Activity {
                 public void onFailure(Call<Resident> call, Throwable t) {
                     Preferences.dismissLoading();
                     t.printStackTrace();
+                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -187,10 +221,13 @@ public class ResidentActivity extends Activity {
             getMenuInflater().inflate(R.menu.menu_activity_resident, menu);
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
+                // display predefined title for action bar
                 actionBar.setDisplayShowTitleEnabled(true);
+
+                // display go-back-home arrow at the left most of the action bar
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
@@ -209,13 +246,15 @@ public class ResidentActivity extends Activity {
                     // app icon in action bar clicked; goto parent activity.
                     this.finish();
                     return true;
+
+                // reload activity
                 case R.id.action_refresh_resident:
                     activity.recreate();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

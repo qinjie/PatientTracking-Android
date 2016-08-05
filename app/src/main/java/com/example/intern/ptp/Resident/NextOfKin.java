@@ -36,180 +36,140 @@ public class NextOfKin {
     private String relation;
 
     /**
-     *
-     * @return
-     * The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     *
-     * @param id
-     * The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     *
-     * @return
-     * The nric
+     * @return The nric
      */
     public String getNric() {
         return nric;
     }
 
     /**
-     *
-     * @param nric
-     * The nric
+     * @param nric The nric
      */
     public void setNric(String nric) {
         this.nric = nric;
     }
 
     /**
-     *
-     * @return
-     * The firstName
+     * @return The firstName
      */
     public String getFirstName() {
         return firstName;
     }
 
     /**
-     *
-     * @param firstName
-     * The first_name
+     * @param firstName The first_name
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     /**
-     *
-     * @return
-     * The lastName
+     * @return The lastName
      */
     public String getLastName() {
         return lastName;
     }
 
     /**
-     *
-     * @param lastName
-     * The last_name
+     * @param lastName The last_name
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     /**
-     *
-     * @return
-     * The contact
+     * @return The contact
      */
     public String getContact() {
         return contact;
     }
 
     /**
-     *
-     * @param contact
-     * The contact
+     * @param contact The contact
      */
     public void setContact(String contact) {
         this.contact = contact;
     }
 
     /**
-     *
-     * @return
-     * The email
+     * @return The email
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     *
-     * @param email
-     * The email
+     * @param email The email
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     *
-     * @return
-     * The remark
+     * @return The remark
      */
     public String getRemark() {
         return remark;
     }
 
     /**
-     *
-     * @param remark
-     * The remark
+     * @param remark The remark
      */
     public void setRemark(String remark) {
         this.remark = remark;
     }
 
     /**
-     *
-     * @return
-     * The createdAt
+     * @return The createdAt
      */
     public String getCreatedAt() {
         return createdAt;
     }
 
     /**
-     *
-     * @param createdAt
-     * The created_at
+     * @param createdAt The created_at
      */
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
     /**
-     *
-     * @return
-     * The updatedAt
+     * @return The updatedAt
      */
     public String getUpdatedAt() {
         return updatedAt;
     }
 
     /**
-     *
-     * @param updatedAt
-     * The updated_at
+     * @param updatedAt The updated_at
      */
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
     /**
-     *
-     * @return
-     * The relation
+     * @return The relation
      */
     public String getRelation() {
         return relation;
     }
 
     /**
-     *
-     * @param relation
-     * The relation
+     * @param relation The relation
      */
     public void setRelation(String relation) {
         this.relation = relation;

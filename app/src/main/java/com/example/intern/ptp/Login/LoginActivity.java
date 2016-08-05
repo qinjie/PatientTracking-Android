@@ -41,26 +41,38 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            // check Google Play Services plug-in to be able to register to FCM server and receive message from it
             checkPlayServices();
+
+            // get Shared Preferences of the app
             pref = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
 
+            // get session token from the Shared Preferences
             token = pref.getString("token", "");
+
+            // if a token is available then try to login
             if (!token.equalsIgnoreCase("")) {
 
+                // create an API service and set session token to request header
                 api = ServiceGenerator.createService(ServerApi.class, this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+                // create request object to check session timeout
                 Call<ResponseBody> call = api.getCheck();
                 Preferences.showLoading(activity);
                 call.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         try {
+                            // if session is not expired
                             if (response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
+
+                                // start NavigationActivity
                                 Intent intent = new Intent(activity, NavigationActivity.class);
                                 startActivity(intent);
                             } else {
                                 Preferences.dismissLoading();
                             }
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             Preferences.dismissLoading();
                             e.printStackTrace();
                         }
@@ -70,10 +82,13 @@ public class LoginActivity extends Activity {
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Preferences.dismissLoading();
                         t.printStackTrace();
+                        Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                     }
                 });
 
             }
+
+            // set layout for the activity
             setLayout();
 
         } catch (Exception e) {
@@ -81,6 +96,9 @@ public class LoginActivity extends Activity {
         }
     }
 
+    /**
+     * set layout for the activity
+     */
     public void setLayout() {
 
         setContentView(R.layout.activity_login);
@@ -88,6 +106,8 @@ public class LoginActivity extends Activity {
         mPasswordView = (EditText) findViewById(R.id.password);
 
         mButton = (Button) findViewById(R.id.button);
+
+        // handle click event of the above button
         mButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,55 +115,91 @@ public class LoginActivity extends Activity {
             }
         });
 
+        // get username stored in the Shared Preferences
         username = pref.getString("username", "");
+
+        // get password stored in the Shared Preferences
         password = pref.getString("password", "");
 
+        // get MAC address of the device
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo wInfo = wifiManager.getConnectionInfo();
         MAC = wInfo.getMacAddress();
 
+        // set username and password to the two text views that receive input username and password form user
+        // in order to help user save time
         mUsernameView.setText(username);
         mPasswordView.setText(password);
 
     }
 
+    /**
+     * attempt to request a login to the app
+     */
     public void attemptLogin() {
 
         try {
+            // create an API service
             api = ServiceGenerator.createService(ServerApi.class);
 
+            // get input username
             username = mUsernameView.getText().toString();
-            if(username.isEmpty()){
+
+            // empty username is not allowed
+            if (username.isEmpty()) {
                 Preferences.showDialog(activity, null, "Please enter your username!");
                 return;
             }
+
+            // get input password
             password = mPasswordView.getText().toString();
-            if(password.isEmpty()){
+
+            // empty password is not allowed
+            if (password.isEmpty()) {
                 Preferences.showDialog(activity, null, "Please enter your password!");
                 return;
             }
 
+            // create request object to send login information
             Call<LoginResult> call = api.getLogin(new LoginInfo(username, password, MAC));
             Preferences.showLoading(activity);
-
             call.enqueue(new Callback<LoginResult>() {
                 @Override
                 public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
                     try {
+                        // get response information from server
                         LoginResult res = response.body();
+
+                        // if username and password are correct
                         if (res.getResult().equalsIgnoreCase("correct")) {
+
+                            // get Shared Preferences Editor in order to save data
                             editor = activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit();
+
+                            // save new session token received from server to local
                             editor.putString("token", res.getToken());
+
+                            // save correct username to local
                             editor.putString("username", username);
+
+                            // save correct password to local
                             editor.putString("password", password);
+
+                            // apply the changes in another thread
                             editor.apply();
 
+                            // start NavigationActivity
                             Intent intent = new Intent(activity, NavigationActivity.class);
                             startActivity(intent);
+
+                            // if username or password is wrong, notify user by a dialog
                         } else if (res.getResult().equalsIgnoreCase("wrong")) {
                             Preferences.dismissLoading();
                             Preferences.showDialog(activity, null, "Wrong username or password!");
-                        }else{
+
+
+                            // otherwise exception occurs or inconsistent database in server
+                        } else {
                             Preferences.dismissLoading();
                             Preferences.showDialog(activity, "Server Error", "Please try again!");
                         }
@@ -152,12 +208,13 @@ public class LoginActivity extends Activity {
                     }
                 }
 
+                // if connection to server is failed
                 @Override
                 public void onFailure(Call<LoginResult> call, Throwable t) {
                     try {
                         Preferences.dismissLoading();
                         t.printStackTrace();
-                        Preferences.showDialog(activity, "Connection Failure", "Please check your network!");
+                        Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                     } catch (Exception e) {
                         Preferences.dismissLoading();
                         e.printStackTrace();
@@ -169,15 +226,18 @@ public class LoginActivity extends Activity {
         }
     }
 
+    /**
+     * check Google Play Services plug-in
+     */
     private boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(activity);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
             } else {
-                this.finish();
+                activity.finish();
             }
             return false;
         }
