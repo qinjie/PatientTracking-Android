@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="android:Theme.Material.Light.DarkActionBar">
         <item name="android:icon">@android:color/transparent</item>
         <item name="android:actionBarStyle">@style/MyActionBar</item>
     </style>
-    <style name="MyActionBar"
-        parent="android:Widget.Holo.ActionBar.Solid" >
+
+    <style name="MyActionBar" parent="android:Widget.Holo.ActionBar.Solid">
         <item name="android:background">#007fff</item>
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
     </style>
-    <style name="MyActionBarTitleText"
-        parent="android:TextAppearance.Material.Widget.ActionBar.Title">
+
+    <style name="MyActionBarTitleText" parent="android:TextAppearance.Material.Widget.ActionBar.Title">
         <item name="android:textColor">#ffffff</item>
     </style>
+
     <style name="MyDialogStyle" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColorPrimary">#007fff</item>
     </style>

@@ -18,8 +18,7 @@ import com.example.intern.ptp.Setting.ProfileFragment;
 
 public class NavigationActivity extends Activity
         implements
-        NavigationDrawerFragment.NavigationDrawerCallbacks
-{
+        NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
