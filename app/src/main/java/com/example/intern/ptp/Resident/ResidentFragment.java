@@ -30,23 +30,31 @@ import com.example.intern.ptp.Retrofit.ServiceGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ResidentFragment extends Fragment {
-
     private SearchView sv;
-    private TableLayout[] tls;
-    private TextView[] headers;
-    private Spinner spinner;
+
+    @BindViews({R.id.tableLayout1, R.id.tableLayout2, R.id.tableLayout3})
+    List<TableLayout> tls;
+
+    @BindViews({R.id.header1, R.id.header2, R.id.header3})
+    List<TextView> headers;
+
+    @BindView(R.id.spinner)
+    Spinner spinner;
+
     private List<Location> locationList;
     private int sortIndex = -1;
     private String[] colName = {"id", "name", "floor_id"};
     private boolean asc[] = {true, true, true};
     private Activity activity;
-    private View myView;
     private ServerApi api;
 
     public ResidentFragment() {
@@ -137,7 +145,7 @@ public class ResidentFragment extends Fragment {
                                 trs[k].addView(tvs[k]);
 
                                 // add table row to table layout
-                                tls[k].addView(trs[k]);
+                                tls.get(k).addView(trs[k]);
 
                             }
 
@@ -388,11 +396,10 @@ public class ResidentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        myView = inflater.inflate(R.layout.fragment_resident, container, false);
+        View myView = inflater.inflate(R.layout.fragment_resident, container, false);
+        ButterKnife.bind(this, myView);
 
         try {
-            spinner = (Spinner) myView.findViewById(R.id.spinner);
-
             // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
@@ -481,18 +488,10 @@ public class ResidentFragment extends Fragment {
                             }
                         });
 
-                        tls = new TableLayout[3];
-                        tls[0] = (TableLayout) myView.findViewById(R.id.tableLayout1);
-                        tls[1] = (TableLayout) myView.findViewById(R.id.tableLayout2);
-                        tls[2] = (TableLayout) myView.findViewById(R.id.tableLayout3);
 
-                        headers = new TextView[3];
-                        headers[0] = (TextView) myView.findViewById(R.id.header1);
-                        headers[1] = (TextView) myView.findViewById(R.id.header2);
-                        headers[2] = (TextView) myView.findViewById(R.id.header3);
-                        for (int i = 0; i < headers.length; i++) {
+                        for (int i = 0; i < headers.size(); i++) {
                             final int k = i;
-                            headers[i].setOnClickListener(new View.OnClickListener() {
+                            headers.get(i).setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     // create an API service and set session token to request header

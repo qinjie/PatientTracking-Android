@@ -20,6 +20,9 @@ import com.example.intern.ptp.Retrofit.ServiceGenerator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,8 +32,12 @@ public class LoginActivity extends Activity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    private EditText mUsernameView, mPasswordView;
-    private Button mButton;
+    @BindView(R.id.username)
+    EditText mUsernameView;
+
+    @BindView(R.id.password)
+    EditText mPasswordView;
+
     private String username, password, token, MAC;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -100,20 +107,8 @@ public class LoginActivity extends Activity {
      * set layout for the activity
      */
     public void setLayout() {
-
         setContentView(R.layout.activity_login);
-        mUsernameView = (EditText) findViewById(R.id.username);
-        mPasswordView = (EditText) findViewById(R.id.password);
-
-        mButton = (Button) findViewById(R.id.button);
-
-        // handle click event of the above button
-        mButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        ButterKnife.bind(this);
 
         // get username stored in the Shared Preferences
         username = pref.getString("username", "");
@@ -136,6 +131,7 @@ public class LoginActivity extends Activity {
     /**
      * attempt to request a login to the app
      */
+    @OnClick(R.id.button)
     public void attemptLogin() {
 
         try {

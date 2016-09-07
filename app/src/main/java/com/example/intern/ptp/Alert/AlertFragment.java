@@ -24,6 +24,8 @@ import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,9 +33,13 @@ import retrofit2.Response;
 
 public class AlertFragment extends Fragment {
 
-    private ListView alertListView;
+    @BindView(R.id.nListView)
+    ListView alertListView;
+
+    @BindView(R.id.redCheck)
+    CheckBox redCheck;
+
     private List<Alert> alertList;
-    private CheckBox redCheck;
     private Activity activity;
     private ServerApi api;
 
@@ -99,13 +105,12 @@ public class AlertFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_alert, container, false);
-        alertListView = (ListView) myView.findViewById(R.id.nListView);
-        redCheck = (CheckBox) myView.findViewById(R.id.redCheck);
+        View view = inflater.inflate(R.layout.fragment_alert, container, false);
+        ButterKnife.bind(this, view);
 
         // display a list of notification basing on checked status of the above check box
         display();
-        return myView;
+        return view;
     }
 
     @Override

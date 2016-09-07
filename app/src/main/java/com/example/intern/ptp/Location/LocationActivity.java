@@ -11,18 +11,38 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
+import com.google.android.gms.vision.text.Text;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LocationActivity extends Activity {
-    private TextView tvID, tvLabel, tvDescription, tvWidth, tvHeight, tvCount;
+
+    @BindView(R.id.ID)
+    TextView tvID;
+
+    @BindView(R.id.label)
+    TextView tvLabel;
+
+    @BindView(R.id.description)
+    TextView tvDescription;
+
+    @BindView(R.id.width)
+    TextView tvWidth;
+
+    @BindView(R.id.height)
+    TextView tvHeight;
+
+    @BindView(R.id.count)
+    TextView tvCount;
+
     private String mID, mLabel, mDescription, mWidth, mHeight, mCount;
 
-    private ServerApi api;
     private Activity activity = this;
 
     @Override
@@ -30,15 +50,10 @@ public class LocationActivity extends Activity {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_location);
-            tvID = (TextView) findViewById(R.id.ID);
-            tvLabel = (TextView) findViewById(R.id.label);
-            tvDescription = (TextView) findViewById(R.id.description);
-            tvWidth = (TextView) findViewById(R.id.width);
-            tvHeight = (TextView) findViewById(R.id.height);
-            tvCount = (TextView) findViewById(R.id.count);
+            ButterKnife.bind(this);
 
             // create an API service and set session token to request header
-            api = ServiceGenerator.createService(ServerApi.class, this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            ServerApi api = ServiceGenerator.createService(ServerApi.class, this.getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             // create request object to get a floor information
             Call<List<Location>> call = api.getFloor(this.getIntent().getStringExtra(Preferences.floor_idTag));

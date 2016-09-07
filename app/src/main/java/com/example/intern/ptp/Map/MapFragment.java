@@ -23,6 +23,8 @@ import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,7 +32,9 @@ import retrofit2.Response;
 
 public class MapFragment extends Fragment {
 
-    private ListView mapListView;
+    @BindView(R.id.mapListView)
+    ListView mapListView;
+
     private List<Location> mapList;
     private Activity activity;
     private ServerApi api;
@@ -99,10 +103,10 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_map, container, false);
-        try {
-            mapListView = (ListView) myView.findViewById(R.id.mapListView);
+        ButterKnife.bind(this, myView);
 
-            // create an API service and set session token to request header
+        try {
+             // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             // create request object to get all floors' basic information

@@ -19,7 +19,7 @@
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="The resident"/>
+            android:text="The resident" />
 
         <TextView
             android:id="@+id/resident"
@@ -36,14 +36,15 @@
             android:textSize="25sp"
             android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/addition"
             android:textColor="@android:color/holo_blue_dark"
             android:textSize="20sp"
             android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

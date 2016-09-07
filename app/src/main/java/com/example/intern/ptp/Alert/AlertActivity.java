@@ -19,14 +19,26 @@ import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AlertActivity extends Activity {
-    private Button bt;
-    private TextView mes, tv, resident;
+    @BindView(R.id.take_action)
+    Button bt;
+
+    @BindView(R.id.message)
+    TextView mes;
+
+    @BindView(R.id.addition)
+    TextView tv;
+
+    @BindView(R.id.resident)
+    TextView resident;
+
     private ServerApi api;
     private Activity activity = this;
 
@@ -34,10 +46,7 @@ public class AlertActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alert);
-        resident = (TextView) findViewById(R.id.resident);
-        mes = (TextView) findViewById(R.id.message);
-        bt = (Button) findViewById(R.id.take_action);
-        tv = (TextView) findViewById(R.id.addition);
+        ButterKnife.bind(this);
 
         try {
             // create an API service and set session token to request header
