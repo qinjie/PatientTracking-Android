@@ -24,6 +24,8 @@ import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,10 +33,15 @@ import retrofit2.Response;
 
 public class NearestFragment extends Fragment {
 
+    @BindView(R.id.tvResident)
+    TextView tvResident;
+
+    @BindView(R.id.tvDistance)
+    TextView tvDistance;
+
     private Activity activity;
     private ServerApi api;
     private String username;
-    private TextView tvResident, tvDistance;
     private boolean red = true;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -200,8 +207,8 @@ public class NearestFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_nearest, container, false);
-        tvResident = (TextView) myView.findViewById(R.id.tvResident);
-        tvDistance = (TextView) myView.findViewById(R.id.tvDistance);
+        ButterKnife.bind(this, myView);
+
         try {
             // register a broadcast receiver with the tag equals "Preferences.nearest_broadcastTag + username"
             activity.registerReceiver(mMessageReceiver, new IntentFilter(Preferences.nearest_broadcastTag + username));

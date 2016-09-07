@@ -33,15 +33,22 @@ import com.squareup.picasso.Target;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MapActivity extends Activity {
 
-    public static Bitmap mBitmap, sBitMap;
-    public static PhotoView mImageView;
+    @BindView(R.id.iv_photo)
+    PhotoView mImageView;
+
+    @BindView(R.id.map_layout)
+    RelativeLayout layout;
+
     public static int radius = 4;
     public static int delta = 1;
     private List<Resident> residentList;
     private PhotoViewAttacher mAttacher;
-    private RelativeLayout layout;
+    public static Bitmap mBitmap, sBitMap;
     private RectF rec;
     private String floorId;
     private Activity activity = this;
@@ -197,8 +204,7 @@ public class MapActivity extends Activity {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_map);
-            layout = (RelativeLayout) findViewById(R.id.map_layout);
-            mImageView = (PhotoView) findViewById(R.id.iv_photo);
+            ButterKnife.bind(this);
 
             // get floor id in the intent received from MapFragment
             floorId = getIntent().getStringExtra(Preferences.floor_idTag);

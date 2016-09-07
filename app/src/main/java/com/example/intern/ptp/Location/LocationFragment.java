@@ -21,6 +21,8 @@ import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +30,9 @@ import retrofit2.Response;
 
 public class LocationFragment extends Fragment {
 
-    private ListView locationListView;
+    @BindView(R.id.locationListView)
+    ListView locationListView;
+
     private List<Location> locationList;
     private Activity activity;
     private ServerApi api;
@@ -96,9 +100,9 @@ public class LocationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_location, container, false);
-        try {
-            locationListView = (ListView) myView.findViewById(R.id.locationListView);
+        ButterKnife.bind(this, myView);
 
+        try {
             // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 

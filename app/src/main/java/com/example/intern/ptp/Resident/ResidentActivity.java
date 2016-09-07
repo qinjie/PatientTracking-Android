@@ -23,18 +23,47 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ResidentActivity extends Activity {
 
-    private TextView tvID, tvFirstName, tvLastName, tvNric, tvGender, tvBirthday, tvContact, tvRemark;
-    private TableLayout[] tableLayouts;
-    private LinearLayout layout;
+    @BindView(R.id.ID)
+    TextView tvID;
+
+    @BindView(R.id.firstname)
+    TextView tvFirstName;
+
+    @BindView(R.id.lastname)
+    TextView tvLastName;
+
+    @BindView(R.id.nric)
+    TextView tvNric;
+
+    @BindView(R.id.gender)
+    TextView tvGender;
+
+    @BindView(R.id.birthday)
+    TextView tvBirthday;
+
+    @BindView(R.id.contact)
+    TextView tvContact;
+
+    @BindView(R.id.remark)
+    TextView tvRemark;
+
+    @BindViews({R.id.tbID, R.id.tbFirstname, R.id.tbLastname, R.id.tbNRIC, R.id.tbContact, R.id.tbEmail, R.id.tbRemark, R.id.tbRelation})
+    List<TableLayout> tableLayouts;
+
+    @BindView(R.id.layout)
+    LinearLayout layout;
+
     private String mID, mFirstName, mLastName, mNric, mGender, mBirthday, mContact, mRemark;
     private String nID, nFirstName, nLastName, nNric, nContact, nEmail, nRemark, nRelation;
-    private ServerApi api;
     private Activity activity = this;
 
     private int getPx(int dp) {
@@ -87,7 +116,7 @@ public class ResidentActivity extends Activity {
             tr.addView(tv);
 
             // add table row to i-th table layout in tableLayouts array
-            tableLayouts[i].addView(tr);
+            tableLayouts.get(i).addView(tr);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,28 +127,10 @@ public class ResidentActivity extends Activity {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_resident);
-            layout = (TableLayout) findViewById(R.id.layout);
-            tableLayouts = new TableLayout[8];
-            tableLayouts[0] = (TableLayout) findViewById(R.id.tbID);
-            tableLayouts[1] = (TableLayout) findViewById(R.id.tbFirstname);
-            tableLayouts[2] = (TableLayout) findViewById(R.id.tbLastname);
-            tableLayouts[3] = (TableLayout) findViewById(R.id.tbNRIC);
-            tableLayouts[4] = (TableLayout) findViewById(R.id.tbContact);
-            tableLayouts[5] = (TableLayout) findViewById(R.id.tbEmail);
-            tableLayouts[6] = (TableLayout) findViewById(R.id.tbRemark);
-            tableLayouts[7] = (TableLayout) findViewById(R.id.tbRelation);
-
-            tvID = (TextView) findViewById(R.id.ID);
-            tvFirstName = (TextView) findViewById(R.id.firstname);
-            tvLastName = (TextView) findViewById(R.id.lastname);
-            tvNric = (TextView) findViewById(R.id.nric);
-            tvGender = (TextView) findViewById(R.id.gender);
-            tvBirthday = (TextView) findViewById(R.id.birthday);
-            tvContact = (TextView) findViewById(R.id.contact);
-            tvRemark = (TextView) findViewById(R.id.remark);
+            ButterKnife.bind(this);
 
             // create an API service and set session token to request header
-            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            ServerApi api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             // create request object to get a resident's information
             Call<Resident> call = api.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));

@@ -18,6 +18,9 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.Retrofit.ServerApi;
 import com.example.intern.ptp.Retrofit.ServiceGenerator;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,9 +28,12 @@ import retrofit2.Response;
 public class ProfileFragment extends Fragment {
 
     private Activity activity;
-    private ServerApi api;
-    private TextView tvUsername, tvEmail;
-    private Button btLogout;
+
+    @BindView(R.id.tvusername)
+    TextView tvUsername;
+
+    @BindView(R.id.tvemail)
+    TextView tvEmail;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -92,16 +98,15 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View myView = inflater.inflate(R.layout.fragment_profile, container, false);
+        ButterKnife.bind(this, myView);
+
         Preferences.showLoading(activity);
 
-        tvUsername = (TextView) myView.findViewById(R.id.tvusername);
         tvUsername.setText(activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
-
-        tvEmail = (TextView) myView.findViewById(R.id.tvemail);
 
         Preferences.showLoading(activity);
         // create an API service and set session token to request header
-        api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+        ServerApi api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
         // create request object to get email of the user from server
         Call<String> call = api.getEmail(activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
@@ -136,15 +141,11 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
-        btLogout = (Button) myView.findViewById(R.id.btlogout);
-        btLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Preferences.goLogin(activity);
-            }
-        });
-
         return myView;
+    }
+
+    @OnClick(R.id.btlogout)
+    public void performLogout() {
+        Preferences.goLogin(activity);
     }
 }
