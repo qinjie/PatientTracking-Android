@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.utils.FontManager;
 
 import java.util.List;
 
@@ -16,10 +17,12 @@ import butterknife.ButterKnife;
 
 public class NavigationListAdapter extends BaseAdapter {
 
+    private Context context;
     private LayoutInflater inflater;
     private List<NavigationItem> items;
 
     public NavigationListAdapter(Context context, List<NavigationItem> items) {
+        this.context = context;
         inflater = LayoutInflater.from(context);
         this.items = items;
     }
@@ -65,6 +68,8 @@ public class NavigationListAdapter extends BaseAdapter {
                     view = inflater.inflate(R.layout.item_navigation_profile, parent, false);
                     holder = new ProfileViewHolder(view);
                     view.setTag(holder);
+                    view.setEnabled(false);
+                    view.setOnClickListener(null);
                 }
 
                 holder.name.setText(item.getName());
@@ -77,6 +82,8 @@ public class NavigationListAdapter extends BaseAdapter {
 
                 if (view == null) {
                     view = inflater.inflate(R.layout.item_navigation_divider, parent, false);
+                    view.setEnabled(false);
+                    view.setOnClickListener(null);
                 }
 
                 break;
@@ -92,6 +99,8 @@ public class NavigationListAdapter extends BaseAdapter {
                     view = inflater.inflate(R.layout.item_navigation_primary, parent, false);
                     holder = new PrimaryViewHolder(view);
                     view.setTag(holder);
+
+                    holder.icon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                 }
 
                 holder.icon.setText(item.getFontIcon());

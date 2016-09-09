@@ -3,36 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="10dp"
-    >
+    android:paddingBottom="15dp"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp"
+    android:paddingTop="15dp">
 
     <TextView
         android:id="@+id/navigation_primary_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:text="icon"
-         />
+        android:layout_marginTop="2dp"
+        android:text="@string/fa_icon_bell" />
 
     <TextView
         android:id="@+id/navigation_primary_label"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:textStyle="bold"
-        android:layout_toEndOf="@id/navigation_primary_icon"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:layout_toEndOf="@id/navigation_primary_icon"
+
         android:text="Alerts"
-         />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/navigation_primary_additional_information"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:textStyle="bold"
-        android:layout_toEndOf="@id/navigation_primary_label"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@id/navigation_primary_label"
         android:gravity="end"
         android:text="2"
-        />
+        android:textStyle="bold" />
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
+    <string name="fa_icon_bell">&#xf0f3;</string>
+    <string name="fa_icon_map">&#xf279;</string>
+    <string name="fa_icon_users">&#xf0c0;</string>
 </resources>

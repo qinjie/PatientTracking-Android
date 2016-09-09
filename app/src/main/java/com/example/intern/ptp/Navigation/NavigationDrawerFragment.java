@@ -6,11 +6,13 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.intern.ptp.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -97,19 +102,19 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        mDrawerListView.setAdapter(new ArrayAdapter<>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section4),
-                        getString(R.string.title_section5),
-                        getString(R.string.title_section6),
-                        getString(R.string.title_section7)
-                }));
+        List<NavigationItem> items = new ArrayList<NavigationItem>();
+        items.add(new ProfileNavigationItem("Martin Christmann", "martin.christmann@gmail.com"));
+        items.add(new DividerNavigationItem());
+        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_bell), "Alerts", "0"));
+        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_map), "Map", ""));
+        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_users), "Residents", ""));
+        items.add(new DividerNavigationItem());
+        items.add(new SecondaryNavigationItem("Nearest Resident"));
+        items.add(new SecondaryNavigationItem("My Profile"));
+        items.add(new SecondaryNavigationItem("Logout"));
+
+        NavigationListAdapter adapter = new NavigationListAdapter(getActivity(), items);
+        mDrawerListView.setAdapter(adapter);
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
