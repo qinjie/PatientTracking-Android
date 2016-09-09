@@ -103,15 +103,15 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         List<NavigationItem> items = new ArrayList<NavigationItem>();
-        items.add(new ProfileNavigationItem("Martin Christmann", "martin.christmann@gmail.com"));
+        items.add(new ProfileNavigationItem("Chen Li", "chen.li@happynurse.com"));
         items.add(new DividerNavigationItem());
-        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_bell), "Alerts", "0"));
-        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_map), "Map", ""));
-        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_users), "Residents", ""));
+        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_bell), getString(R.string.title_fragment_alert), "0"));
+        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_map), getString(R.string.title_fragment_map), ""));
+        items.add(new PrimaryNavigationItem(getString(R.string.fa_icon_users), getString(R.string.title_fragment_resident), ""));
         items.add(new DividerNavigationItem());
-        items.add(new SecondaryNavigationItem("Nearest Resident"));
-        items.add(new SecondaryNavigationItem("My Profile"));
-        items.add(new SecondaryNavigationItem("Logout"));
+        items.add(new SecondaryNavigationItem(getString(R.string.title_fragment_neasrest_resident)));
+        items.add(new SecondaryNavigationItem(getString(R.string.title_fragment_profile)));
+        items.add(new SecondaryNavigationItem(getString(R.string.logout)));
 
         NavigationListAdapter adapter = new NavigationListAdapter(getActivity(), items);
         mDrawerListView.setAdapter(adapter);
