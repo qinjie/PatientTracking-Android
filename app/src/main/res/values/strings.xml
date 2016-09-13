@@ -52,4 +52,10 @@
 
     <string name="ic_sos">Alert image</string>
     <string name="logout">Logout</string>
+    <string name="alerts_alert_profile_picture">Resident\'s profile picture</string>
+    <string name="btn_take_care">Take care</string>
+    <string name="alerts_alert_ongoing_alerts">Ongoing alerts (%1$d)</string>
+    <string name="alerts_alert_solved_alerts">Solved alerts (%1$d)</string>
+    <string name="alert_title">%1$s %2$s</string>
+    <string name="alerts_ongoing_alerts_only">Hide Solved Alerts</string>
 </resources>

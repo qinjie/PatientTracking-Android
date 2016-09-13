@@ -291,18 +291,6 @@ public class AlertFragment extends Fragment {
                             }
                         });
 
-                        // free resources associated to Views placed in the RecycleBin
-                        alertListView.setRecyclerListener(new AbsListView.RecyclerListener() {
-                            @Override
-                            public void onMovedToScrapHeap(View view) {
-                                try {
-                                    AlertListAdapter.ListRow row = (AlertListAdapter.ListRow) view;
-                                    row.clear();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

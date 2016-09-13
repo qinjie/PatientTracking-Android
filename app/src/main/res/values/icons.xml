@@ -3,4 +3,6 @@
     <string name="fa_icon_bell">&#xf0f3;</string>
     <string name="fa_icon_map">&#xf279;</string>
     <string name="fa_icon_users">&#xf0c0;</string>
+    <string name="fa_check_square">&#xf14a;</string>
+    <string name="fa_clock_o">&#xf017;</string>
 </resources>
