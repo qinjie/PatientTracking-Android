@@ -1,4 +1,4 @@
-package com.example.intern.ptp.Retrofit;
+package com.example.intern.ptp.network;
 
 import com.example.intern.ptp.Preferences;
 

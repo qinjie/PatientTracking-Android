@@ -1,4 +1,4 @@
-package com.example.intern.ptp.Retrofit;
+package com.example.intern.ptp.network;
 
 import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.FCM.FCMInfo;
@@ -64,6 +64,9 @@ public interface ServerApi {
     // also get user_id and username who has taken care of a notification
     @POST("user/alerts")
     Call<List<Alert>> getAlerts(@Query("id") String id, @Query("ok") String ok);
+
+    @POST("user/alertcount")
+    Call<Integer> getAlertCount();
 
     // get notified by untakencare notifications
     @POST("user/alertuntakencare")

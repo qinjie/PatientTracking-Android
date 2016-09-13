@@ -2,18 +2,25 @@ package com.example.intern.ptp.Alert;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.internal.widget.ThemeUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.utils.FontManager;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,6 +29,8 @@ import butterknife.ButterKnife;
 
 public class AlertListAdapter extends BaseAdapter {
     private final LayoutInflater inflater;
+    private final SimpleDateFormat dateParser;
+
     private Context context;
     private List<Alert> ongoingAlerts;
     private List<Alert> solvedAlerts;
@@ -37,6 +46,8 @@ public class AlertListAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         ongoingAlerts = new ArrayList<>(alerts.size());
         solvedAlerts = new ArrayList<>(alerts.size());
+
+        dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
         saveAlertsSorted(alerts);
     }
@@ -88,7 +99,9 @@ public class AlertListAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0 || position == ongoingAlerts.size() + ONGOING_LABEL_ITEM_COUNT) {
+        if (position == 0) {
+            return VIEWTYPE_LABEL;
+        } else if (ongoingAlerts.size() > 0 && position == ONGOING_LABEL_ITEM_COUNT + ongoingAlerts.size()) {
             return VIEWTYPE_LABEL;
         } else {
             return VIEWTYPE_ALERT;
@@ -101,7 +114,7 @@ public class AlertListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(final int position, View view, final ViewGroup parent) {
         Resources res = context.getResources();
 
         switch (getItemViewType(position)) {
@@ -120,13 +133,15 @@ public class AlertListAdapter extends BaseAdapter {
                     holder.icon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                 }
 
-                if (position == 0) {
-                    holder.icon.setText(res.getString(R.string.fa_icon_bell));
+                if (position == 0 && ongoingAlerts.size() > 0) {
+                    holder.icon.setText(    res.getString(R.string.fa_icon_bell));
+                    holder.icon.setTextColor(ContextCompat.getColor(context, R.color.red));
 
                     String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_ongoing_alerts), ongoingAlerts.size());
                     holder.text.setText(text);
                 } else {
                     holder.icon.setText(res.getString(R.string.fa_check_square));
+                    holder.icon.setTextColor(ContextCompat.getColor(context, R.color.green));
 
                     String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_solved_alerts), solvedAlerts.size());
                     holder.text.setText(text);
@@ -138,11 +153,12 @@ public class AlertListAdapter extends BaseAdapter {
             case VIEWTYPE_ALERT: {
                 AlertViewHolder holder;
 
-                if (view != null && view.getTag() instanceof LabelViewHolder) {
+                if (view != null && view.getTag() instanceof AlertViewHolder) {
                     holder = (AlertViewHolder) view.getTag();
                 } else {
                     view = inflater.inflate(R.layout.item_alerts_alert, parent, false);
                     holder = new AlertViewHolder(view);
+                    view.setTag(holder);
                     holder.locationIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                     holder.timeIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                 }
@@ -154,15 +170,54 @@ public class AlertListAdapter extends BaseAdapter {
 
                 holder.location.setText(alert.getLastPositionLabel());
 
-                holder.time.setText(alert.getCreatedAt());
+                CharSequence timeSinceAlarm;
+
+                try {
+                    Date createdAt = dateParser.parse(alert.getCreatedAt());
+                    timeSinceAlarm = DateUtils.getRelativeTimeSpanString(createdAt.getTime(), new Date().getTime(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+                } catch (ParseException ex) {
+                    timeSinceAlarm = alert.getCreatedAt();
+                }
+
+                holder.time.setText(timeSinceAlarm);
 
                 if (!alert.getOk().equalsIgnoreCase("0")) {
                     holder.takeCareButton.setVisibility(View.INVISIBLE);
+                } else {
+                    holder.takeCareButton.setVisibility(View.VISIBLE);
                 }
+
+                holder.takeCareButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ((ListView) parent).performItemClick(v, position, 0); // Let the event be handled in onItemClick()
+                    }
+                });
             }
         }
 
         return view;
+    }
+
+    public void updateAlerts(List<Alert> alerts){
+        ongoingAlerts.clear();
+        solvedAlerts.clear();
+
+        saveAlertsSorted(alerts);
+        notifyDataSetChanged();
+    }
+
+    public void updateAlerts() {
+        List<Alert> alerts = new ArrayList<>(solvedAlerts.size() + ongoingAlerts.size());
+
+        alerts.addAll(ongoingAlerts);
+        alerts.addAll(solvedAlerts);
+        ongoingAlerts.clear();
+        solvedAlerts.clear();
+
+        saveAlertsSorted(alerts);
+        notifyDataSetChanged();
     }
 
     private void saveAlertsSorted(List<Alert> alerts) {

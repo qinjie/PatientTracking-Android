@@ -6,8 +6,8 @@ import android.os.Bundle;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.Resident.Resident;
-import com.example.intern.ptp.Retrofit.ServerApi;
-import com.example.intern.ptp.Retrofit.ServiceGenerator;
+import com.example.intern.ptp.network.ServerApi;
+import com.example.intern.ptp.network.ServiceGenerator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
