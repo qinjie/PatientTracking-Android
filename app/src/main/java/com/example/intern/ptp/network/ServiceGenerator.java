@@ -24,6 +24,7 @@ public class ServiceGenerator {
                     .baseUrl(API_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
 
+
     /**
      * create an API service related to an API interface
      */

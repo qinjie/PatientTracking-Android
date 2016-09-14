@@ -1,6 +1,7 @@
 package com.example.intern.ptp.Navigation;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +107,13 @@ public class NavigationListAdapter extends BaseAdapter {
                 holder.icon.setText(item.getFontIcon());
                 holder.label.setText(item.getLabel());
                 holder.additionalInformation.setText(item.getAdditionalInformation());
+                holder.additionalInformation.setTextColor(ContextCompat.getColor(context, R.color.black));
+
+                if("navigation_alerts".equals(item.getId())) {
+                    if(!item.getAdditionalInformation().equals("0")) {
+                        holder.additionalInformation.setTextColor(ContextCompat.getColor(context, R.color.red));
+                    }
+                }
 
                 break;
             }
@@ -129,6 +137,18 @@ public class NavigationListAdapter extends BaseAdapter {
         }
 
         return view;
+    }
+
+    public void updateItemById(String id, Object update) {
+
+        for(NavigationItem item : items) {
+            if(item.getId() != null && item.getId().equals(id)) {
+                if(id.equals("navigation_alerts")) {
+                    ((PrimaryNavigationItem) item).setAdditionalInformation("" + update);
+                    notifyDataSetChanged();
+                }
+            }
+        }
     }
 
     static class ProfileViewHolder {
