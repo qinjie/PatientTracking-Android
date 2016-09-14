@@ -5,5 +5,5 @@
     android:layout_height="match_parent"
     android:padding="15dp"
     android:paddingLeft="20dp"
-    android:textStyle="bold"
-    />
+    android:textColor="@color/black"
+    android:textStyle="bold" />

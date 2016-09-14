@@ -16,7 +16,7 @@
     </style>
 
     <style name="MyDialogStyle" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:textColorPrimary">#aaa</item>
+        <item name="android:textColorPrimary">#000</item>
     </style>
 
 </resources>

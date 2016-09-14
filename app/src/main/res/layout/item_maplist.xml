@@ -15,7 +15,7 @@
             android:layout_marginLeft="15dp"
             android:gravity="center_vertical"
             android:layout_weight="5"
-            android:textColor="#005fff"
+            android:textColor="@color/black"
             android:textSize="20sp" />
 
         <ImageView
