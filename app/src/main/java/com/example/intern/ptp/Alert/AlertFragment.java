@@ -109,7 +109,6 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
         View view = inflater.inflate(R.layout.fragment_alert, container, false);
         ButterKnife.bind(this, view);
 
-
         // assign data contained in alertList to alertListView
         adapter = new AlertListAdapter(activity, new ArrayList<Alert>());
         alertListView.setAdapter(adapter);

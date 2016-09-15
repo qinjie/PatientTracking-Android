@@ -18,12 +18,12 @@
 
     <TextView
         android:id="@+id/alerts_alert_title"
+        style="@style/TextAppearance.ContentLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/alerts_alert_profile_picture"
         android:layout_marginTop="2dp"
         android:layout_toEndOf="@id/alerts_alert_profile_picture"
-        android:textColor="@color/black"
         android:text="Tim Cook" />
 
     <TextView
@@ -77,6 +77,6 @@
         android:layout_height="0.1dp"
         android:layout_below="@id/alerts_alert_location_icon"
         android:layout_marginTop="15dp"
-        android:background="@color/divider" />
+        android:background="@color/light_grey" />
 
 </RelativeLayout>
