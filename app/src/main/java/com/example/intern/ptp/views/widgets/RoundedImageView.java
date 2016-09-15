@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import static android.graphics.Paint.FILTER_BITMAP_FLAG;
+
 public class RoundedImageView extends ImageView {
 
     public RoundedImageView(Context context) {
@@ -65,7 +67,7 @@ public class RoundedImageView extends ImageView {
         Canvas canvas = new Canvas(output);
 
         final int color = 0xffa19774;
-        final Paint paint = new Paint();
+        final Paint paint = new Paint(FILTER_BITMAP_FLAG);
         final Rect rect = new Rect(0, 0, radius, radius);
 
         paint.setAntiAlias(true);
@@ -73,10 +75,19 @@ public class RoundedImageView extends ImageView {
         paint.setDither(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(Color.parseColor("#BAB399"));
-        canvas.drawCircle(radius / 2 + 0.7f,
-                radius / 2 + 0.7f, radius / 2 + 0.1f, paint);
+        canvas.drawCircle(radius / 2,
+                radius / 2, radius / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(sbmp, rect, rect, paint);
+
+
+        final Paint circlePaint = new Paint();
+        circlePaint.setColor(Color.parseColor("#cccccc"));
+        circlePaint.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(radius / 2,
+                radius / 2, radius / 2, circlePaint);
+
+
 
         return output;
     }
