@@ -1,4 +1,4 @@
-package com.example.intern.ptp.Retrofit;
+package com.example.intern.ptp.network;
 
 import com.example.intern.ptp.Preferences;
 
@@ -23,6 +23,7 @@ public class ServiceGenerator {
             new Retrofit.Builder()
                     .baseUrl(API_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create());
+
 
     /**
      * create an API service related to an API interface

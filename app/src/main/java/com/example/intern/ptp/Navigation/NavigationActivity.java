@@ -52,36 +52,32 @@ public class NavigationActivity extends Activity
         Fragment fragment;
 
         switch (position) {
-            case 0: {
-                fragment = new ResidentFragment();
-                break;
-            }
-            case 1: {
-                fragment = new LocationFragment();
-                break;
-            }
             case 2: {
-                fragment = new MapFragment();
-                break;
-            }
-            case 3: {
                 fragment = new AlertFragment();
                 break;
             }
-            case 4: {
-                fragment = new NearestFragment();
+            case 3: {
+                fragment = new MapFragment();
                 break;
             }
-            case 5: {
-                fragment = new ProfileFragment();
+            case 4: {
+                fragment = new ResidentFragment();
                 break;
             }
             case 6: {
-                fragment = new ChangeFragment();
+                fragment = new NearestFragment();
                 break;
             }
+            case 7: {
+                fragment = new ProfileFragment();
+                break;
+            }
+            case 8: {
+                Preferences.goLogin(this);
+                return;
+            }
             default:
-                fragment = new ResidentFragment();
+                fragment = new AlertFragment();
                 break;
         }
         // set up selected fragment

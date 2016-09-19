@@ -3,6 +3,8 @@ package com.example.intern.ptp.Alert;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 public class Alert {
     @SerializedName("id")
     @Expose
@@ -19,6 +21,9 @@ public class Alert {
     @SerializedName("last_position")
     @Expose
     private String lastPosition;
+    @SerializedName("last_position_label")
+    @Expose
+    private String lastPositionLabel;
     @SerializedName("user_id")
     @Expose
     private String userId;
@@ -28,6 +33,9 @@ public class Alert {
     @SerializedName("ok")
     @Expose
     private String ok;
+    @SerializedName("created_at")
+    @Expose
+    private String createdAt;
 
 
     public Alert(String id, String residentId, String firstname, String lastname, String lastPosition, String userId, String username, String ok) {
@@ -111,6 +119,14 @@ public class Alert {
         this.lastPosition = lastPosition;
     }
 
+    public String getLastPositionLabel() {
+        return lastPositionLabel;
+    }
+
+    public void setLastPositionLabel(String lastPositionLabel) {
+        this.lastPositionLabel = lastPositionLabel;
+    }
+
     /**
      * @return The userId
      */
@@ -151,5 +167,13 @@ public class Alert {
      */
     public void setOk(String ok) {
         this.ok = ok;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }

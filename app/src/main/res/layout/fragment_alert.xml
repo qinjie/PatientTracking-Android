@@ -13,15 +13,19 @@
             android:id="@+id/redCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="10dp"
-            android:text="RED only"
-            android:textColor="#ff0000" />
+            android:layout_gravity="right"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="15dp"
+            android:textColor="@color/black"
+            android:text="@string/alerts_ongoing_alerts_only"
+            />
 
         <ListView
             android:id="@+id/nListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
             android:layout_gravity="center_horizontal|top" />
 
     </LinearLayout>

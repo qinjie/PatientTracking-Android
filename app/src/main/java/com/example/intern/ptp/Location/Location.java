@@ -31,6 +31,9 @@ public class Location {
     @SerializedName("file_path")
     @Expose
     private String filePath;
+    @SerializedName("ongoing_alerts")
+    @Expose
+    private int ongoingAlerts;
     @SerializedName("thumbnail_path")
     @Expose
     private String thumbnailPath;
@@ -164,6 +167,14 @@ public class Location {
      */
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public int getOngoingAlerts() {
+        return ongoingAlerts;
+    }
+
+    public void setOngoingAlerts(int ongoingAlerts) {
+        this.ongoingAlerts = ongoingAlerts;
     }
 
     /**

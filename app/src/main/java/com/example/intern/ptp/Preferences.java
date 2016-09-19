@@ -13,8 +13,8 @@ import android.net.wifi.WifiManager;
 
 import com.example.intern.ptp.FCM.FCMInfo;
 import com.example.intern.ptp.Login.LoginActivity;
-import com.example.intern.ptp.Retrofit.ServerApi;
-import com.example.intern.ptp.Retrofit.ServiceGenerator;
+import com.example.intern.ptp.network.ServerApi;
+import com.example.intern.ptp.network.ServiceGenerator;
 
 import java.util.List;
 

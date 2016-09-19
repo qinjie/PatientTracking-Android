@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:paddingBottom="8dp"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp">
+
+    <com.example.intern.ptp.views.widgets.RoundedImageView
+        android:id="@+id/navigation_profile_picture"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/profile_picture" />
+
+    <TextView
+        android:id="@+id/navigation_profile_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="56dp"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/navigation_profile_mail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/navigation_profile_name"
+        android:layout_below="@id/navigation_profile_name" />
+
+</RelativeLayout>

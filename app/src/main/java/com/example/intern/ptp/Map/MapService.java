@@ -5,8 +5,8 @@ import android.content.Intent;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.Resident.Resident;
-import com.example.intern.ptp.Retrofit.ServerApi;
-import com.example.intern.ptp.Retrofit.ServiceGenerator;
+import com.example.intern.ptp.network.ServerApi;
+import com.example.intern.ptp.network.ServiceGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

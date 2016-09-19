@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <TextView
+        android:id="@+id/maps_alert_icon"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:text="@string/fa_icon_bell" />
+
+    <TextView
+        android:id="@+id/maps_resident_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="8" />
+
+
+    <TextView
+        android:id="@+id/maps_user_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@id/maps_resident_count"
+        android:text="@string/fa_icon_users" />
+
+    <TextView
+        android:id="@+id/maps_title"
+        style="@style/TextAppearance.ContentLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="56dp"
+        android:layout_toStartOf="@id/maps_user_icon"
+        android:text="B5-1" />
+
+
+</RelativeLayout>

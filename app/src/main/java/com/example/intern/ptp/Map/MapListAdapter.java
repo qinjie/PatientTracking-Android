@@ -1,107 +1,93 @@
 package com.example.intern.ptp.Map;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.intern.ptp.Location.Location;
-import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.example.intern.ptp.utils.FontManager;
 
 import java.util.List;
 
-public class MapListAdapter extends ArrayAdapter<Location> {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    private final Activity activity;
-    private final List<Location> items;
+public class MapListAdapter extends BaseAdapter {
 
-    public MapListAdapter(Activity activity,
-                          List<Location> items) {
-        super(activity, R.layout.item_maplist, items);
-        this.activity = activity;
-        this.items = items;
+    private Context context;
+    private LayoutInflater inflater;
+    private List<Location> locations;
+
+    public MapListAdapter(Context context, List<Location> locations) {
+        this.context = context;
+        inflater = LayoutInflater.from(context);
+        this.locations = locations;
+    }
+
+    @Override
+    public int getCount() {
+        return locations.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return locations.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        ListRow row;
-        if (view == null) {
-            row = new ListRow(activity, null);
+        ViewHolder holder;
+        if (view != null) {
+            holder = (ViewHolder) view.getTag();
         } else {
-            row = (ListRow) view;
+            view = inflater.inflate(R.layout.item_maps, parent, false);
+            holder = new ViewHolder(view);
+            view.setTag(holder);
+
+            holder.alertIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
+            holder.userIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
         }
 
-        row.setTitle(items.get(position).getLabel());
-        String thumbnailUrl = Preferences.imageRoot + items.get(position).getThumbnailPath();
-        String imageUrl = Preferences.imageRoot + items.get(position).getFilePath();
-        row.setImage(thumbnailUrl, imageUrl);
+        Location item = locations.get(position);
+        holder.title.setText(item.getLabel());
+        holder.residentCount.setText(item.getCount());
 
-        return row;
+        if (item.getOngoingAlerts() > 0) {
+            holder.alertIcon.setTextColor(ContextCompat.getColor(context, R.color.red));
+        } else {
+            holder.alertIcon.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
+        }
+
+            return view;
+        }
+
+    public void updateLocations(List<Location> locations) {
+        this.locations = locations;
+        notifyDataSetChanged();
     }
 
-    public class ListRow extends RelativeLayout {
-        private TextView mTitle;
-        private ImageView mImage;
+    static class ViewHolder {
+        @BindView(R.id.maps_title)
+        TextView title;
+        @BindView(R.id.maps_alert_icon)
+        TextView alertIcon;
+        @BindView(R.id.maps_user_icon)
+        TextView userIcon;
+        @BindView(R.id.maps_resident_count)
+        TextView residentCount;
 
-        public ListRow(Context context, AttributeSet attrs) {
-            super(context, attrs);
-            LayoutInflater.from(context).inflate(R.layout.item_maplist, this);
-
-            mTitle = (TextView) findViewById(R.id.title);
-            mImage = (ImageView) findViewById(R.id.image);
-        }
-
-        public void setTitle(String text) {
-            mTitle.setText(text);
-        }
-
-        public void setImage(String thumbnailUrl, final String imageUrl) {
-            Picasso.with(activity)
-                    .load(thumbnailUrl)
-                    .priority(Picasso.Priority.HIGH)
-//                    .networkPolicy(NetworkPolicy.NO_CACHE)
-//                    .networkPolicy(NetworkPolicy.NO_STORE)
-//                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-//                    .memoryPolicy(MemoryPolicy.NO_STORE)
-                    .placeholder(R.drawable.loading_image)
-                    .error(R.drawable.null_thumbnail)
-                    .into(mImage);
-
-            Picasso.with(activity)
-                    .load(imageUrl)
-                    .priority(Picasso.Priority.HIGH)
-//                    .networkPolicy(NetworkPolicy.NO_CACHE)
-//                    .networkPolicy(NetworkPolicy.NO_STORE)
-//                    .memoryPolicy(MemoryPolicy.NO_CACHE)
-//                    .memoryPolicy(MemoryPolicy.NO_STORE)
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        }
-                    });
-        }
-
-        public void clear() {
-            mImage.setImageDrawable(null);
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
 }

@@ -1,109 +1,288 @@
 package com.example.intern.ptp.Alert;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.internal.widget.ThemeUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.utils.FontManager;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
-public class AlertListAdapter extends ArrayAdapter<Alert> {
-    private final Activity activity;
-    private final List<Alert> items;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    public AlertListAdapter(Activity activity,
-                            List<Alert> items) {
-        super(activity, R.layout.item_alertlist, items);
-        this.activity = activity;
-        this.items = items;
+public class AlertListAdapter extends BaseAdapter {
+
+    // TODO: REMOVE THIS. JUST SEPT2016 DEMO
+    private static final int MAX_RESIDENTS = 4;
+    private static int residentNr = 0;
+    private HashMap<String, String> residentProfilePics = new HashMap();
+
+    private final LayoutInflater inflater;
+    private final SimpleDateFormat dateParser;
+
+    private Context context;
+    private List<Alert> ongoingAlerts;
+    private List<Alert> solvedAlerts;
+
+    private static final int ONGOING_LABEL_ITEM_COUNT = 1;
+    private static final int SOLVED_LABEL_ITEM_COUNT = 1;
+
+    private static final int VIEWTYPE_LABEL = 0;
+    private static final int VIEWTYPE_ALERT = 1;
+
+    public AlertListAdapter(Context context, List<Alert> alerts) {
+        this.context = context;
+        inflater = LayoutInflater.from(context);
+        ongoingAlerts = new ArrayList<>(alerts.size());
+        solvedAlerts = new ArrayList<>(alerts.size());
+
+        dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+        saveAlertsSorted(alerts);
     }
 
-    /**
-     * define layout for each item in the list view
-     */
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
-        ListRow row;
-        if (view == null) {
-            row = new ListRow(activity, null);
-        } else {
-            row = (ListRow) view;
+    public int getCount() {
+        int count = 0;
+
+        if (ongoingAlerts.size() > 0) {
+            count += ONGOING_LABEL_ITEM_COUNT + ongoingAlerts.size();
         }
 
-        // status that whether the alert has been taken care of or not
-        boolean ok = !items.get(position).getOk().equalsIgnoreCase("0");
+        if (solvedAlerts.size() > 0) {
+            count += SOLVED_LABEL_ITEM_COUNT + solvedAlerts.size();
+        }
 
-        // get alert icon from resource as a Drawable object
-        Drawable drawable = activity.getDrawable(R.drawable.ic_sos);
-
-        // set alert icon for the item
-        row.setImage(drawable);
-
-        // set background color for the item depending on the above takencare status
-        row.setImageBackgroundColor(ok ? Color.BLUE : Color.RED);
-
-        // set title for the item
-        row.setTitle("Resident - " + items.get(position).getFirstname());
-
-        // set content for the item
-        row.setContent("Resident " + items.get(position).getFirstname() + (ok ? " has been taken care of." : " needs you help now!"));
-
-        // set color for the content depending on the above takencare status
-        row.setContentColor(ok ? Color.BLUE : Color.RED);
-
-        return row;
-
+        return count;
     }
 
-    /**
-     * make the list view more smoothly when scrolling
-     */
-    public class ListRow extends RelativeLayout {
-        private ImageView mImage;
-        private TextView mTitle;
-        private TextView mContent;
+    @Override
+    public Object getItem(int position) {
+        int arrIndex = position;
 
-        public ListRow(Context context, AttributeSet attrs) {
-            super(context, attrs);
-            LayoutInflater.from(context).inflate(R.layout.item_alertlist, this);
+        if (ongoingAlerts.size() > 0) {
+            arrIndex -= ONGOING_LABEL_ITEM_COUNT;
 
-            mImage = (ImageView) findViewById(R.id.image);
-            mTitle = (TextView) findViewById(R.id.title);
-            mContent = (TextView) findViewById(R.id.content);
+            if (arrIndex < ongoingAlerts.size()) {
+                return ongoingAlerts.get(arrIndex);
+            } else {
+                arrIndex -= ongoingAlerts.size();
+            }
         }
 
-        public void setImage(Drawable drawable) {
-            mImage.setImageDrawable(drawable);
+        if (solvedAlerts.size() > 0) {
+            arrIndex -= SOLVED_LABEL_ITEM_COUNT;
+
+            if (arrIndex < solvedAlerts.size()) {
+                return solvedAlerts.get(arrIndex);
+            }
         }
 
-        public void setImageBackgroundColor(int color) {
-            mImage.setBackgroundColor(color);
+        return null;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return VIEWTYPE_LABEL;
+        } else if (ongoingAlerts.size() > 0 && position == ONGOING_LABEL_ITEM_COUNT + ongoingAlerts.size()) {
+            return VIEWTYPE_LABEL;
+        } else {
+            return VIEWTYPE_ALERT;
+        }
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(final int position, View view, final ViewGroup parent) {
+        Resources res = context.getResources();
+
+        switch (getItemViewType(position)) {
+            case VIEWTYPE_LABEL: {
+                LabelViewHolder holder;
+
+                if (view != null && view.getTag() instanceof LabelViewHolder) {
+                    holder = (LabelViewHolder) view.getTag();
+
+                } else {
+                    view = inflater.inflate(R.layout.item_alerts_label, parent, false);
+                    holder = new LabelViewHolder(view);
+                    view.setTag(holder);
+                    view.setEnabled(false);
+                    view.setOnClickListener(null);
+                    holder.icon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
+                }
+
+                if (position == 0 && ongoingAlerts.size() > 0) {
+                    holder.icon.setText(    res.getString(R.string.fa_icon_bell));
+                    holder.icon.setTextColor(ContextCompat.getColor(context, R.color.red));
+
+                    String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_ongoing_alerts), ongoingAlerts.size());
+                    holder.text.setText(text);
+                } else {
+                    holder.icon.setText(res.getString(R.string.fa_check_square));
+                    holder.icon.setTextColor(ContextCompat.getColor(context, R.color.green));
+
+                    String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_solved_alerts), solvedAlerts.size());
+                    holder.text.setText(text);
+                }
+
+                break;
+            }
+
+            case VIEWTYPE_ALERT: {
+                AlertViewHolder holder;
+
+                if (view != null && view.getTag() instanceof AlertViewHolder) {
+                    holder = (AlertViewHolder) view.getTag();
+                } else {
+                    view = inflater.inflate(R.layout.item_alerts_alert, parent, false);
+                    holder = new AlertViewHolder(view);
+                    view.setTag(holder);
+                    holder.locationIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
+                    holder.timeIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
+                }
+
+                Alert alert = (Alert) getItem(position);
+
+                String title = String.format(Locale.getDefault(), res.getString(R.string.alert_title), alert.getFirstname(), alert.getLastname());
+                holder.title.setText(title);
+
+                holder.location.setText(alert.getLastPositionLabel());
+
+                CharSequence timeSinceAlarm;
+
+                try {
+                    Date createdAt = dateParser.parse(alert.getCreatedAt());
+                    timeSinceAlarm = DateUtils.getRelativeTimeSpanString(createdAt.getTime(), new Date().getTime(), DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+                } catch (ParseException ex) {
+                    timeSinceAlarm = alert.getCreatedAt();
+                }
+
+                holder.time.setText(timeSinceAlarm);
+
+                if (!alert.getOk().equalsIgnoreCase("0")) {
+                    holder.takeCareButton.setVisibility(View.INVISIBLE);
+                } else {
+                    holder.takeCareButton.setVisibility(View.VISIBLE);
+                }
+
+                //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
+                String profilePicture = residentProfilePics.get(alert.getResidentId());
+
+                if(profilePicture == null) {
+                    profilePicture = "resident" + (residentNr % MAX_RESIDENTS);
+                    residentProfilePics.put(alert.getResidentId(), profilePicture);
+                    residentNr++;
+                }
+
+                Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
+                holder.profilePicture.setImageDrawable(image);
+                // TODO END
+
+                holder.takeCareButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ((ListView) parent).performItemClick(v, position, 0); // Let the event be handled in onItemClick()
+                    }
+                });
+            }
         }
 
-        public void setTitle(String text) {
-            mTitle.setText(text);
-        }
+        return view;
+    }
 
-        public void setContent(String content) {
-            mContent.setText(content);
-        }
+    public void updateAlerts(List<Alert> alerts){
+        ongoingAlerts.clear();
+        solvedAlerts.clear();
 
-        public void setContentColor(int color) {
-            mContent.setTextColor(color);
-        }
+        saveAlertsSorted(alerts);
+        notifyDataSetChanged();
+    }
 
-        public void clear() {
-            mImage.setImageDrawable(null);
+    public void updateAlerts() {
+        List<Alert> alerts = new ArrayList<>(solvedAlerts.size() + ongoingAlerts.size());
+
+        alerts.addAll(ongoingAlerts);
+        alerts.addAll(solvedAlerts);
+        ongoingAlerts.clear();
+        solvedAlerts.clear();
+
+        saveAlertsSorted(alerts);
+        notifyDataSetChanged();
+    }
+
+    private void saveAlertsSorted(List<Alert> alerts) {
+
+        for (Alert alert : alerts) {
+            boolean isSolved = !alert.getOk().equalsIgnoreCase("0");
+
+            if (isSolved) {
+                solvedAlerts.add(alert);
+            } else {
+                ongoingAlerts.add(alert);
+            }
+        }
+    }
+
+    static class LabelViewHolder {
+        @BindView(R.id.alert_label_icon)
+        TextView icon;
+        @BindView(R.id.alert_label_text)
+        TextView text;
+
+        public LabelViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    static class AlertViewHolder {
+        @BindView(R.id.alerts_alert_profile_picture)
+        ImageView profilePicture;
+        @BindView(R.id.alerts_alert_title)
+        TextView title;
+        @BindView(R.id.alerts_alert_location_icon)
+        TextView locationIcon;
+        @BindView(R.id.alerts_alert_location)
+        TextView location;
+        @BindView(R.id.alerts_alert_time_icon)
+        TextView timeIcon;
+        @BindView(R.id.alerts_alert_time)
+        TextView time;
+        @BindView(R.id.alerts_alert_take_care_button)
+        Button takeCareButton;
+
+        public AlertViewHolder(View view) {
+            ButterKnife.bind(this, view);
         }
     }
 }

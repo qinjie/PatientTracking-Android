@@ -6,11 +6,13 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.network.rest.ServerResponse;
+import com.example.intern.ptp.utils.BusManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -74,6 +84,9 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
+        Bus bus = BusManager.getBus();
+        bus.register(this);
+
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
     }
@@ -97,19 +110,19 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        mDrawerListView.setAdapter(new ArrayAdapter<>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section4),
-                        getString(R.string.title_section5),
-                        getString(R.string.title_section6),
-                        getString(R.string.title_section7)
-                }));
+        List<NavigationItem> items = new ArrayList<NavigationItem>();
+        items.add(new ProfileNavigationItem("navigation_profile", "Chen Li", "chen.li@happynurse.com"));
+        items.add(new DividerNavigationItem());
+        items.add(new PrimaryNavigationItem("navigation_alerts", getString(R.string.fa_icon_bell), getString(R.string.title_fragment_alert), "0"));
+        items.add(new PrimaryNavigationItem("navigation_map", getString(R.string.fa_icon_map), getString(R.string.title_fragment_map), ""));
+        items.add(new PrimaryNavigationItem("navigation_resident", getString(R.string.fa_icon_users), getString(R.string.title_fragment_resident), ""));
+        items.add(new DividerNavigationItem());
+        items.add(new SecondaryNavigationItem("navigation_nearest", getString(R.string.title_fragment_neasrest_resident)));
+        items.add(new SecondaryNavigationItem("navigation_profile", getString(R.string.title_fragment_profile)));
+        items.add(new SecondaryNavigationItem("navigation_logout", getString(R.string.logout)));
+
+        NavigationListAdapter adapter = new NavigationListAdapter(getActivity(), items);
+        mDrawerListView.setAdapter(adapter);
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -172,6 +185,9 @@ public class NavigationDrawerFragment extends Fragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
                 }
 
+                AlertService service = AlertService.getService();
+                service.getAlertCount();
+
                 getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
@@ -217,6 +233,14 @@ public class NavigationDrawerFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Bus bus = BusManager.getBus();
+        bus.unregister(this);
     }
 
     @Override
@@ -275,5 +299,14 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+    }
+
+    @Subscribe
+    public void onServerResponse(ServerResponse event) {
+        if(event.getType().equals(ServerResponse.GET_ALERT_COUNT)) {
+
+            NavigationListAdapter adapter = (NavigationListAdapter) mDrawerListView.getAdapter();
+            adapter.updateItemById("navigation_alerts", event.getResponse());
+        }
     }
 }

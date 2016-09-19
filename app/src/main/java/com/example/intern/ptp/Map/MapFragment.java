@@ -11,16 +11,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.intern.ptp.Location.Location;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.Retrofit.ServerApi;
-import com.example.intern.ptp.Retrofit.ServiceGenerator;
+import com.example.intern.ptp.network.ServerApi;
+import com.example.intern.ptp.network.ServiceGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,7 +35,7 @@ public class MapFragment extends Fragment {
     @BindView(R.id.mapListView)
     ListView mapListView;
 
-    private List<Location> mapList;
+    private MapListAdapter adapter;
     private Activity activity;
     private ServerApi api;
 
@@ -105,6 +105,9 @@ public class MapFragment extends Fragment {
         View myView = inflater.inflate(R.layout.fragment_map, container, false);
         ButterKnife.bind(this, myView);
 
+        adapter = new MapListAdapter(activity, new ArrayList<Location>());
+        mapListView.setAdapter(adapter);
+
         try {
              // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
@@ -129,12 +132,8 @@ public class MapFragment extends Fragment {
                             return;
                         }
 
-                        // get list of Locations from response
-                        mapList = response.body();
-
                         // assign data contained in mapList to mapListView
-                        MapListAdapter adapter = new MapListAdapter(activity, mapList);
-                        mapListView.setAdapter(adapter);
+                        adapter.updateLocations(response.body());
 
                         // handle click event on each list view item
                         mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -167,15 +166,16 @@ public class MapFragment extends Fragment {
 
                                             // create a new intent related to MapActivity
                                             Intent intent = new Intent(activity, MapActivity.class);
+                                            Location location = (Location) adapter.getItem(pos);
 
                                             // put floor's file path of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floorFileParthTag, mapList.get(pos).getFilePath());
+                                            intent.putExtra(Preferences.floorFileParthTag, location.getFilePath());
 
                                             // put floor id of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floor_idTag, mapList.get(pos).getId());
+                                            intent.putExtra(Preferences.floor_idTag, location.getId());
 
                                             // put floor's label of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floor_labelTag, mapList.get(pos).getLabel());
+                                            intent.putExtra(Preferences.floor_labelTag, location.getLabel());
 
                                             // start a new MapActivity with the intent
                                             activity.startActivity(intent);
@@ -195,18 +195,6 @@ public class MapFragment extends Fragment {
                             }
                         });
 
-                        // free resources associated to Views placed in the RecycleBin
-                        mapListView.setRecyclerListener(new AbsListView.RecyclerListener() {
-                            @Override
-                            public void onMovedToScrapHeap(View view) {
-                                try {
-                                    MapListAdapter.ListRow row = (MapListAdapter.ListRow) view;
-                                    row.clear();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

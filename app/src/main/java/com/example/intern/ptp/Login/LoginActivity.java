@@ -7,16 +7,13 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.intern.ptp.Navigation.NavigationActivity;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.Retrofit.ServerApi;
-import com.example.intern.ptp.Retrofit.ServiceGenerator;
+import com.example.intern.ptp.network.ServerApi;
+import com.example.intern.ptp.network.ServiceGenerator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 

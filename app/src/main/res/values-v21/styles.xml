@@ -7,7 +7,7 @@
     </style>
 
     <style name="MyActionBar" parent="android:Widget.Holo.ActionBar.Solid">
-        <item name="android:background">#007fff</item>
+        <item name="android:background">#aaa</item>
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
     </style>
 
@@ -16,7 +16,7 @@
     </style>
 
     <style name="MyDialogStyle" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:textColorPrimary">#007fff</item>
+        <item name="android:textColorPrimary">#000</item>
     </style>
 
 </resources>
