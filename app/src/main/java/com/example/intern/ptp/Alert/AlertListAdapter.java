@@ -2,6 +2,7 @@ package com.example.intern.ptp.Alert;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.internal.widget.ThemeUtils;
 import android.text.format.DateUtils;
@@ -21,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +30,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AlertListAdapter extends BaseAdapter {
+
+    // TODO: REMOVE THIS. JUST SEPT2016 DEMO
+    private static final int MAX_RESIDENTS = 4;
+    private static int residentNr = 0;
+    private HashMap<String, String> residentProfilePics = new HashMap();
+
     private final LayoutInflater inflater;
     private final SimpleDateFormat dateParser;
 
@@ -186,6 +194,19 @@ public class AlertListAdapter extends BaseAdapter {
                 } else {
                     holder.takeCareButton.setVisibility(View.VISIBLE);
                 }
+
+                //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
+                String profilePicture = residentProfilePics.get(alert.getResidentId());
+
+                if(profilePicture == null) {
+                    profilePicture = "resident" + (residentNr % MAX_RESIDENTS);
+                    residentProfilePics.put(alert.getResidentId(), profilePicture);
+                    residentNr++;
+                }
+
+                Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
+                holder.profilePicture.setImageDrawable(image);
+                // TODO END
 
                 holder.takeCareButton.setOnClickListener(new View.OnClickListener() {
 
