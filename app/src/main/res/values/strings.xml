@@ -58,4 +58,13 @@
     <string name="alerts_alert_solved_alerts">Solved alerts (%1$d)</string>
     <string name="alert_title">%1$s %2$s</string>
     <string name="alerts_ongoing_alerts_only">Hide Solved Alerts</string>
+    <string name="resident_profile_picture_description">Profile picture</string>
+    <string name="firstname">Firstname</string>
+    <string name="lastname">Lastname</string>
+    <string name="nric">NRIC</string>
+    <string name="birthday">Birthday</string>
+    <string name="remark">Remark</string>
+    <string name="map">Map</string>
+    <string name="alert_history">Alert History</string>
+    <string name="next_of_kin">Next Of Kin</string>
 </resources>
