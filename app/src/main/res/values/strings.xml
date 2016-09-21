@@ -58,4 +58,5 @@
     <string name="alerts_alert_solved_alerts">Solved alerts (%1$d)</string>
     <string name="alert_title">%1$s %2$s</string>
     <string name="alerts_ongoing_alerts_only">Hide Solved Alerts</string>
+    <string name="backbutton_exit_warning">Please click BACK again to exit</string>
 </resources>

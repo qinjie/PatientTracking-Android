@@ -72,7 +72,7 @@ public class LoginActivity extends Activity {
 
                                 // start NavigationActivity
                                 Intent intent = new Intent(activity, NavigationActivity.class);
-                                startActivity(intent);
+                                startActivityForResult(intent, 0);
                             } else {
                                 Preferences.dismissLoading();
                             }
@@ -183,7 +183,7 @@ public class LoginActivity extends Activity {
 
                             // start NavigationActivity
                             Intent intent = new Intent(activity, NavigationActivity.class);
-                            startActivity(intent);
+                            startActivityForResult(intent, 0);
 
                             // if username or password is wrong, notify user by a dialog
                         } else if (res.getResult().equalsIgnoreCase("wrong")) {
@@ -235,6 +235,15 @@ public class LoginActivity extends Activity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == RESULT_CANCELED) {
+            finish();
+        }
     }
 }
 
