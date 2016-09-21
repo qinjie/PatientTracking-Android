@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
+import com.example.intern.ptp.Resident.ResidentActivity2;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 
@@ -100,7 +101,7 @@ public class AlertActivity extends Activity {
                                                 }
 
                                                 // create a new intent related to ResidentActivity
-                                                Intent intent = new Intent(activity, ResidentActivity.class);
+                                                Intent intent = new Intent(activity, ResidentActivity2.class);
 
                                                 // put resident id of the notification as an extra in the above created intent
                                                 intent.putExtra(Preferences.resident_idTag, alert.getResidentId());

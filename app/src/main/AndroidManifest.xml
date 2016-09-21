@@ -30,6 +30,12 @@
             android:name=".Resident.ResidentActivity"
             android:label="@string/title_activity_resident"
             android:launchMode="singleTask" />
+
+        <activity
+            android:name=".Resident.ResidentActivity2"
+            android:label="@string/title_activity_resident"
+            android:launchMode="singleTask" />
+
         <activity
             android:name=".Location.LocationActivity"
             android:label="@string/title_activity_location"
@@ -50,7 +56,7 @@
             android:name=".Alert.AlertActivity"
             android:label="@string/title_activity_alert" />
         <activity
-            android:name=".Map.MapActivity"
+            android:name=".Map.MapFragment"
             android:label="@string/title_activity_map"
             android:launchMode="singleTask" />
 

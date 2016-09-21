@@ -28,7 +28,7 @@ public class MapService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            // get floor id in the intent received from MapActivity
+            // get floor id in the intent received from MapFragment
             final String floorId = intent.getStringExtra(Preferences.floor_idTag);
 
             // get username from Shared Preferences
@@ -45,7 +45,7 @@ public class MapService extends IntentService {
                         @Override
                         public void onResponse(Call<List<Resident>> call, Response<List<Resident>> response) {
                             try {
-                                // create an intent corresponding to broadcast receiver in the MapActivity with the same tag equals "Preferences.map_broadcastTag + floorId"
+                                // create an intent corresponding to broadcast receiver in the MapFragment with the same tag equals "Preferences.map_broadcastTag + floorId"
                                 Intent intent = new Intent(Preferences.map_broadcastTag + floorId);
 
                                 // put result header from response to the intent as an extra string
@@ -58,7 +58,7 @@ public class MapService extends IntentService {
                                 // put list of map points to the above created intent as an parcelable extra because res is a list of object, not a primitive data type
                                 intent.putParcelableArrayListExtra(Preferences.map_pointsTag, res);
 
-                                // broadcast the intent to the broadcast service in the MapActivity
+                                // broadcast the intent to the broadcast service in the MapFragment
                                 MapService.this.sendBroadcast(intent);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -69,13 +69,13 @@ public class MapService extends IntentService {
                         public void onFailure(Call<List<Resident>> call, Throwable t) {
                             t.printStackTrace();
 
-                            // create an intent corresponding to broadcast service in the MapActivity with the same tag equals "Preferences.map_broadcastTag + floorId"
+                            // create an intent corresponding to broadcast service in the MapFragment with the same tag equals "Preferences.map_broadcastTag + floorId"
                             Intent intent = new Intent(Preferences.map_broadcastTag + floorId);
 
                             // notify that the connection is failed by putting to the intent an extra string
                             intent.putExtra(Preferences.map_resultTag, "connection_failure");
 
-                            // broadcast the intent to the broadcast service in the MapActivity
+                            // broadcast the intent to the broadcast service in the MapFragment
                             MapService.this.sendBroadcast(intent);
                         }
                     });

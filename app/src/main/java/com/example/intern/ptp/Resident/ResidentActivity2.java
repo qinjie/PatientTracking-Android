@@ -3,7 +3,9 @@ package com.example.intern.ptp.Resident;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
@@ -38,14 +40,21 @@ public class ResidentActivity2 extends Activity {
     @BindView(R.id.resident_remark)
     TextView remark;
 
+    @BindView(R.id.resident_view_toggle)
+    RadioGroup toggleGroup;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resident2);
         ButterKnife.bind(this);
 
+        toggleGroup.setOnCheckedChangeListener(toggleListener);
+
         // create an API service and set session token to request header
         ServerApi api = ServiceGenerator.createService(ServerApi.class, getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+        Preferences.showLoading(this);
 
         // create request object to get a resident's information
         Call<Resident> call = api.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
@@ -70,37 +79,15 @@ public class ResidentActivity2 extends Activity {
                     Resident resident = response.body();
 
                     // display resident's information
-
                     firstName.setText(resident.getFirstname());
                     lastName.setText(resident.getLastname());
                     nric.setText(resident.getNric());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
                     Date d = sdf.parse(resident.getBirthday());
                     sdf.applyPattern("MMM dd, yyyy");
-                    birthday0..setText(sdf.format(d));
-                    tvContact.setText(mContact);
-                    tvRemark.setText(mRemark);
+                    birthday.setText(sdf.format(d));
+                    remark.setText(resident.getRemark());
 
-                    // display next-of-kin information in each table cell
-                    for (int i = 0; i < nextOfKinList.size(); i++) {
-                        NextOfKin nextOfKin = nextOfKinList.get(i);
-                        nID = nextOfKin.getId();
-                        addTableCell(0, nID, i);
-                        nFirstName = nextOfKin.getFirstName();
-                        addTableCell(1, nFirstName, i);
-                        nLastName = nextOfKin.getLastName();
-                        addTableCell(2, nLastName, i);
-                        nNric = nextOfKin.getNric();
-                        addTableCell(3, nNric, i);
-                        nContact = nextOfKin.getContact();
-                        addTableCell(4, nContact, i);
-                        nEmail = nextOfKin.getEmail();
-                        addTableCell(5, nEmail, i);
-                        nRemark = nextOfKin.getRemark();
-                        addTableCell(6, nRemark, i);
-                        nRelation = nextOfKin.getRelation();
-                        addTableCell(7, nRelation, i);
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -111,12 +98,22 @@ public class ResidentActivity2 extends Activity {
             public void onFailure(Call<Resident> call, Throwable t) {
                 Preferences.dismissLoading();
                 t.printStackTrace();
-                Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
+                Preferences.showDialog(ResidentActivity2.this, "Connection Failure", "Please check your network and try again!");
             }
         });
-    } catch (Exception e) {
-        e.printStackTrace();
     }
 
+    public void onToggle(View view) {
+        ((RadioGroup)view.getParent()).check(view.getId());
     }
+
+    static final RadioGroup.OnCheckedChangeListener toggleListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(final RadioGroup radioGroup, final int i) {
+            for (int j = 0; j < radioGroup.getChildCount(); j++) {
+                final ToggleButton view = (ToggleButton) radioGroup.getChildAt(j);
+                view.setChecked(view.getId() == i);
+            }
+        }
+    };
 }

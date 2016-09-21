@@ -13,6 +13,7 @@ import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.Alert.AlertActivity;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.Resident.ResidentActivity2;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -62,7 +63,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
                 content += " needs your help now!";
 
             // create a new intent related to AlertActivity
-            Intent intent = new Intent(MyFcmListenerService.this, AlertActivity.class);
+            Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity2.class);
 
             // This flag is used to create a new task and launch an activity into it.
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

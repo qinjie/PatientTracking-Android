@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.Resident.ResidentActivity2;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 
@@ -335,13 +336,13 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
                                 return;
                             }
 
-                            // create a new intent related to AlertActivity
-                            Intent intent = new Intent(activity, AlertActivity.class);
-
                             Alert alert = (Alert) adapter.getItem(position);
 
-                            // put alert id of the notification as an extra in the above created intent
-                            intent.putExtra(Preferences.notify_idTag, alert.getId());
+                            // create a new intent related to AlertActivity
+                            Intent intent = new Intent(activity, ResidentActivity2.class);
+
+                            // put resident id of the resident as an extra in the above created intent
+                            intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
                             // start a new AlertActivity with the intent
                             activity.startActivity(intent);

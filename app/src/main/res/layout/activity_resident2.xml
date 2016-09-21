@@ -129,6 +129,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/resident_remark"
+        android:layout_alignStart="@id/resident_profile_picture"
+        android:layout_alignEnd="@id/resident_lastname_layout"
         android:layout_marginTop="16dp"
         android:orientation="horizontal">
 
@@ -169,9 +171,11 @@
         android:layout_marginTop="10dp"
         android:background="@color/light_grey" />
 
+    <!--
     <fragment
+        android:id="@+id/resident_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/resident_divider" />
+        android:layout_below="@id/resident_divider" /> -->
 
 </RelativeLayout>

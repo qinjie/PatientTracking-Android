@@ -3,9 +3,9 @@
     android:id="@+id/map_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.intern.ptp.Map.MapActivity">
+    tools:context="com.example.intern.ptp.Map.MapFragment">
 
-    <com.example.intern.library.PhotoView xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.example.intern.ptp.views.widgets.LocatorMapPhotoView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/iv_photo"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
