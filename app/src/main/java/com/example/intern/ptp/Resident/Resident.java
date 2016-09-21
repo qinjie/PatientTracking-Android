@@ -317,6 +317,9 @@ public class Resident implements Parcelable {
         this.nextofkin = nextofkin;
     }
 
+    public boolean isNurse() {
+        return id.equalsIgnoreCase("-1");
+    }
 
     @Override
     public int describeContents() {

@@ -10,8 +10,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
 
 import com.example.intern.library.PhotoView;
 import com.example.intern.library.PhotoViewAttacher;
@@ -20,7 +18,7 @@ import com.example.intern.ptp.Resident.Resident;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.OnMatrixChangedListener{
+public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.OnMatrixChangedListener {
 
     private RectF displayRect;
     private List<Resident> residents;
@@ -30,6 +28,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
 
     private static final float SCALED_CIRCLE_SIZE = 12;
     private static final float SCALED_TEXT_SIZE = 32;
+    private static final float MAX_WITHIN_TOUCH_DISTANCE = 50;
 
     private Paint circlePaint;
     private Paint textPaint;
@@ -70,7 +69,9 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         }
 
         for (final Resident resident : residents) {
-            drawResidentName(canvas, resident);
+            if(!resident.isNurse()) {
+                drawResidentName(canvas, resident);
+            }
         }
     }
 
@@ -117,7 +118,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private void drawResidentIndicator(Canvas canvas, Resident resident) {
         int color = Integer.parseInt(resident.getColor());
 
-        if(resident == touchedResident) {
+        if (resident == touchedResident) {
             circlePaint.setColor(Color.BLACK);
         } else {
             circlePaint.setColor(color);
@@ -141,6 +142,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         float residentY = convertResidentY(y, scale);
 
         String text = resident.getFirstname();
+
         textPaint.setTextSize(SCALED_TEXT_SIZE * (scale * 0.75f));
         float residentNameX = calculateTextX(residentX, textPaint.measureText(text));
         float residentNameY = calculateTextY(residentY, textPaint.getTextSize());
@@ -164,18 +166,16 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
 
             float distance = (float) (Math.pow(point.x - residentX, 2.d) + Math.pow(point.y - residentY, 2.d));
 
-            if(closestDistance > distance) {
+            if (closestDistance > distance) {
                 closestDistance = distance;
                 closestResident = resident;
             }
         }
 
-        if(Math.sqrt(closestDistance) > 50) {
+        if (Math.sqrt(closestDistance) > MAX_WITHIN_TOUCH_DISTANCE) {
             return null;
         } else {
             return closestResident;
         }
-
     }
-
 }
