@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.Toast;
 
 import com.example.intern.ptp.Alert.AlertFragment;
 import com.example.intern.ptp.Location.LocationFragment;
@@ -20,10 +22,11 @@ public class NavigationActivity extends Activity
         implements
         NavigationDrawerFragment.NavigationDrawerCallbacks {
 
+    boolean doubleBackToExitPressedOnce = false;
+
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -85,5 +88,24 @@ public class NavigationActivity extends Activity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, R.string.backbutton_exit_warning, Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }
