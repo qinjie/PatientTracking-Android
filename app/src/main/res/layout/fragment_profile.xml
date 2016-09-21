@@ -24,31 +24,31 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_gravity="end"
                 android:layout_margin="5dp"
-                android:textSize="20dp"
-                android:text="Username: "
+                android:gravity="center_vertical"
                 android:lines="2"
-                android:textColor="@android:color/darker_gray" />
+                android:text="Username: "
+                android:textColor="@android:color/darker_gray"
+                android:textSize="20dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_margin="5dp"
-                android:background="@android:color/darker_gray"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_gravity="end"
                 android:layout_margin="5dp"
-                android:textSize="20dp"
-                android:text="Email: "
+                android:gravity="center_vertical"
                 android:lines="2"
-                android:textColor="@android:color/darker_gray" />
+                android:text="Email: "
+                android:textColor="@android:color/darker_gray"
+                android:textSize="20dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -61,37 +61,30 @@
                 android:id="@+id/tvusername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_margin="5dp"
-                android:textSize="20dp"
+                android:gravity="center_vertical"
                 android:lines="2"
-                android:textColor="#0000ff" />
+                android:textColor="#0000ff"
+                android:textSize="20dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_margin="5dp"
-                android:background="@android:color/darker_gray"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="@android:color/darker_gray" />
 
             <TextView
                 android:id="@+id/tvemail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_margin="5dp"
-                android:textSize="20dp"
+                android:gravity="center_vertical"
                 android:lines="2"
-                android:textColor="#0000ff" />
+                android:textColor="#0000ff"
+                android:textSize="20dp" />
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btlogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="LOG OUT" />
+    
 </RelativeLayout>

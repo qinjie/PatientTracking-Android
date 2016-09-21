@@ -142,9 +142,4 @@ public class ProfileFragment extends Fragment {
 
         return myView;
     }
-
-    @OnClick(R.id.btlogout)
-    public void performLogout() {
-        Preferences.goLogin(activity);
-    }
 }
