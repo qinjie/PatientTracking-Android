@@ -17,6 +17,7 @@ import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,6 +43,8 @@ public class Preferences {
 
     // tag for sending alert id through intents
     public static final String notify_idTag = "Resident_Tracking_notification";
+
+    public static final String alertTag = "Alert";
 
     // tags for sending basic floor information through intents
     public static final String floor_idTag = "Resident_Tracking.floor_id";

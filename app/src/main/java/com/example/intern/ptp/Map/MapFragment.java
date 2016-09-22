@@ -21,6 +21,7 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.Resident.ResidentActivity;
+import com.example.intern.ptp.Resident.ResidentActivity2;
 import com.example.intern.ptp.views.widgets.LocatorMapPhotoView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -195,7 +196,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
         if(resident != null) {
             // create a new intent related to ResidentActivity
-            Intent intent = new Intent(getActivity(), ResidentActivity.class);
+            Intent intent = new Intent(getActivity(), ResidentActivity2.class);
 
             // put id of the resident as an extra in the above created intent
             intent.putExtra(Preferences.resident_idTag, resident.getId());

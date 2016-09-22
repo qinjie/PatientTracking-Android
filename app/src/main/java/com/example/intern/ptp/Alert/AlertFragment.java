@@ -338,13 +338,10 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
 
                             Alert alert = (Alert) adapter.getItem(position);
 
-                            // create a new intent related to AlertActivity
                             Intent intent = new Intent(activity, ResidentActivity2.class);
-
-                            // put resident id of the resident as an extra in the above created intent
+                            intent.putExtra(Preferences.alertTag, alert);
                             intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
-                            // start a new AlertActivity with the intent
                             activity.startActivity(intent);
                         } catch (Exception e) {
                             e.printStackTrace();

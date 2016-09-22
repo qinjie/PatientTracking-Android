@@ -39,6 +39,9 @@ public class Resident implements Parcelable {
     @SerializedName("floor_id")
     @Expose
     private String floorId;
+    @SerializedName("file_path")
+    @Expose
+    private String filePath;
     @SerializedName("label")
     @Expose
     private String label;
@@ -317,6 +320,14 @@ public class Resident implements Parcelable {
         this.nextofkin = nextofkin;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
     public boolean isNurse() {
         return id.equalsIgnoreCase("-1");
     }
@@ -345,6 +356,7 @@ public class Resident implements Parcelable {
         dest.writeString(pixely);
         dest.writeString(color);
         dest.writeString(distance);
+        dest.writeString(filePath);
     }
 
     protected Resident(Parcel in) {
@@ -365,6 +377,7 @@ public class Resident implements Parcelable {
         pixely = in.readString();
         color = in.readString();
         distance = in.readString();
+        filePath = in.readString();
     }
 
     public static final Creator<Resident> CREATOR = new Creator<Resident>() {

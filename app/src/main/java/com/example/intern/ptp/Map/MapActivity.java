@@ -22,7 +22,7 @@ public class MapActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         String floorId = getIntent().getStringExtra(Preferences.floor_idTag);
         setTitle("Map - " + getIntent().getStringExtra(Preferences.floor_labelTag));
         String url = Preferences.imageRoot + getIntent().getStringExtra(Preferences.floorFilePathTag);
