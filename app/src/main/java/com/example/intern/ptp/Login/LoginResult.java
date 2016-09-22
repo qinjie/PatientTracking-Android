@@ -10,7 +10,12 @@ public class LoginResult {
     @SerializedName("token")
     @Expose
     private String token;
-
+    @SerializedName("email")
+    @Expose
+    private String email;
+    @SerializedName("username")
+    @Expose
+    private String username;
     /**
      * @return The result
      */
@@ -39,4 +44,20 @@ public class LoginResult {
         this.token = token;
     }
 
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

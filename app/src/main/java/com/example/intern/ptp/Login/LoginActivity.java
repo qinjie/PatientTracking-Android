@@ -166,19 +166,11 @@ public class LoginActivity extends Activity {
                         // if username and password are correct
                         if (res.getResult().equalsIgnoreCase("correct")) {
 
-                            // get Shared Preferences Editor in order to save data
                             editor = activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit();
-
-                            // save new session token received from server to local
                             editor.putString("token", res.getToken());
-
-                            // save correct username to local
                             editor.putString("username", username);
-
-                            // save correct password to local
                             editor.putString("password", password);
-
-                            // apply the changes in another thread
+                            editor.putString("email", res.getEmail());
                             editor.apply();
 
                             // start NavigationActivity

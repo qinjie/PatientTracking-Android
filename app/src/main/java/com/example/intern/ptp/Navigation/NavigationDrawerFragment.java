@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ServerResponse;
@@ -110,8 +111,11 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
+
         List<NavigationItem> items = new ArrayList<NavigationItem>();
-        items.add(new ProfileNavigationItem("navigation_profile", "Chen Li", "chen.li@happynurse.com"));
+        items.add(new ProfileNavigationItem("navigation_profile", prefs.getString("username", ""), prefs.getString("email", "")));
         items.add(new DividerNavigationItem());
         items.add(new PrimaryNavigationItem("navigation_alerts", getString(R.string.fa_icon_bell), getString(R.string.title_fragment_alert), "0"));
         items.add(new PrimaryNavigationItem("navigation_map", getString(R.string.fa_icon_map), getString(R.string.title_fragment_map), ""));
