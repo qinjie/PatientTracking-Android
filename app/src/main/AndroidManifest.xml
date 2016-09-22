@@ -55,8 +55,9 @@
         <activity
             android:name=".Alert.AlertActivity"
             android:label="@string/title_activity_alert" />
+
         <activity
-            android:name=".Map.MapFragment"
+            android:name=".Map.MapActivity"
             android:label="@string/title_activity_map"
             android:launchMode="singleTask" />
 

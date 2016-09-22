@@ -102,7 +102,7 @@ public class MapListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_map, container, false);
+        View myView = inflater.inflate(R.layout.fragment_maplist, container, false);
         ButterKnife.bind(this, myView);
 
         adapter = new MapListAdapter(activity, new ArrayList<Location>());
@@ -165,11 +165,11 @@ public class MapListFragment extends Fragment {
                                             }
 
                                             // create a new intent related to MapFragment
-                                            Intent intent = new Intent(activity, MapFragment.class);
+                                            Intent intent = new Intent(activity, MapActivity.class);
                                             Location location = (Location) adapter.getItem(pos);
 
                                             // put floor's file path of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floorFileParthTag, location.getFilePath());
+                                            intent.putExtra(Preferences.floorFilePathTag, location.getFilePath());
 
                                             // put floor id of the location as an extra in the above created intent
                                             intent.putExtra(Preferences.floor_idTag, location.getId());

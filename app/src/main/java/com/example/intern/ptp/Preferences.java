@@ -46,7 +46,7 @@ public class Preferences {
     // tags for sending basic floor information through intents
     public static final String floor_idTag = "Resident_Tracking.floor_id";
     public static final String floor_labelTag = "Resident_Tracking.floor_label";
-    public static final String floorFileParthTag = "Resident_Tracking.floor_file_path";
+    public static final String floorFilePathTag = "Resident_Tracking.floor_file_path";
 
     // tags for nearest resident function
     public static final String nearest_broadcastTag = "Resident_Tracking.NEAREST";

@@ -1,7 +1,6 @@
 package com.example.intern.ptp.Map;
 
-import android.app.ActionBar;
-import android.app.Activity;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.intern.library.PhotoViewAttacher;
@@ -32,7 +30,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTapListener {
+public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTapListener {
 
     @BindView(R.id.iv_photo)
     LocatorMapPhotoView mImageView;
@@ -41,7 +39,6 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
     RelativeLayout layout;
 
     private PhotoViewAttacher mAttacher;
-    private String floorId;
 
     /**
      * create BroadcastReceiver to receive broadcast data from MapService
@@ -56,21 +53,21 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
 
                 // if exception occurs or inconsistent database in server
                 if (result.equalsIgnoreCase("failed")) {
-                    Preferences.kill(MapFragment.this, ":mapservice");
+                    Preferences.kill(getActivity(), ":mapservice");
                     Preferences.showDialog(context, "Server Error", "Please try again!");
                     return;
                 }
 
                 // if connection is failed
                 if (result.equalsIgnoreCase("connection_failure")) {
-                    Preferences.kill(MapFragment.this, ":mapservice");
-                    Preferences.showDialog(MapFragment.this, "Connection Failure", "Please check your network and try again!");
+                    Preferences.kill(getActivity(), ":mapservice");
+                    Preferences.showDialog(getActivity(), "Connection Failure", "Please check your network and try again!");
                     return;
                 }
 
                 // if session is expired
                 if (!result.equalsIgnoreCase("isNotExpired")) {
-                    Preferences.kill(MapFragment.this, ":mapservice");
+                    Preferences.kill(getActivity(), ":mapservice");
                     Preferences.goLogin(context);
                     return;
                 }
@@ -86,24 +83,22 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
     };
 
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        View view = inflater.inflate(R.layout.fragment_map, null);
+        ButterKnife.bind(this, view);
+
+        Bundle args = getArguments();
+
+        final String floorId = args.getString(Preferences.floor_idTag);
+        final String url = args.getString(Preferences.floorFilePathTag);
+
         try {
-            setContentView(R.layout.activity_map);
-            ButterKnife.bind(this);
-
-            // get floor id in the intent received from MapListFragment
-            floorId = getIntent().getStringExtra(Preferences.floor_idTag);
-
-            // set title related to the floor for the activity
-            MapFragment.this.setTitle("Map - " + getIntent().getStringExtra(Preferences.floor_labelTag));
-
-            // get url for loading the map of the floor in the intent received from MapListFragment
-            String url = Preferences.imageRoot + getIntent().getStringExtra(Preferences.floorFileParthTag);
-
             // use Picasso library to load the map
-            Picasso.with(this)
+            Picasso.with(getActivity())
                     .load(url)
                     .priority(Picasso.Priority.HIGH)
                     .into(new Target() {
@@ -123,16 +118,16 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
 
 
                                 // create a new intent related to MapService
-                                Intent serviceIntent = new Intent(MapFragment.this, MapService.class);
+                                Intent serviceIntent = new Intent(getActivity(), MapService.class);
 
                                 // put floor id as an extra in the above created intent
                                 serviceIntent.putExtra(Preferences.floor_idTag, floorId);
 
                                 // register a broadcast receiver with the tag equals "Preferences.map_broadcastTag + floorId"
-                                MapFragment.this.registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
+                                getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
 
                                 // start a new MapService with the intent
-                                MapFragment.this.startService(serviceIntent);
+                                getActivity().startService(serviceIntent);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -171,25 +166,8 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        try {
-            getMenuInflater().inflate(R.menu.menu_activity_map, menu);
-            ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                // display predefined title for action bar
-                actionBar.setDisplayShowTitleEnabled(true);
-
-                // display go-back-home arrow at the left most of the action bar
-                actionBar.setDisplayHomeAsUpEnabled(true);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
+        return view;
     }
 
     @Override
@@ -197,44 +175,16 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
         super.onDestroy();
         try {
             // unregister the broadcast receiver when the activity is destroyed
-            MapFragment.this.unregisterReceiver(mMessageReceiver);
+            getActivity().unregisterReceiver(mMessageReceiver);
 
             // kill MapService process
-            Preferences.kill(MapFragment.this, ":mapservice");
+            Preferences.kill(getActivity(), ":mapservice");
 
             // clean up the map
             if (mAttacher != null) mAttacher.cleanup();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        try {
-            int id = item.getItemId();
-
-            switch (id) {
-                case android.R.id.home:
-                    Preferences.dismissLoading();
-                    this.finish();
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public void onBackPressed() {
-        Preferences.dismissLoading();
-        this.finish();
     }
 
     @Override
@@ -245,7 +195,7 @@ public class MapFragment extends Activity implements PhotoViewAttacher.OnViewTap
 
         if(resident != null) {
             // create a new intent related to ResidentActivity
-            Intent intent = new Intent(this, ResidentActivity.class);
+            Intent intent = new Intent(getActivity(), ResidentActivity.class);
 
             // put id of the resident as an extra in the above created intent
             intent.putExtra(Preferences.resident_idTag, resident.getId());
