@@ -202,7 +202,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             intent.putExtra(Preferences.resident_idTag, resident.getId());
 
             // start a new ResidentActivity with the intent
-            this.startActivity(intent);
+            this.startActivityForResult(intent, 0);
         }
     }
 }
