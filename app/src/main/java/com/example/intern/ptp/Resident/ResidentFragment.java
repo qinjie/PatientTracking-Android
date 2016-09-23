@@ -178,14 +178,10 @@ public class ResidentFragment extends Fragment {
                                                         return;
                                                     }
 
-                                                    // create a new intent related to ResidentActivity
-                                                    Intent intent = new Intent(activity, ResidentActivity2.class);
-
-                                                    // put resident id of the resident as an extra in the above created intent
+                                                    Intent intent = new Intent(activity, ResidentActivity.class);
                                                     intent.putExtra(Preferences.resident_idTag, resId);
-
-                                                    // start a new ResidentActivity with the intent
                                                     activity.startActivity(intent);
+
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }

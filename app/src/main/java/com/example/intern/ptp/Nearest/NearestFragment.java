@@ -21,7 +21,6 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.Resident.ResidentActivity;
-import com.example.intern.ptp.Resident.ResidentActivity2;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 
@@ -104,13 +103,8 @@ public class NearestFragment extends Fragment {
                                                     return;
                                                 }
 
-                                                // create a new intent related to ResidentActivity
-                                                Intent intent = new Intent(activity, ResidentActivity2.class);
-
-                                                // put resident id as an extra in the above created intent
+                                                Intent intent = new Intent(activity, ResidentActivity.class);
                                                 intent.putExtra(Preferences.resident_idTag, resident.getId());
-
-                                                // start a new ResidentActivity with the intent
                                                 startActivity(intent);
                                             } catch (Exception e) {
                                                 Preferences.dismissLoading();

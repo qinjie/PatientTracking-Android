@@ -10,10 +10,9 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
 import com.example.intern.ptp.Alert.Alert;
-import com.example.intern.ptp.Alert.AlertActivity;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.Resident.ResidentActivity2;
+import com.example.intern.ptp.Resident.ResidentActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -62,13 +61,8 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             else
                 content += " needs your help now!";
 
-            // create a new intent related to AlertActivity
-            Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity2.class);
-
-            // This flag is used to create a new task and launch an activity into it.
+            Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            // // put notification id of the notification as an extra in the above created intent
             intent.putExtra(Preferences.notify_idTag, alert.getId());
 
             // create pendding intent for the notification

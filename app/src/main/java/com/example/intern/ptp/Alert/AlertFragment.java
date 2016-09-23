@@ -18,7 +18,7 @@ import android.widget.ListView;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.Resident.ResidentActivity2;
+import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 
@@ -125,7 +125,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
     public void onResume() {
         super.onResume();
 
-        // refresh the notification list after coming back from AlertActivity
+        // refresh the notification list after coming back from ResidentFragment
         display();
     }
 
@@ -338,7 +338,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
 
                             Alert alert = (Alert) adapter.getItem(position);
 
-                            Intent intent = new Intent(activity, ResidentActivity2.class);
+                            Intent intent = new Intent(activity, ResidentActivity.class);
                             intent.putExtra(Preferences.BUNDLE_KEY_ALERT, alert);
                             intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
