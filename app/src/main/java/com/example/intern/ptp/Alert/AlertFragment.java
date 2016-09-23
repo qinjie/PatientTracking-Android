@@ -78,7 +78,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
         } catch (Exception e) {
             e.printStackTrace();
         }
-        super.onCreateOptionsMenu(menu, inflater);
+        //super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override

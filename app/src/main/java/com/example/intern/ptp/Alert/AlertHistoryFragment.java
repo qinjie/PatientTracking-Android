@@ -6,13 +6,21 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 
+import java.util.ArrayList;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 public class AlertHistoryFragment extends Fragment {
+
+    @BindView(R.id.alerthistory_list)
+    ListView alertHistoryList;
 
     @Nullable
     @Override
@@ -21,6 +29,12 @@ public class AlertHistoryFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_alert_history, null);
         ButterKnife.bind(this, view);
+
+        Bundle args = getArguments();
+        ArrayList<Alert> alerts = args.getParcelableArrayList(Preferences.BUNDLE_KEY_ALERT);
+
+        AlertListAdapter adapter = new AlertListAdapter(getActivity(), alerts);
+        alertHistoryList.setAdapter(adapter);
 
         return view;
     }

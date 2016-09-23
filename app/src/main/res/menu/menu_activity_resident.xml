@@ -6,5 +6,6 @@
         android:id="@+id/action_refresh_resident"
         android:title="@string/action_settings"
         android:orderInCategory="100"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_refresh_white_24dp"
+        app:showAsAction="always" />
 </menu>

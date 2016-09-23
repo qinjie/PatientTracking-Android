@@ -3,6 +3,7 @@ package com.example.intern.ptp.Resident;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.intern.ptp.Alert.Alert;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -66,6 +67,9 @@ public class Resident implements Parcelable {
     @SerializedName("nextofkin")
     @Expose
     private List<NextOfKin> nextofkin;
+    @SerializedName("alert_list")
+    @Expose
+    private List<Alert> alerts;
 
 
     /**
@@ -326,6 +330,14 @@ public class Resident implements Parcelable {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public List<Alert> getAlerts() {
+        return alerts;
+    }
+
+    public void setAlerts(List<Alert> alerts) {
+        this.alerts = alerts;
     }
 
     public boolean isNurse() {

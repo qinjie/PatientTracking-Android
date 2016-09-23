@@ -30,7 +30,7 @@
         android:id="@+id/nextofkin_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/nextofkin_phone_icon"
+        android:layout_below="@id/nextofkin_name"
         android:layout_marginEnd="10dp"
         android:layout_toEndOf="@id/nextofkin_phone_icon"
         android:text="90934582" />
@@ -49,7 +49,7 @@
         android:id="@+id/nextofkin_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/nextofkin_email_icon"
+        android:layout_below="@id/nextofkin_name"
         android:layout_toEndOf="@id/nextofkin_email_icon"
         android:text="priscilla_liew@gmail.com" />
 

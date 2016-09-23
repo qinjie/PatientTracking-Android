@@ -33,7 +33,7 @@ public class AlertListAdapter extends BaseAdapter {
     // TODO: REMOVE THIS. JUST SEPT2016 DEMO
     private static final int MAX_RESIDENTS = 4;
     private static int residentNr = 0;
-    private HashMap<String, String> residentProfilePics = new HashMap();
+    private HashMap<String, String> residentProfilePics;
 
     private final LayoutInflater inflater;
     private final SimpleDateFormat dateParser;
@@ -45,8 +45,8 @@ public class AlertListAdapter extends BaseAdapter {
     private static final int ONGOING_LABEL_ITEM_COUNT = 1;
     private static final int SOLVED_LABEL_ITEM_COUNT = 1;
 
-    private static final int VIEWTYPE_LABEL = 0;
-    private static final int VIEWTYPE_ALERT = 1;
+    private static final int VIEW_TYPE_LABEL = 0;
+    private static final int VIEW_TYPE_ALERT = 1;
 
     public AlertListAdapter(Context context, List<Alert> alerts) {
         this.context = context;
@@ -55,6 +55,7 @@ public class AlertListAdapter extends BaseAdapter {
         solvedAlerts = new ArrayList<>(alerts.size());
 
         dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        residentProfilePics = new HashMap<>();
 
         saveAlertsSorted(alerts);
     }
@@ -107,11 +108,11 @@ public class AlertListAdapter extends BaseAdapter {
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
-            return VIEWTYPE_LABEL;
+            return VIEW_TYPE_LABEL;
         } else if (ongoingAlerts.size() > 0 && position == ONGOING_LABEL_ITEM_COUNT + ongoingAlerts.size()) {
-            return VIEWTYPE_LABEL;
+            return VIEW_TYPE_LABEL;
         } else {
-            return VIEWTYPE_ALERT;
+            return VIEW_TYPE_ALERT;
         }
     }
 
@@ -125,7 +126,7 @@ public class AlertListAdapter extends BaseAdapter {
         Resources res = context.getResources();
 
         switch (getItemViewType(position)) {
-            case VIEWTYPE_LABEL: {
+            case VIEW_TYPE_LABEL: {
                 LabelViewHolder holder;
 
                 if (view != null && view.getTag() instanceof LabelViewHolder) {
@@ -157,7 +158,7 @@ public class AlertListAdapter extends BaseAdapter {
                 break;
             }
 
-            case VIEWTYPE_ALERT: {
+            case VIEW_TYPE_ALERT: {
                 AlertViewHolder holder;
 
                 if (view != null && view.getTag() instanceof AlertViewHolder) {

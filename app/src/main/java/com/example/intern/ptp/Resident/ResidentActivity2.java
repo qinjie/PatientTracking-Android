@@ -200,6 +200,7 @@ public class ResidentActivity2 extends Activity {
         if (fragment == null) {
             fragment = new AlertHistoryFragment();
             Bundle args = new Bundle();
+            args.putParcelableArrayList(Preferences.BUNDLE_KEY_ALERT, new ArrayList<Parcelable>(resident.getAlerts()));
             fragment.setArguments(args);
         }
 
