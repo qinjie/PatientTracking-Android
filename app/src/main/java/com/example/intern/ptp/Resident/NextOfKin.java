@@ -1,9 +1,12 @@
 package com.example.intern.ptp.Resident;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class NextOfKin {
+public class NextOfKin implements Parcelable {
     @SerializedName("id")
     @Expose
     private String id;
@@ -174,4 +177,48 @@ public class NextOfKin {
     public void setRelation(String relation) {
         this.relation = relation;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(nric);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(contact);
+        dest.writeString(email);
+        dest.writeString(remark);
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+        dest.writeString(relation);
+    }
+
+    protected NextOfKin(Parcel in) {
+        id = in.readString();
+        nric = in.readString();
+        firstName = in.readString();
+        lastName = in.readString();
+        contact = in.readString();
+        email = in.readString();
+        remark = in.readString();
+        createdAt = in.readString();
+        updatedAt = in.readString();
+        relation = in.readString();
+    }
+
+    public static final Creator<NextOfKin> CREATOR = new Creator<NextOfKin>() {
+        @Override
+        public NextOfKin createFromParcel(Parcel in) {
+            return new NextOfKin(in);
+        }
+
+        @Override
+        public NextOfKin[] newArray(int size) {
+            return new NextOfKin[size];
+        }
+    };
 }

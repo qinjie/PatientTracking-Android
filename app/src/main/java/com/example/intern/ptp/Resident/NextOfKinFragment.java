@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +29,12 @@ public class NextOfKinFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_next_of_kin, null);
         ButterKnife.bind(this, view);
+
+        Bundle arguments = getArguments();
+        ArrayList<NextOfKin> nextOfKins = arguments.getParcelableArrayList(Preferences.BUNDLE_KEY_NEXT_OF_KINS);
+
+        NextOfKinAdapter adapter = new NextOfKinAdapter(getActivity(), nextOfKins);
+        nextOfKinList.setAdapter(adapter);
 
         return view;
     }

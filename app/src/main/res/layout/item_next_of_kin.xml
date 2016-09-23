@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="8dp"
+    android:paddingEnd="16dp"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp">
+
+    <TextView
+        android:id="@+id/nextofkin_name"
+        style="@style/TextAppearance.ContentLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Priscilla Liew" />
+
+    <TextView
+        android:id="@+id/nextofkin_phone_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/nextofkin_name"
+        android:layout_below="@id/nextofkin_name"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="3dp"
+        android:text="@string/fa_phone_square" />
+
+    <TextView
+        android:id="@+id/nextofkin_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/nextofkin_phone_icon"
+        android:layout_marginEnd="10dp"
+        android:layout_toEndOf="@id/nextofkin_phone_icon"
+        android:text="90934582" />
+
+    <TextView
+        android:id="@+id/nextofkin_email_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nextofkin_name"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@id/nextofkin_phone"
+        android:text="@string/fa_envelope" />
+
+    <TextView
+        android:id="@+id/nextofkin_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/nextofkin_email_icon"
+        android:layout_toEndOf="@id/nextofkin_email_icon"
+        android:text="priscilla_liew@gmail.com" />
+
+    <TextView
+        android:id="@+id/nextofkin_remark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/nextofkin_name"
+        android:layout_below="@id/nextofkin_phone_icon"
+        android:layout_marginTop="3dp"
+        android:text="Daughter; Only call Mo-Fri 8-17 for emergencys" />
+
+</RelativeLayout>

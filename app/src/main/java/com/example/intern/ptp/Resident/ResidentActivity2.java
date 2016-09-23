@@ -1,12 +1,14 @@
 package com.example.intern.ptp.Resident;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +27,6 @@ import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.utils.FontManager;
 
-import java.text.CharacterIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -149,9 +151,11 @@ public class ResidentActivity2 extends Activity {
             return;
         }
 
-        alert = (Alert) bundle.get(Preferences.alertTag);
+        alert = (Alert) bundle.get(Preferences.BUNDLE_KEY_ALERT);
 
-        if(alert == null || !alert.getOk().equalsIgnoreCase("0")) {
+        if (alert == null) {
+            return;
+        } else if (!alert.getOk().equalsIgnoreCase("0")) {
             return;
         }
 
@@ -174,83 +178,68 @@ public class ResidentActivity2 extends Activity {
     }
 
     private void showMap() {
-        boolean addNew = false;
         FragmentManager manager = getFragmentManager();
         Fragment fragment = manager.findFragmentByTag("MapFragment");
 
-        if(fragment == null) {
+        if (fragment == null) {
             fragment = new MapFragment();
-            String url = Preferences.imageRoot + "uploads/7.png";
+            String url = Preferences.imageRoot + resident.getFilePath();
             Bundle args = new Bundle();
-            args.putString(Preferences.floor_idTag, "7");// resident.getFloorId());
-            args.putString(Preferences.floorFilePathTag, url);// resident.getFilePath());
+            args.putString(Preferences.floor_idTag, resident.getFloorId());
+            args.putString(Preferences.floorFilePathTag, url);
             fragment.setArguments(args);
-            addNew = true;
         }
 
-        showFragment(fragment, "MapFragment", addNew);
+        showFragment(fragment, "MapFragment");
     }
 
     private void showAlertHistory() {
-        boolean addNew = false;
         FragmentManager manager = getFragmentManager();
         Fragment fragment = manager.findFragmentByTag("AlertHistoryFragment");
 
-        if(fragment == null) {
+        if (fragment == null) {
             fragment = new AlertHistoryFragment();
             Bundle args = new Bundle();
             fragment.setArguments(args);
-            addNew = true;
         }
 
-        showFragment(fragment, "AlertHistoryFragment", addNew);
+        showFragment(fragment, "AlertHistoryFragment");
     }
 
     private void showNextOfKin() {
-        boolean addNew = false;
         FragmentManager manager = getFragmentManager();
         Fragment fragment = manager.findFragmentByTag("NextOfKinFragment");
 
-        if(fragment == null) {
+        if (fragment == null) {
             fragment = new NextOfKinFragment();
             Bundle args = new Bundle();
+            args.putParcelableArrayList(Preferences.BUNDLE_KEY_NEXT_OF_KINS, new ArrayList<Parcelable>(resident.getNextofkin()));
             fragment.setArguments(args);
-            addNew = true;
         }
 
-        showFragment(fragment, "NextOfKinFragment", addNew);
+        showFragment(fragment, "NextOfKinFragment");
     }
 
-    private void showFragment(Fragment fragment, String fragmentTag, boolean addNew) {
+    private void showFragment(Fragment fragment, String fragmentTag) {
         FragmentManager manager = getFragmentManager();
         FragmentTransaction ft = manager.beginTransaction();
 
-        for(Fragment frag : fragments) {
-            ft.hide(frag);
-        }
+        ft.replace(R.id.resident_fragment_container, fragment, fragmentTag);
+        ft.commit();
 
-        if (addNew) {
-            ft.add(R.id.resident_fragment_container, fragment, fragmentTag);
-            ft.addToBackStack(null);
-            ft.commit();
-
-            fragments.add(fragment);
-        } else {
-            ft.show(fragment);
-            ft.commit();
-        }
+        fragments.add(fragment);
     }
 
     public void onToggle(View view) {
-        ((RadioGroup)view.getParent()).check(view.getId());
+        ((RadioGroup) view.getParent()).check(view.getId());
 
-         if(view.getId() == R.id.resident_map_button) {
-             showMap();
-         } else if(view.getId() == R.id.resident_alert_history_button) {
-             showAlertHistory();
-         } else if(view.getId() == R.id.resident_next_of_kin_button) {
-             showNextOfKin();
-         }
+        if (view.getId() == R.id.resident_map_button) {
+            showMap();
+        } else if (view.getId() == R.id.resident_alert_history_button) {
+            showAlertHistory();
+        } else if (view.getId() == R.id.resident_next_of_kin_button) {
+            showNextOfKin();
+        }
     }
 
     static final RadioGroup.OnCheckedChangeListener toggleListener = new RadioGroup.OnCheckedChangeListener() {
@@ -262,6 +251,62 @@ public class ResidentActivity2 extends Activity {
             }
         }
     };
+
+    @OnClick(R.id.resident_take_care_button)
+    public void onTakeCare(View view) {
+        ServerApi api = ServiceGenerator.createService(ServerApi.class, this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+        // create request object to send a take-care-action request to server
+        Call<String> call = api.setTakecare(alert.getId(), this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
+        Preferences.showLoading(this);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    // if exception occurs or inconsistent database in server
+                    if (response.headers().get("result").equalsIgnoreCase("failed")) {
+                        Preferences.dismissLoading();
+                        Preferences.showDialog(ResidentActivity2.this, "Server Error", "Please try again !");
+                        return;
+                    }
+
+                    // if session is expired
+                    if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
+                        Preferences.goLogin(ResidentActivity2.this);
+                        return;
+                    }
+
+                    // get response from server
+                    String res = response.body();
+
+                    // if successfully sent take-care-action request to server
+                    if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
+                        alert.setOk("1");
+                        alertLayout.animate()
+                                .translationY(0)
+                                .alpha(0.0f)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        alertLayout.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Preferences.dismissLoading();
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Preferences.dismissLoading();
+                t.printStackTrace();
+                Preferences.showDialog(ResidentActivity2.this, "Connection Failure", "Please check your network and try again!");
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

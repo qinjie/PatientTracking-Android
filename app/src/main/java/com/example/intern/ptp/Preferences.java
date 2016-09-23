@@ -44,7 +44,9 @@ public class Preferences {
     // tag for sending alert id through intents
     public static final String notify_idTag = "Resident_Tracking_notification";
 
-    public static final String alertTag = "Alert";
+
+    public static final String BUNDLE_KEY_ALERT = "bundle_key_alert";
+    public static final String BUNDLE_KEY_NEXT_OF_KINS = "bundle_key_next_of_kins";
 
     // tags for sending basic floor information through intents
     public static final String floor_idTag = "Resident_Tracking.floor_id";
@@ -74,6 +76,7 @@ public class Preferences {
 
     // whether there is a dialog on screen
     public static boolean isDialog = false;
+
 
     /**
      * go to log in screen

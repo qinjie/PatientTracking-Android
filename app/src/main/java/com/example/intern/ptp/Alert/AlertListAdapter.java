@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -142,7 +141,7 @@ public class AlertListAdapter extends BaseAdapter {
                 }
 
                 if (position == 0 && ongoingAlerts.size() > 0) {
-                    holder.icon.setText(    res.getString(R.string.fa_icon_bell));
+                    holder.icon.setText(    res.getString(R.string.fa_bell));
                     holder.icon.setTextColor(ContextCompat.getColor(context, R.color.red));
 
                     String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_ongoing_alerts), ongoingAlerts.size());
