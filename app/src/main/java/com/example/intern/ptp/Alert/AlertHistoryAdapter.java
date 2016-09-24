@@ -93,6 +93,12 @@ public class AlertHistoryAdapter extends BaseAdapter {
         return view;
     }
 
+    public void updateAlerts(List<Alert> alerts){
+        items = alerts;
+        notifyDataSetChanged();
+    }
+
+
     static class ViewHolder {
         @BindView(R.id.alerthistory_took_care_of)
         TextView tookCareOf;

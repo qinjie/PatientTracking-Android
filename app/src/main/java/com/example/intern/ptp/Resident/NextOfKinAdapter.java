@@ -67,6 +67,11 @@ public class NextOfKinAdapter extends BaseAdapter {
         return view;
     }
 
+    public void setNextOfKins(List<NextOfKin> nextOfKins) {
+        this.items = nextOfKins;
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder {
         @BindView(R.id.nextofkin_name)
         TextView name;

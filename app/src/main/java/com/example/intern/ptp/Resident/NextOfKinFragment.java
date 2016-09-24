@@ -12,6 +12,7 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,5 +38,10 @@ public class NextOfKinFragment extends Fragment {
         nextOfKinList.setAdapter(adapter);
 
         return view;
+    }
+
+    public void refresh(List<NextOfKin> nextOfKins) {
+        NextOfKinAdapter adapter = (NextOfKinAdapter) nextOfKinList.getAdapter();
+        adapter.setNextOfKins(nextOfKins);
     }
 }

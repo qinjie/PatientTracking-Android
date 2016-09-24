@@ -21,7 +21,11 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.network.rest.ServerResponse;
+import com.example.intern.ptp.utils.BusManager;
 import com.example.intern.ptp.utils.UserManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +59,19 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
 
+        Bus bus = BusManager.getBus();
+        bus.register(this);
+
         // check whether the device has successfully sent a registered FCM token to server, if not and a FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Bus bus = BusManager.getBus();
+        bus.unregister(this);
     }
 
     @Override
@@ -362,5 +377,16 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
                 e.printStackTrace();
             }
         }
+    }
+
+    @Subscribe
+    public void onServerResponse(ServerResponse event) {
+        if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
+            onTakeCare((String) event.getResponse());
+        }
+    }
+
+    public void onTakeCare(String success) {
+
     }
 }

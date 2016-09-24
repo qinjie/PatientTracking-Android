@@ -14,6 +14,7 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,5 +40,10 @@ public class AlertHistoryFragment extends Fragment {
         alertHistoryList.setAdapter(adapter);
 
         return view;
+    }
+
+    public void refresh(List<Alert> alerts) {
+        AlertHistoryAdapter adapter = (AlertHistoryAdapter) alertHistoryList.getAdapter();
+        adapter.updateAlerts(alerts);
     }
 }

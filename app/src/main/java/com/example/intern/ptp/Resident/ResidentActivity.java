@@ -23,9 +23,14 @@ import com.example.intern.ptp.Alert.AlertHistoryFragment;
 import com.example.intern.ptp.Map.MapFragment;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.network.rest.ResidentService;
+import com.example.intern.ptp.network.rest.ServerResponse;
+import com.example.intern.ptp.utils.BusManager;
 import com.example.intern.ptp.utils.FontManager;
+import com.example.intern.ptp.utils.UserManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,9 +42,6 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ResidentActivity extends Activity {
 
@@ -86,62 +88,14 @@ public class ResidentActivity extends Activity {
         setContentView(R.layout.activity_resident);
         ButterKnife.bind(this);
 
+        Bus bus = BusManager.getBus();
+        bus.register(this);
+
         toggleGroup.setOnCheckedChangeListener(toggleListener);
 
         initAlert();
-
-        // create an API service and set session token to request header
-        ServerApi api = ServiceGenerator.createService(ServerApi.class, getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-        Preferences.showLoading(this);
-
-        // create request object to get a resident's information
-        Call<Resident> call = api.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
-        call.enqueue(new Callback<Resident>() {
-            @Override
-            public void onResponse(Call<Resident> call, Response<Resident> response) {
-                try {
-                    // if exception occurs or inconsistent database in server
-                    if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                        Preferences.dismissLoading();
-                        Preferences.showDialog(ResidentActivity.this, "Server Error", "Please try again !");
-                        return;
-                    }
-
-                    // if session is expired
-                    if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                        Preferences.goLogin(ResidentActivity.this);
-                        return;
-                    }
-
-                    // get response data from server
-                    resident = response.body();
-
-                    // display resident's information
-                    firstName.setText(resident.getFirstname());
-                    lastName.setText(resident.getLastname());
-                    nric.setText(resident.getNric());
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-                    Date d = sdf.parse(resident.getBirthday());
-                    sdf.applyPattern("MMM dd, yyyy");
-                    birthday.setText(sdf.format(d));
-                    remark.setText(resident.getRemark());
-
-                    showMap();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Preferences.dismissLoading();
-            }
-
-            @Override
-            public void onFailure(Call<Resident> call, Throwable t) {
-                Preferences.dismissLoading();
-                t.printStackTrace();
-                Preferences.showDialog(ResidentActivity.this, "Connection Failure", "Please check your network and try again!");
-            }
-        });
+        ResidentService service = ResidentService.getService();
+        service.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
     }
 
     private void initAlert() {
@@ -254,59 +208,81 @@ public class ResidentActivity extends Activity {
     };
 
     @OnClick(R.id.resident_take_care_button)
-    public void onTakeCare(View view) {
-        ServerApi api = ServiceGenerator.createService(ServerApi.class, this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+    public void takeCare(View view) {
+        AlertService service = AlertService.getService();
+        service.postTakeCare(alert.getId(), UserManager.getName(this));
+    }
 
-        // create request object to send a take-care-action request to server
-        Call<String> call = api.setTakecare(alert.getId(), this.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
-        Preferences.showLoading(this);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                try {
-                    // if exception occurs or inconsistent database in server
-                    if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                        Preferences.dismissLoading();
-                        Preferences.showDialog(ResidentActivity.this, "Server Error", "Please try again !");
-                        return;
-                    }
+    @Subscribe
+    public void onServerResponse(ServerResponse event) {
+        if (event.getType().equals(ServerResponse.GET_RESIDENT)) {
+            onResidentRefresh((Resident) event.getResponse());
+        } else if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
+            onTakeCare((String) event.getResponse());
+        }
+    }
 
-                    // if session is expired
-                    if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                        Preferences.goLogin(ResidentActivity.this);
-                        return;
-                    }
+    public void onTakeCare(String success) {
+        // if successfully sent take-care-action request to server
+        if (success.equalsIgnoreCase("success") || !success.equalsIgnoreCase("failed")) {
+            alert.setOk("1");
+            alertLayout.animate()
+                    .translationY(0)
+                    .alpha(0.0f)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            alertLayout.setVisibility(View.GONE);
+                        }
+                    });
 
-                    // get response from server
-                    String res = response.body();
+            ResidentService service = ResidentService.getService();
+            service.getResident(resident.getId());
+        }
+    }
 
-                    // if successfully sent take-care-action request to server
-                    if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
-                        alert.setOk("1");
-                        alertLayout.animate()
-                                .translationY(0)
-                                .alpha(0.0f)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        alertLayout.setVisibility(View.GONE);
-                                    }
-                                });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+    public void onResidentRefresh(Resident resident) {
+        this.resident = resident;
+
+        firstName.setText(resident.getFirstname());
+        lastName.setText(resident.getLastname());
+        nric.setText(resident.getNric());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        String birthdayText = resident.getBirthday();
+
+        try {
+            Date birthday = sdf.parse(resident.getBirthday());
+            sdf.applyPattern("MMM dd, yyyy");
+            birthdayText = sdf.format(birthday);
+
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+        }
+
+        birthday.setText(birthdayText);
+        remark.setText(resident.getRemark());
+
+        if (fragments.size() == 0) {
+            showMap();
+        } else {
+            for (Fragment frag : fragments) {
+                if (frag instanceof AlertHistoryFragment) {
+                    ((AlertHistoryFragment) frag).refresh(resident.getAlerts());
+                } else if (frag instanceof NextOfKinFragment) {
+                    ((NextOfKinFragment) frag).refresh(resident.getNextofkin());
                 }
-                Preferences.dismissLoading();
             }
+        }
+    }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Preferences.dismissLoading();
-                t.printStackTrace();
-                Preferences.showDialog(ResidentActivity.this, "Connection Failure", "Please check your network and try again!");
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Bus bus = BusManager.getBus();
+        bus.unregister(this);
     }
 
     @Override
