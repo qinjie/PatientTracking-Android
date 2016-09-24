@@ -167,6 +167,7 @@ public class LoginActivity extends Activity {
                         if (res.getResult().equalsIgnoreCase("correct")) {
 
                             editor = activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit();
+                            editor.putString("id", res.getUserId());
                             editor.putString("token", res.getToken());
                             editor.putString("username", username);
                             editor.putString("password", password);

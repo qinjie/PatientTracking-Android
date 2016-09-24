@@ -13,9 +13,13 @@ public class LoginResult {
     @SerializedName("email")
     @Expose
     private String email;
+    @SerializedName("user_id")
+    @Expose
+    private String userId;
     @SerializedName("username")
     @Expose
     private String username;
+
     /**
      * @return The result
      */
@@ -51,6 +55,14 @@ public class LoginResult {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

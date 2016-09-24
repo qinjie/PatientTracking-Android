@@ -167,6 +167,7 @@ public class AlertListAdapter extends BaseAdapter {
                     view = inflater.inflate(R.layout.item_alerts_alert, parent, false);
                     holder = new AlertViewHolder(view);
                     view.setTag(holder);
+                    holder.tookCareOfIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                     holder.locationIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                     holder.timeIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                 }
@@ -175,6 +176,15 @@ public class AlertListAdapter extends BaseAdapter {
 
                 String title = String.format(Locale.getDefault(), res.getString(R.string.alert_title), alert.getFirstname(), alert.getLastname());
                 holder.title.setText(title);
+
+                if(alert.getUsername() != null) {
+                    holder.tookCareOfIcon.setVisibility(View.VISIBLE);
+                    holder.tookCareOf.setVisibility(View.VISIBLE);
+                    holder.tookCareOf.setText(alert.getUsername());
+                } else {
+                    holder.tookCareOfIcon.setVisibility(View.GONE);
+                    holder.tookCareOf.setVisibility(View.GONE);
+                }
 
                 holder.location.setText(alert.getLastPositionLabel());
 
@@ -270,6 +280,10 @@ public class AlertListAdapter extends BaseAdapter {
         ImageView profilePicture;
         @BindView(R.id.alerts_alert_title)
         TextView title;
+        @BindView(R.id.alert_alert_took_care_by_icon)
+        TextView tookCareOfIcon;
+        @BindView(R.id.alert_alert_took_care_by)
+        TextView tookCareOf;
         @BindView(R.id.alerts_alert_location_icon)
         TextView locationIcon;
         @BindView(R.id.alerts_alert_location)

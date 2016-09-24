@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.example.intern.ptp.Preferences;
@@ -33,7 +35,7 @@ public class AlertHistoryFragment extends Fragment {
         Bundle args = getArguments();
         ArrayList<Alert> alerts = args.getParcelableArrayList(Preferences.BUNDLE_KEY_ALERT);
 
-        AlertListAdapter adapter = new AlertListAdapter(getActivity(), alerts);
+        ListAdapter adapter = new AlertHistoryAdapter(getActivity(), alerts);
         alertHistoryList.setAdapter(adapter);
 
         return view;

@@ -21,6 +21,7 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.utils.UserManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -294,6 +295,8 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
                         // if successfully sent take-care-action request to server
                         if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
                             alert.setOk("1");
+                            alert.setUserId(UserManager.getId(getActivity()));
+                            alert.setUsername(UserManager.getName(getActivity()));
                             adapter.updateAlerts();
                         }
                     } catch (Exception e) {

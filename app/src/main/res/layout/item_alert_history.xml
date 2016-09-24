@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/alerthistory_took_care_of"
+        style="@style/TextAppearance.Content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="nurse1" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignWithParentIfMissing="true"
+        android:gravity="center_vertical"
+        android:layout_below="@id/alerthistory_took_care_of"
+        >
+    <TextView
+        android:id="@+id/alerthistory_location_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/fa_map" />
+
+    <TextView
+        android:id="@+id/alerthistory_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="B1-5" />
+
+    <TextView
+        android:id="@+id/alerthistory_time_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/fa_clock_o" />
+
+    <TextView
+        android:id="@+id/alerthistory_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="4 minutes ago" />
+    </LinearLayout>
 
 </RelativeLayout>
+
