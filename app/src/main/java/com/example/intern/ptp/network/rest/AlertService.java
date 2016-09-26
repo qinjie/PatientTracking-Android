@@ -1,17 +1,15 @@
 package com.example.intern.ptp.network.rest;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.view.View;
 
+import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.Preferences;
-import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.squareup.otto.Bus;
 
-import okhttp3.ResponseBody;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,6 +36,38 @@ public class AlertService {
     private AlertService(Context context, Bus bus) {
         this.context = context;
         this.bus = bus;
+    }
+
+    public void getAlerts(boolean onlyOngoing) {
+        // create an API service and set session token to request header
+        ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+
+        // create request object to get notification information
+        Call<List<Alert>> call = api.getAlerts("all", onlyOngoing ? "0" : "all");
+        call.enqueue(new Callback<List<Alert>>() {
+            @Override
+            public void onResponse(Call<List<Alert>> call, Response<List<Alert>> response) {
+
+                // if exception occurs or inconsistent database in server
+                if (response.headers().get("result").equalsIgnoreCase("failed")) {
+                    return;
+                }
+
+                // if session is expired
+                if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
+                    Preferences.goLogin(context);
+                    return;
+                }
+
+                bus.post(new ServerResponse(ServerResponse.GET_ALERTS, response.body()));
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Alert>> call, Throwable t) {
+                bus.post(new ServerResponse(ServerResponse.SERVER_ERROR, t));
+            }
+        });
     }
 
     public void getAlertCount() {
