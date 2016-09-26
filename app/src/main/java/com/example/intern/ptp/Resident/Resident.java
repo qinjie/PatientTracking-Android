@@ -70,7 +70,9 @@ public class Resident implements Parcelable {
     @SerializedName("alert_list")
     @Expose
     private List<Alert> alerts;
-
+    @SerializedName("ongoing_alert")
+    @Expose
+    private Alert ongoingAlert;
 
     /**
      * @return The id
@@ -338,6 +340,14 @@ public class Resident implements Parcelable {
 
     public void setAlerts(List<Alert> alerts) {
         this.alerts = alerts;
+    }
+
+    public Alert getOngoingAlert() {
+        return ongoingAlert;
+    }
+
+    public void setOngoingAlert(Alert ongoingAlert) {
+        this.ongoingAlert = ongoingAlert;
     }
 
     public boolean isNurse() {

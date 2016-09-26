@@ -61,10 +61,8 @@ public class AlertService {
 
     public void postTakeCare(String id, String username) {
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-        // create request object to send a take-care-action request to server
         Call<String> call = api.setTakecare(id, username);
-        Preferences.showLoading(context);
+
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -85,7 +83,6 @@ public class AlertService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Preferences.dismissLoading();
 
                 bus.post(new ServerResponse(ServerResponse.POST_TAKE_CARE, response.body()));
             }
@@ -94,7 +91,6 @@ public class AlertService {
             public void onFailure(Call<String> call, Throwable t) {
                 Preferences.dismissLoading();
                 t.printStackTrace();
-                Preferences.showDialog(context, "Connection Failure", "Please check your network and try again!");
 
                 bus.post(new ServerResponse(ServerResponse.SERVER_ERROR, t));
             }

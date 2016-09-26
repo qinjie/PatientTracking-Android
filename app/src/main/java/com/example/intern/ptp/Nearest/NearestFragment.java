@@ -166,7 +166,6 @@ public class NearestFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
-            inflater.inflate(R.menu.menu_fragment_nearest, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
                 // set title for action bar and display it

@@ -93,12 +93,6 @@ public class ResidentActivity extends Activity {
 
         toggleGroup.setOnCheckedChangeListener(toggleListener);
 
-        initAlert();
-        ResidentService service = ResidentService.getService();
-        service.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
-    }
-
-    private void initAlert() {
         Bundle bundle = getIntent().getExtras();
 
         if (bundle == null) {
@@ -107,9 +101,16 @@ public class ResidentActivity extends Activity {
 
         alert = (Alert) bundle.get(Preferences.BUNDLE_KEY_ALERT);
 
+        showAlert(alert);
+        ResidentService service = ResidentService.getService();
+        service.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
+    }
+
+    private void showAlert(Alert alert) {
         if (alert == null) {
             return;
         } else if (!alert.getOk().equalsIgnoreCase("0")) {
+            alertLayout.setVisibility(View.GONE);
             return;
         }
 
@@ -263,6 +264,7 @@ public class ResidentActivity extends Activity {
 
         birthday.setText(birthdayText);
         remark.setText(resident.getRemark());
+        showAlert(resident.getOngoingAlert());
 
         if (fragments.size() == 0) {
             showMap();

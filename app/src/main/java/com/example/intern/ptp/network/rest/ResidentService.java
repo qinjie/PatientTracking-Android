@@ -45,8 +45,6 @@ public class ResidentService {
         // create an API service and set session token to request header
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
-        Preferences.showLoading(context);
-
         // create request object to get a resident's information
         Call<Resident> call = api.getResident(id);
         call.enqueue(new Callback<Resident>() {
@@ -55,8 +53,6 @@ public class ResidentService {
                 try {
                     // if exception occurs or inconsistent database in server
                     if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                        Preferences.dismissLoading();
-                        Preferences.showDialog(context, "Server Error", "Please try again !");
                         return;
                     }
 
@@ -70,12 +66,10 @@ public class ResidentService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Preferences.dismissLoading();
             }
 
             @Override
             public void onFailure(Call<Resident> call, Throwable t) {
-                Preferences.dismissLoading();
                 t.printStackTrace();
                 Preferences.showDialog(context, "Connection Failure", "Please check your network and try again!");
 

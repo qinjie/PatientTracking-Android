@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_refresh_fragment_resident"
         android:orderInCategory="1"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:title="@string/action_refresh" />
 

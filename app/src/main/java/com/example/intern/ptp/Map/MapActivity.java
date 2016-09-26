@@ -71,7 +71,7 @@ public class MapActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         try {
-            getMenuInflater().inflate(R.menu.menu_activity_map, menu);
+
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
                 // display predefined title for action bar
