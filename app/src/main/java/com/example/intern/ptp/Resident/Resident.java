@@ -3,6 +3,7 @@ package com.example.intern.ptp.Resident;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.intern.ptp.Alert.Alert;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -39,6 +40,9 @@ public class Resident implements Parcelable {
     @SerializedName("floor_id")
     @Expose
     private String floorId;
+    @SerializedName("file_path")
+    @Expose
+    private String filePath;
     @SerializedName("label")
     @Expose
     private String label;
@@ -63,7 +67,12 @@ public class Resident implements Parcelable {
     @SerializedName("nextofkin")
     @Expose
     private List<NextOfKin> nextofkin;
-
+    @SerializedName("alert_list")
+    @Expose
+    private List<Alert> alerts;
+    @SerializedName("ongoing_alert")
+    @Expose
+    private Alert ongoingAlert;
 
     /**
      * @return The id
@@ -317,6 +326,33 @@ public class Resident implements Parcelable {
         this.nextofkin = nextofkin;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public List<Alert> getAlerts() {
+        return alerts;
+    }
+
+    public void setAlerts(List<Alert> alerts) {
+        this.alerts = alerts;
+    }
+
+    public Alert getOngoingAlert() {
+        return ongoingAlert;
+    }
+
+    public void setOngoingAlert(Alert ongoingAlert) {
+        this.ongoingAlert = ongoingAlert;
+    }
+
+    public boolean isNurse() {
+        return id.equalsIgnoreCase("-1");
+    }
 
     @Override
     public int describeContents() {
@@ -342,6 +378,7 @@ public class Resident implements Parcelable {
         dest.writeString(pixely);
         dest.writeString(color);
         dest.writeString(distance);
+        dest.writeString(filePath);
     }
 
     protected Resident(Parcel in) {
@@ -362,6 +399,7 @@ public class Resident implements Parcelable {
         pixely = in.readString();
         color = in.readString();
         distance = in.readString();
+        filePath = in.readString();
     }
 
     public static final Creator<Resident> CREATOR = new Creator<Resident>() {

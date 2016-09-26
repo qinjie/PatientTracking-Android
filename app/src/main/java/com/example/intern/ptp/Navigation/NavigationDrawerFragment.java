@@ -6,26 +6,25 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ServerResponse;
 import com.example.intern.ptp.utils.BusManager;
+import com.example.intern.ptp.utils.UserManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -89,13 +88,15 @@ public class NavigationDrawerFragment extends Fragment {
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
+
+        // Indicate that this fragment would like to influence the set of actions in the action bar.
+        setHasOptionsMenu(true);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // Indicate that this fragment would like to influence the set of actions in the action bar.
-        setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -111,11 +112,11 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         List<NavigationItem> items = new ArrayList<NavigationItem>();
-        items.add(new ProfileNavigationItem("navigation_profile", "Chen Li", "chen.li@happynurse.com"));
+        items.add(new ProfileNavigationItem("navigation_profile", UserManager.getName(getActivity()), UserManager.getEmail(getActivity())));
         items.add(new DividerNavigationItem());
-        items.add(new PrimaryNavigationItem("navigation_alerts", getString(R.string.fa_icon_bell), getString(R.string.title_fragment_alert), "0"));
-        items.add(new PrimaryNavigationItem("navigation_map", getString(R.string.fa_icon_map), getString(R.string.title_fragment_map), ""));
-        items.add(new PrimaryNavigationItem("navigation_resident", getString(R.string.fa_icon_users), getString(R.string.title_fragment_resident), ""));
+        items.add(new PrimaryNavigationItem("navigation_alerts", getString(R.string.fa_bell), getString(R.string.title_fragment_alert), "0"));
+        items.add(new PrimaryNavigationItem("navigation_map", getString(R.string.fa_map), getString(R.string.title_fragment_map), ""));
+        items.add(new PrimaryNavigationItem("navigation_resident", getString(R.string.fa_users), getString(R.string.title_fragment_resident), ""));
         items.add(new DividerNavigationItem());
         items.add(new SecondaryNavigationItem("navigation_nearest", getString(R.string.title_fragment_neasrest_resident)));
         items.add(new SecondaryNavigationItem("navigation_profile", getString(R.string.title_fragment_profile)));
@@ -126,10 +127,6 @@ public class NavigationDrawerFragment extends Fragment {
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
-    }
-
-    public boolean isDrawerOpen() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
     /**
@@ -265,11 +262,6 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
             return true;
         }
 

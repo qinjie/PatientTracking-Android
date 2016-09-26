@@ -103,13 +103,8 @@ public class NearestFragment extends Fragment {
                                                     return;
                                                 }
 
-                                                // create a new intent related to ResidentActivity
                                                 Intent intent = new Intent(activity, ResidentActivity.class);
-
-                                                // put resident id as an extra in the above created intent
                                                 intent.putExtra(Preferences.resident_idTag, resident.getId());
-
-                                                // start a new ResidentActivity with the intent
                                                 startActivity(intent);
                                             } catch (Exception e) {
                                                 Preferences.dismissLoading();
@@ -171,7 +166,6 @@ public class NearestFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
-            inflater.inflate(R.menu.menu_fragment_nearest, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
                 // set title for action bar and display it

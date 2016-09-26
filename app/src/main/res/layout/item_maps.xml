@@ -12,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="10dp"
-        android:text="@string/fa_icon_bell" />
+        android:text="@string/fa_bell" />
 
     <TextView
         android:id="@+id/maps_resident_count"
@@ -30,7 +30,7 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="5dp"
         android:layout_toStartOf="@id/maps_resident_count"
-        android:text="@string/fa_icon_users" />
+        android:text="@string/fa_users" />
 
     <TextView
         android:id="@+id/maps_title"

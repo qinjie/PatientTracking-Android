@@ -1,11 +1,15 @@
 package com.example.intern.ptp.Alert;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.example.intern.ptp.Resident.Resident;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class Alert {
+public class Alert implements Parcelable {
     @SerializedName("id")
     @Expose
     private String id;
@@ -176,4 +180,49 @@ public class Alert {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(residentId);
+        dest.writeString(firstname);
+        dest.writeString(lastname);
+        dest.writeString(lastPosition);
+        dest.writeString(lastPositionLabel);
+        dest.writeString(userId);
+        dest.writeString(username);
+        dest.writeString(ok);
+        dest.writeString(createdAt);
+    }
+
+    protected Alert(Parcel in) {
+        id = in.readString();
+        residentId = in.readString();
+        firstname = in.readString();
+        lastname = in.readString();
+        lastPosition = in.readString();
+        lastPositionLabel = in.readString();
+        userId = in.readString();
+        username = in.readString();
+        ok = in.readString();
+        createdAt = in.readString();
+    }
+
+    public static final Creator<Alert> CREATOR = new Creator<Alert>() {
+        @Override
+        public Alert createFromParcel(Parcel in) {
+            return new Alert(in);
+        }
+
+        @Override
+        public Alert[] newArray(int size) {
+            return new Alert[size];
+        }
+    };
 }

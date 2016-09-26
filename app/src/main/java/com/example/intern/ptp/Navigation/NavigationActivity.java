@@ -9,13 +9,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
 import com.example.intern.ptp.Alert.AlertFragment;
-import com.example.intern.ptp.Location.LocationFragment;
-import com.example.intern.ptp.Map.MapFragment;
+import com.example.intern.ptp.Map.MapListFragment;
 import com.example.intern.ptp.Nearest.NearestFragment;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentFragment;
-import com.example.intern.ptp.Setting.ChangeFragment;
 import com.example.intern.ptp.Setting.ProfileFragment;
 
 public class NavigationActivity extends Activity
@@ -60,7 +58,7 @@ public class NavigationActivity extends Activity
                 break;
             }
             case 3: {
-                fragment = new MapFragment();
+                fragment = new MapListFragment();
                 break;
             }
             case 4: {

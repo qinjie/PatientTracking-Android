@@ -18,15 +18,21 @@ import android.widget.ListView;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
+import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.network.rest.ServerResponse;
+import com.example.intern.ptp.utils.BusManager;
+import com.example.intern.ptp.utils.UserManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,19 +48,25 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
     private AlertListAdapter adapter;
 
     private Activity activity;
-    private ServerApi api;
-
-    public AlertFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
 
+        Bus bus = BusManager.getBus();
+        bus.register(this);
+
         // check whether the device has successfully sent a registered FCM token to server, if not and a FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Bus bus = BusManager.getBus();
+        bus.unregister(this);
     }
 
     @Override
@@ -77,7 +89,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
         } catch (Exception e) {
             e.printStackTrace();
         }
-        super.onCreateOptionsMenu(menu, inflater);
+        //super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -91,7 +103,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
             switch (id) {
                 // reload fragment
                 case R.id.action_refresh_fragment_alert:
-                    activity.recreate();
+                    display();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -124,7 +136,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
     public void onResume() {
         super.onResume();
 
-        // refresh the notification list after coming back from AlertActivity
+        // refresh the notification list after coming back from ResidentFragment
         display();
     }
 
@@ -132,14 +144,15 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
      * retrieve status of RED only checkbox from Shared Preferences in order to display user's preferred data
      */
     private void display() {
+        final AlertService service = AlertService.getService();
 
         // check whether user prefers only untaken care notificaiotns
         if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
             redCheck.setChecked(true);
-            getData("0");
+            service.getAlerts(true);
         } else {
             redCheck.setChecked(false);
-            getData("all");
+            service.getAlerts(false);
         }
 
 
@@ -147,115 +160,10 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
         redCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                try {
-                    // create an API service and set session token to request header
-                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-                    // create request object to check session time out
-                    Call<ResponseBody> call = api.getCheck();
-                    Preferences.showLoading(activity);
-                    final boolean isC = isChecked;
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            try {
-                                // if exception occurs or inconsistent database in server
-                                if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                    Preferences.dismissLoading();
-                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                    return;
-                                }
-
-                                // if session is expired
-                                if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                    Preferences.goLogin(activity);
-                                    return;
-                                }
-
-                                // save status of RED only checkbox to Shared Preferences
-                                activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putString("red_only", isC ? "1" : "0").apply();
-
-                                // display preferred data
-                                if (isC) {
-                                    getData("0");
-                                } else {
-                                    getData("all");
-                                }
-                            } catch (Exception e) {
-                                Preferences.dismissLoading();
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Preferences.dismissLoading();
-                            t.printStackTrace();
-                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                        }
-                    });
-                } catch (Exception e) {
-                    Preferences.dismissLoading();
-                    e.printStackTrace();
-                }
+                service.getAlerts(isChecked);
 
             }
         });
-    }
-
-
-    /**
-     * display notifications on list view basing on 'ok' parameter
-     *
-     * @param ok 1. "all": get all notifications from database and display on list view
-     *           2. otherwise get untaken care notifications from database and display on list view
-     */
-    private void getData(String ok) {
-        try {
-            // create an API service and set session token to request header
-            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-            // create request object to get notification information
-            Call<List<Alert>> call = api.getAlerts("all", ok);
-            Preferences.showLoading(activity);
-            call.enqueue(new Callback<List<Alert>>() {
-                @Override
-                public void onResponse(Call<List<Alert>> call, Response<List<Alert>> response) {
-                    try {
-                        // if exception occurs or inconsistent database in server
-                        if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
-                            Preferences.showDialog(activity, "Server Error", "Please try again !");
-                            return;
-                        }
-
-                        // if session is expired
-                        if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(activity);
-                            return;
-                        }
-
-                        // get list of Alerts from response
-                        List<Alert> alertList = response.body();
-                        adapter.updateAlerts(alertList);
-
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Preferences.dismissLoading();
-                }
-
-                @Override
-                public void onFailure(Call<List<Alert>> call, Throwable t) {
-                    Preferences.dismissLoading();
-                    t.printStackTrace();
-                }
-            });
-        } catch (Exception e) {
-            Preferences.dismissLoading();
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -264,7 +172,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
 
         if (viewId == R.id.alerts_alert_take_care_button) {
             // create an API service and set session token to request header
-            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            ServerApi api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
             final Alert alert = (Alert) adapter.getItem(position);
 
             // create request object to send a take-care-action request to server
@@ -293,6 +201,8 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
                         // if successfully sent take-care-action request to server
                         if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
                             alert.setOk("1");
+                            alert.setUserId(UserManager.getId(getActivity()));
+                            alert.setUsername(UserManager.getName(getActivity()));
                             adapter.updateAlerts();
                         }
                     } catch (Exception e) {
@@ -309,57 +219,33 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
                 }
             });
         } else {
+            Alert alert = (Alert) adapter.getItem(position);
 
-            try {
-                // create an API service and set session token to request header
-                api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            Intent intent = new Intent(activity, ResidentActivity.class);
+            intent.putExtra(Preferences.BUNDLE_KEY_ALERT, alert);
+            intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
-                // create request object to check session timeout
-                Call<ResponseBody> call = api.getCheck();
-                Preferences.showLoading(activity);
-
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        try {
-                            // if exception occurs or inconsistent database in server
-                            if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                Preferences.dismissLoading();
-                                Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                return;
-                            }
-
-                            // if session is expired
-                            if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                Preferences.goLogin(activity);
-                                return;
-                            }
-
-                            // create a new intent related to AlertActivity
-                            Intent intent = new Intent(activity, AlertActivity.class);
-
-                            Alert alert = (Alert) adapter.getItem(position);
-
-                            // put alert id of the notification as an extra in the above created intent
-                            intent.putExtra(Preferences.notify_idTag, alert.getId());
-
-                            // start a new AlertActivity with the intent
-                            activity.startActivity(intent);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Preferences.dismissLoading();
-                        t.printStackTrace();
-                    }
-                });
-            } catch (Exception e) {
-                Preferences.dismissLoading();
-                e.printStackTrace();
-            }
+            activity.startActivity(intent);
         }
+    }
+
+    @Subscribe
+    public void onServerResponse(ServerResponse event) {
+        if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
+            onTakeCare((String) event.getResponse());
+        } else if (event.getType().equals(ServerResponse.GET_ALERTS)) {
+            onAlertsRefresh(event.getResponse());
+        }
+    }
+
+    private void onAlertsRefresh(Object response) {
+        if (response instanceof List) {
+            List<Alert> alertList = (List<Alert>) response;
+            adapter.updateAlerts(alertList);
+        }
+    }
+
+    private void onTakeCare(String success) {
+
     }
 }
