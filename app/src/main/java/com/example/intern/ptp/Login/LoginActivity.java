@@ -7,7 +7,12 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.intern.ptp.Navigation.NavigationActivity;
 import com.example.intern.ptp.Preferences;
@@ -16,6 +21,7 @@ import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.vision.text.Text;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +30,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static java.security.AccessController.getContext;
 
 public class LoginActivity extends Activity {
 
@@ -95,6 +103,8 @@ public class LoginActivity extends Activity {
             // set layout for the activity
             setLayout();
 
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,7 +114,15 @@ public class LoginActivity extends Activity {
      * set layout for the activity
      */
     public void setLayout() {
-        setContentView(R.layout.activity_login);
+        //Remove title bar
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Remove notification bar
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        //set content view AFTER ABOVE sequence (to avoid crash)
+        this.setContentView(R.layout.activity_login);
+
         ButterKnife.bind(this);
 
         // get username stored in the Shared Preferences
@@ -122,7 +140,6 @@ public class LoginActivity extends Activity {
         // in order to help user save time
         mUsernameView.setText(username);
         mPasswordView.setText(password);
-
     }
 
     /**

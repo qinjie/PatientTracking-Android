@@ -59,4 +59,5 @@
     <string name="alert_title">%1$s %2$s</string>
     <string name="alerts_ongoing_alerts_only">Hide Solved Alerts</string>
     <string name="backbutton_exit_warning">Please click BACK again to exit</string>
+    <string name="quota">To live well, live long and with peace of mind</string>
 </resources>
