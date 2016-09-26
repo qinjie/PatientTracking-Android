@@ -74,7 +74,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
             // build a notification with icon, title, content, sound, ...
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_sos)
+                    .setSmallIcon(R.drawable.ic_bell)
                     .setContentTitle("Resident - " + name)
                     .setColor(ok ? Color.BLUE : Color.RED)
                     .setContentText(content)
