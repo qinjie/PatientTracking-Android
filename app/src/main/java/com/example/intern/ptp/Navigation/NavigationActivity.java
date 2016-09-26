@@ -102,7 +102,7 @@ public class NavigationActivity extends Activity
 
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }

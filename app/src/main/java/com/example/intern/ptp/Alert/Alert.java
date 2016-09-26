@@ -3,11 +3,8 @@ package com.example.intern.ptp.Alert;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.intern.ptp.Resident.Resident;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Date;
 
 public class Alert implements Parcelable {
     @SerializedName("id")

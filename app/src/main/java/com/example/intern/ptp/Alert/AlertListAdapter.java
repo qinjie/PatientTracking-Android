@@ -145,7 +145,7 @@ public class AlertListAdapter extends BaseAdapter {
                 }
 
                 if (position == 0 && ongoingAlerts.size() > 0) {
-                    holder.icon.setText(    res.getString(R.string.fa_bell));
+                    holder.icon.setText(res.getString(R.string.fa_bell));
                     holder.icon.setTextColor(ContextCompat.getColor(context, R.color.red));
 
                     String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_ongoing_alerts), ongoingAlerts.size());
@@ -180,7 +180,7 @@ public class AlertListAdapter extends BaseAdapter {
                 String title = String.format(Locale.getDefault(), res.getString(R.string.alert_title), alert.getFirstname(), alert.getLastname());
                 holder.title.setText(title);
 
-                if(alert.getUsername() != null) {
+                if (alert.getUsername() != null) {
                     holder.tookCareOfIcon.setVisibility(View.VISIBLE);
                     holder.tookCareOf.setVisibility(View.VISIBLE);
                     holder.tookCareOf.setText(alert.getUsername());
@@ -211,7 +211,7 @@ public class AlertListAdapter extends BaseAdapter {
                 //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
                 String profilePicture = residentProfilePics.get(alert.getResidentId());
 
-                if(profilePicture == null) {
+                if (profilePicture == null) {
                     profilePicture = "resident" + (residentNr % MAX_RESIDENTS);
                     residentProfilePics.put(alert.getResidentId(), profilePicture);
                     residentNr++;
@@ -234,7 +234,7 @@ public class AlertListAdapter extends BaseAdapter {
         return view;
     }
 
-    public void updateAlerts(List<Alert> alerts){
+    public void updateAlerts(List<Alert> alerts) {
         ongoingAlerts.clear();
         solvedAlerts.clear();
 

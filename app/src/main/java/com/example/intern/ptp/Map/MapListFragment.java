@@ -108,7 +108,7 @@ public class MapListFragment extends Fragment {
         mapListView.setAdapter(adapter);
 
         try {
-             // create an API service and set session token to request header
+            // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             // create request object to get all floors' basic information

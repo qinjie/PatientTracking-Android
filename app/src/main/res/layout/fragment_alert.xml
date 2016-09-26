@@ -17,8 +17,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginEnd="15dp"
             android:textColor="@color/black"
-            android:text="@string/alerts_ongoing_alerts_only"
-            />
+            android:text="@string/alerts_ongoing_alerts_only" />
 
         <ListView
             android:id="@+id/nListView"

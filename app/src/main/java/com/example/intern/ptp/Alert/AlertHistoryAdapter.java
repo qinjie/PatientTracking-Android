@@ -1,7 +1,6 @@
 package com.example.intern.ptp.Alert;
 
 import android.content.Context;
-import android.support.v7.app.ActionBar;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +68,7 @@ public class AlertHistoryAdapter extends BaseAdapter {
 
         Alert alert = items.get(position);
 
-        if(alert.getUsername() != null) {
+        if (alert.getUsername() != null) {
             holder.tookCareOf.setVisibility(View.VISIBLE);
             holder.tookCareOf.setText(alert.getUsername());
         } else {
@@ -93,7 +92,7 @@ public class AlertHistoryAdapter extends BaseAdapter {
         return view;
     }
 
-    public void updateAlerts(List<Alert> alerts){
+    public void updateAlerts(List<Alert> alerts) {
         items = alerts;
         notifyDataSetChanged();
     }

@@ -7,5 +7,6 @@ public interface NavigationItem {
     public static final int VIEWTYPE_DIVIDER = 3;
 
     public String getId();
+
     public int getType();
 }

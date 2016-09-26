@@ -75,7 +75,7 @@ public class ResidentListAdapter extends BaseAdapter {
         //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
         String profilePicture = residentProfilePics.get(resident.getId());
 
-        if(profilePicture == null) {
+        if (profilePicture == null) {
             profilePicture = "resident" + (residentNr % MAX_RESIDENTS);
             residentProfilePics.put(resident.getId(), profilePicture);
             residentNr++;

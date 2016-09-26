@@ -67,8 +67,8 @@ public class MapListAdapter extends BaseAdapter {
             holder.alertIcon.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
         }
 
-            return view;
-        }
+        return view;
+    }
 
     public void updateLocations(List<Location> locations) {
         this.locations = locations;

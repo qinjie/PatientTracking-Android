@@ -10,9 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.intern.ptp.Preferences;
-import com.example.intern.ptp.R;
-
-import butterknife.ButterKnife;
 
 
 public class MapActivity extends Activity {

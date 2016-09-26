@@ -10,7 +10,7 @@ public class UserManager {
     public static String getName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
 
-        return  prefs.getString("username", "");
+        return prefs.getString("username", "");
     }
 
     public static String getId(Context context) {

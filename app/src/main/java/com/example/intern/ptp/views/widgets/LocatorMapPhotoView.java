@@ -69,7 +69,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         }
 
         for (final Resident resident : residents) {
-            if(!resident.isNurse()) {
+            if (!resident.isNurse()) {
                 drawResidentName(canvas, resident);
             }
         }

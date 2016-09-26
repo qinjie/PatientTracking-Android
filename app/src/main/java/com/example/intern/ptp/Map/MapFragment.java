@@ -189,11 +189,11 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
     @Override
     public void onViewTap(View view, float x, float y) {
-        PointF touchPoint = new PointF(x,y);
+        PointF touchPoint = new PointF(x, y);
 
         Resident resident = mImageView.getTouchedResident(touchPoint);
 
-        if(resident != null) {
+        if (resident != null) {
             Intent intent = new Intent(getActivity(), ResidentActivity.class);
             intent.putExtra(Preferences.resident_idTag, resident.getId());
             this.startActivityForResult(intent, 0);
