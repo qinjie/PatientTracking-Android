@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,14 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
-import com.example.intern.ptp.Location.Location;
-import com.example.intern.ptp.Location.LocationActivity;
+import com.example.intern.ptp.Map.Location;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.ServerApi;
@@ -31,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.BindViews;
 import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -41,33 +36,18 @@ import retrofit2.Response;
 public class ResidentFragment extends Fragment {
     private SearchView sv;
 
-    @BindViews({R.id.tableLayout1, R.id.tableLayout2, R.id.tableLayout3})
-    List<TableLayout> tls;
+    @BindView(R.id.resident_list)
+    ListView residentList;
 
-    @BindViews({R.id.header1, R.id.header2, R.id.header3})
-    List<TextView> headers;
-
-    @BindView(R.id.spinner)
-    Spinner spinner;
+    @BindView(R.id.resident_map_spinner)
+    Spinner mapSpinner;
 
     private List<Location> locationList;
     private int sortIndex = -1;
-    private String[] colName = {"id", "name", "floor_id"};
-    private boolean asc[] = {true, true, true};
+    private String[] colName = {"name", "floor_id"};
+    private boolean asc[] = {true, true};
     private Activity activity;
     private ServerApi api;
-
-    public ResidentFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * convert dp to px
-     */
-    private int getPx(int dp) {
-        final float scale = activity.getResources().getDisplayMetrics().density;
-        return (int) (dp * scale + 0.5f);
-    }
 
     /**
      * search resident by a SearchParam and display result on a table namely resident list table
@@ -96,165 +76,12 @@ public class ResidentFragment extends Fragment {
                             return;
                         }
 
-                        // clear the resident list table
-                        for (TableLayout tl : tls) {
-                            tl.removeAllViews();
-                        }
-
                         // get list of Residents from response
-                        List<Resident> res = response.body();
+                        List<Resident> residents = response.body();
 
-                        for (int i = 0; i < res.size(); i++) {
+                        ResidentListAdapter adapter = (ResidentListAdapter) residentList.getAdapter();
+                        adapter.setResidents(residents);
 
-                            // get current resident element in for loop
-                            Resident r = res.get(i);
-
-                            // values contains displayed text in a table row
-                            List<String> values = new ArrayList<>();
-                            final String resId = r.getId();
-                            final String flId = r.getFloorId();
-                            values.add(resId);
-                            values.add(r.getFirstname() + " " + r.getLastname());
-                            values.add(r.getLabel());
-
-                            // create 3 table rows for the resident list table
-                            TableRow[] trs = new TableRow[3];
-
-                            // create 3 text views for the above 3 table rows
-                            TextView[] tvs = new TextView[3];
-
-                            for (int k = 0; k < 3; k++) {
-
-                                // add text for each above text view
-                                tvs[k] = new TextView(activity);
-                                tvs[k].setText(values.get(k));
-                                tvs[k].setTextColor(Color.BLUE);
-                                tvs[k].setPadding(getPx(10), getPx(5), getPx(0), getPx(5));
-
-                                // design each above table row
-                                trs[k] = new TableRow(activity);
-                                if (i % 2 == 0)
-                                    trs[k].setBackgroundColor(Color.WHITE);
-                                else
-                                    trs[k].setBackgroundColor(Color.TRANSPARENT);
-                                trs[k].setLayoutParams(new ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT));
-
-                                // add text view to table row
-                                trs[k].addView(tvs[k]);
-
-                                // add table row to table layout
-                                tls.get(k).addView(trs[k]);
-
-                            }
-
-                            // set click event for each cell in the 'Name' column in resident list table
-                            trs[1].setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-
-                                    try {
-                                        // create an API service and set session token to request header
-                                        api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-                                        // create request object to check session timeout
-                                        Call<ResponseBody> call = api.getCheck();
-                                        Preferences.showLoading(activity);
-                                        call.enqueue(new Callback<ResponseBody>() {
-                                            @Override
-                                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                                try {
-                                                    // if exception occurs or inconsistent database in server
-                                                    if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                        Preferences.dismissLoading();
-                                                        Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                                        return;
-                                                    }
-
-                                                    // if session is expired
-                                                    if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                        Preferences.goLogin(activity);
-                                                        return;
-                                                    }
-
-                                                    Intent intent = new Intent(activity, ResidentActivity.class);
-                                                    intent.putExtra(Preferences.resident_idTag, resId);
-                                                    activity.startActivity(intent);
-
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                                Preferences.dismissLoading();
-                                                t.printStackTrace();
-                                                Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-
-                            // set click event for each cell in the 'Location' column in resident list table
-                            trs[2].setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    try {
-                                        // create an API service and set session token to request header
-                                        api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-                                        // create request object to check session timeout
-                                        Call<ResponseBody> call = api.getCheck();
-                                        Preferences.showLoading(activity);
-                                        call.enqueue(new Callback<ResponseBody>() {
-                                            @Override
-                                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                                try {
-                                                    // if exception occurs or inconsistent database in server
-                                                    if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                        Preferences.dismissLoading();
-                                                        Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                                        return;
-                                                    }
-
-                                                    // if session is expired
-                                                    if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                        Preferences.goLogin(activity);
-                                                        return;
-                                                    }
-
-                                                    // create a new intent related to LocationActivity
-                                                    Intent intent = new Intent(activity, LocationActivity.class);
-
-                                                    // put floor id of the location as an extra in the above created intent
-                                                    intent.putExtra(Preferences.floor_idTag, flId);
-
-                                                    // start a new LocationActivity with the intent
-                                                    activity.startActivity(intent);
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                                Preferences.dismissLoading();
-                                                t.printStackTrace();
-                                                Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                            });
-                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -338,7 +165,7 @@ public class ResidentFragment extends Fragment {
                                     }
 
                                     // call display function to search and display result in the increasing order of resident id by default
-                                    display(new SearchParam(query.trim(), ((Location) spinner.getSelectedItem()).getId(), "id", "asc"));
+                                    display(new SearchParam(query.trim(), ((Location) mapSpinner.getSelectedItem()).getId(), "name", "asc"));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -395,6 +222,19 @@ public class ResidentFragment extends Fragment {
         View myView = inflater.inflate(R.layout.fragment_resident, container, false);
         ButterKnife.bind(this, myView);
 
+        residentList.setAdapter(new ResidentListAdapter(getActivity(), new ArrayList<Resident>()));
+        residentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                ResidentListAdapter adapter = (ResidentListAdapter) adapterView.getAdapter();
+                Resident resident = (Resident) adapter.getItem(position);
+
+                Intent intent = new Intent(activity, ResidentActivity.class);
+                intent.putExtra(Preferences.resident_idTag, resident.getId());
+                activity.startActivity(intent);
+            }
+        });
+
         try {
             // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
@@ -423,14 +263,15 @@ public class ResidentFragment extends Fragment {
                         locationList = response.body();
 
                         // add a special floor as a representative of all locations
-                        locationList.add(0, new Location("all", "All floors"));
+                        locationList.add(0, new Location("all", "Show All Floors"));
 
-                        // assign data contained in locationList to spinner
+                        // assign data contained in locationList to mapSpinner
                         ArrayAdapter<Location> adapter = new ArrayAdapter<>(activity, R.layout.item_spinner, locationList);
-                        spinner.setAdapter(adapter);
+                        adapter.setDropDownViewResource(R.layout.item_spinner_dropdown);
+                        mapSpinner.setAdapter(adapter);
 
-                        // handle click event on each item in the spinner
-                        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        // handle click event on each item in the mapSpinner
+                        mapSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 try {
@@ -457,7 +298,7 @@ public class ResidentFragment extends Fragment {
                                             }
 
                                             // display sorted resident list as user's expectation basing on the order that user clicks the 3 headers: 'ID', 'Name', 'Location' in the resident list table
-                                            display(new SearchParam(sv.getQuery().toString().trim(), ((Location) spinner.getSelectedItem()).getId(), colName[sortIndex == -1 ? 0 : sortIndex], (sortIndex == -1 || !asc[sortIndex]) ? "asc" : "desc"));
+                                            display(new SearchParam(sv.getQuery().toString().trim(), ((Location) mapSpinner.getSelectedItem()).getId(), colName[sortIndex == -1 ? 0 : sortIndex], (sortIndex == -1 || !asc[sortIndex]) ? "asc" : "desc"));
                                             if (sortIndex == -1) {
                                                 sortIndex = 0;
                                                 asc[0] = false;
@@ -484,60 +325,10 @@ public class ResidentFragment extends Fragment {
                             }
                         });
 
-
-                        for (int i = 0; i < headers.size(); i++) {
-                            final int k = i;
-                            headers.get(i).setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // create an API service and set session token to request header
-                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-                                    // create request object to check session timeout
-                                    Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(activity);
-                                    call.enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                            try {
-                                                // if exception occurs or inconsistent database in server
-                                                if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                    Preferences.dismissLoading();
-                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                                    return;
-                                                }
-
-                                                // if session is expired
-                                                if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                    Preferences.goLogin(activity);
-                                                    return;
-                                                }
-
-                                                // display sorted resident list as user's expectation basing on the table header user clicks
-                                                display(new SearchParam(sv.getQuery().toString().trim(), ((Location) spinner.getSelectedItem()).getId(), colName[k], asc[k] ? "asc" : "desc"));
-                                                asc[k] = !asc[k];
-                                                sortIndex = k;
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                            Preferences.dismissLoading();
-                                            t.printStackTrace();
-                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                                        }
-                                    });
-                                }
-                            });
-                        }
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-
 
                 @Override
                 public void onFailure(Call<List<Location>> call, Throwable t) {

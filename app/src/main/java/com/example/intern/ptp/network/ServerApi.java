@@ -2,7 +2,7 @@ package com.example.intern.ptp.network;
 
 import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.FCM.FCMInfo;
-import com.example.intern.ptp.Location.Location;
+import com.example.intern.ptp.Map.Location;
 import com.example.intern.ptp.Login.LoginInfo;
 import com.example.intern.ptp.Login.LoginResult;
 import com.example.intern.ptp.Resident.Resident;

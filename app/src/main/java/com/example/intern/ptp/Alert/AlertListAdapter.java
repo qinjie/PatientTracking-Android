@@ -34,6 +34,7 @@ public class AlertListAdapter extends BaseAdapter {
     private static final int MAX_RESIDENTS = 4;
     private static int residentNr = 0;
     private HashMap<String, String> residentProfilePics;
+    // TODO END
 
     private final LayoutInflater inflater;
     private final SimpleDateFormat dateParser;
@@ -55,7 +56,9 @@ public class AlertListAdapter extends BaseAdapter {
         solvedAlerts = new ArrayList<>(alerts.size());
 
         dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        // TODO: REMOVE THIS. JUST SEPT2016 DEMO
         residentProfilePics = new HashMap<>();
+        // TODO END
 
         saveAlertsSorted(alerts);
     }
