@@ -14,10 +14,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NearestService extends IntentService {
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     */
-    private ServerApi api;
 
     public NearestService() {
         super("NearestService");
@@ -32,7 +28,7 @@ public class NearestService extends IntentService {
             while (true) {
                 try {
                     // create an API service and set session token to request header
-                    api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                    ServerApi api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
                     // create request object to get information of the resident nearest to the user corresponding to the username
                     Call<Resident> call = api.getNearest(username);

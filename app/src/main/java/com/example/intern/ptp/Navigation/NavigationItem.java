@@ -1,12 +1,12 @@
 package com.example.intern.ptp.Navigation;
 
 public interface NavigationItem {
-    public static final int VIEWTYPE_PROFILE = 0;
-    public static final int VIEWTYPE_PRIMARY = 1;
-    public static final int VIEWTYPE_SECONDARY = 2;
-    public static final int VIEWTYPE_DIVIDER = 3;
+    int VIEWTYPE_PROFILE = 0;
+    int VIEWTYPE_PRIMARY = 1;
+    int VIEWTYPE_SECONDARY = 2;
+    int VIEWTYPE_DIVIDER = 3;
 
-    public String getId();
+    String getId();
 
-    public int getType();
+    int getType();
 }

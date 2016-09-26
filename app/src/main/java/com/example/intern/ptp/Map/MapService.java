@@ -19,7 +19,6 @@ public class MapService extends IntentService {
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      */
-    private ServerApi api;
 
     public MapService() {
         super("MapService");
@@ -37,7 +36,7 @@ public class MapService extends IntentService {
             while (true) {
                 try {
                     // create an API service and set session token to request header
-                    api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                    ServerApi api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
                     // create request object to get pixel positions of all residents and the user corresponding to the above username if they are in the floor which has id equals the above floor id
                     Call<List<Resident>> call = api.getMappoints(floorId, username);
