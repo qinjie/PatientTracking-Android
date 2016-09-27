@@ -96,73 +96,77 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
         final String floorId = args.getString(Preferences.floor_idTag);
         final String url = args.getString(Preferences.floorFilePathTag);
 
+        final Target mapLoadTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                try {
+                    // make the PhotoView reset when re assign bitmap
+                    mImageView.setResetable(true);
+
+                    // set bitmap to the PhotoView
+                    mImageView.setImageBitmap(bitmap);
+
+                    // to be able to get coordinates of the rectangular map's 4 edges and handle zooming event
+                    mAttacher = new PhotoViewAttacher(mImageView);
+                    mAttacher.setOnMatrixChangeListener(mImageView);
+                    mAttacher.setOnViewTapListener(MapFragment.this);
+
+
+                    // create a new intent related to MapService
+                    Intent serviceIntent = new Intent(getActivity(), MapService.class);
+
+                    // put floor id as an extra in the above created intent
+                    serviceIntent.putExtra(Preferences.floor_idTag, floorId);
+
+                    // register a broadcast receiver with the tag equals "Preferences.map_broadcastTag + floorId"
+                    getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
+
+                    // start a new MapService with the intent
+                    getActivity().startService(serviceIntent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Preferences.dismissLoading();
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                try {
+                    // assign a null image to mBitMap when failed loading the map
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
+
+                    mImageView.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Preferences.dismissLoading();
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                try {
+                    // assign a loading image to mBitMap when the map is being loaded
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
+
+                    // set bitmap to the PhotoView
+                    mImageView.setResetable(true);
+
+                    // set bitmap to the PhotoView
+                    mImageView.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+             
+        mImageView.setTag(mapLoadTarget);
+
         try {
             // use Picasso library to load the map
             Picasso.with(getActivity())
                     .load(url)
                     .priority(Picasso.Priority.HIGH)
-                    .into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            try {
-                                // make the PhotoView reset when re assign bitmap
-                                mImageView.setResetable(true);
-
-                                // set bitmap to the PhotoView
-                                mImageView.setImageBitmap(bitmap);
-
-                                // to be able to get coordinates of the rectangular map's 4 edges and handle zooming event
-                                mAttacher = new PhotoViewAttacher(mImageView);
-                                mAttacher.setOnMatrixChangeListener(mImageView);
-                                mAttacher.setOnViewTapListener(MapFragment.this);
-
-
-                                // create a new intent related to MapService
-                                Intent serviceIntent = new Intent(getActivity(), MapService.class);
-
-                                // put floor id as an extra in the above created intent
-                                serviceIntent.putExtra(Preferences.floor_idTag, floorId);
-
-                                // register a broadcast receiver with the tag equals "Preferences.map_broadcastTag + floorId"
-                                getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
-
-                                // start a new MapService with the intent
-                                getActivity().startService(serviceIntent);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            Preferences.dismissLoading();
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-                            try {
-                                // assign a null image to mBitMap when failed loading the map
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
-
-                                mImageView.setImageBitmap(bitmap);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            Preferences.dismissLoading();
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-                            try {
-                                // assign a loading image to mBitMap when the map is being loaded
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
-
-                                // set bitmap to the PhotoView
-                                mImageView.setResetable(true);
-
-                                // set bitmap to the PhotoView
-                                mImageView.setImageBitmap(bitmap);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+                    .into(mapLoadTarget);
         } catch (Exception e) {
             e.printStackTrace();
         }

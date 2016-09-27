@@ -7,12 +7,15 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -49,6 +52,12 @@ public class ResidentActivity extends Activity {
     private Alert alert;
     List<Fragment> fragments = new ArrayList<>();
 
+    @BindView(R.id.resident_progress_indicator)
+    ProgressBar progressIndicator;
+
+    @BindView(R.id.resident_content)
+    View contentView;
+
     @BindView(R.id.resident_alert_layout)
     RelativeLayout alertLayout;
 
@@ -63,6 +72,9 @@ public class ResidentActivity extends Activity {
 
     @BindView(R.id.resident_time)
     TextView alertTime;
+
+    @BindView(R.id.resident_profile_picture)
+    ImageView profilePicture;
 
     @BindView(R.id.resident_firstname)
     TextView firstName;
@@ -92,16 +104,13 @@ public class ResidentActivity extends Activity {
         bus.register(this);
 
         toggleGroup.setOnCheckedChangeListener(toggleListener);
+        refreshView();
+    }
 
-        Bundle bundle = getIntent().getExtras();
+    private void refreshView() {
+        progressIndicator.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.INVISIBLE);
 
-        if (bundle == null) {
-            return;
-        }
-
-        alert = (Alert) bundle.get(Preferences.BUNDLE_KEY_ALERT);
-
-        showAlert(alert);
         ResidentService service = ResidentService.getService();
         service.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
     }
@@ -246,6 +255,17 @@ public class ResidentActivity extends Activity {
     public void onResidentRefresh(Resident resident) {
         this.resident = resident;
 
+        // TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
+        String pictureName = "profile" + resident.getId();
+        Drawable image = getDrawable(getResources().getIdentifier(pictureName, "drawable", getPackageName()));
+
+        if (image == null) {
+            image = getDrawable(getResources().getIdentifier("profile_default", "drawable", getPackageName()));
+        }
+
+        profilePicture.setImageDrawable(image);
+        // TODO END
+
         firstName.setText(resident.getFirstname());
         lastName.setText(resident.getLastname());
         nric.setText(resident.getNric());
@@ -277,6 +297,9 @@ public class ResidentActivity extends Activity {
                 }
             }
         }
+
+        progressIndicator.setVisibility(View.INVISIBLE);
+        contentView.setVisibility(View.VISIBLE);
     }
 
     @Override

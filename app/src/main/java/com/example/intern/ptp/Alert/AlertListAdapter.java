@@ -30,12 +30,6 @@ import butterknife.ButterKnife;
 
 public class AlertListAdapter extends BaseAdapter {
 
-    // TODO: REMOVE THIS. JUST SEPT2016 DEMO
-    private static final int MAX_RESIDENTS = 4;
-    private static int residentNr = 0;
-    private HashMap<String, String> residentProfilePics;
-    // TODO END
-
     private final LayoutInflater inflater;
     private final SimpleDateFormat dateParser;
 
@@ -56,9 +50,6 @@ public class AlertListAdapter extends BaseAdapter {
         solvedAlerts = new ArrayList<>(alerts.size());
 
         dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        // TODO: REMOVE THIS. JUST SEPT2016 DEMO
-        residentProfilePics = new HashMap<>();
-        // TODO END
 
         saveAlertsSorted(alerts);
     }
@@ -209,15 +200,13 @@ public class AlertListAdapter extends BaseAdapter {
                 }
 
                 //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
-                String profilePicture = residentProfilePics.get(alert.getResidentId());
+                String profilePicture = "profile" + alert.getResidentId();
+                Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
 
-                if (profilePicture == null) {
-                    profilePicture = "resident" + (residentNr % MAX_RESIDENTS);
-                    residentProfilePics.put(alert.getResidentId(), profilePicture);
-                    residentNr++;
+                if(image == null) {
+                    image = context.getDrawable(context.getResources().getIdentifier("profile_default", "drawable", context.getPackageName()));
                 }
 
-                Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
                 holder.profilePicture.setImageDrawable(image);
                 // TODO END
 

@@ -20,12 +20,6 @@ import butterknife.ButterKnife;
 
 public class ResidentListAdapter extends BaseAdapter {
 
-    // TODO: REMOVE THIS. JUST SEPT2016 DEMO
-    private static final int MAX_RESIDENTS = 4;
-    private static int residentNr = 0;
-    private HashMap<String, String> residentProfilePics;
-    // TODO END
-
     private LayoutInflater inflater;
     private Context context;
     private List<Resident> items;
@@ -34,10 +28,6 @@ public class ResidentListAdapter extends BaseAdapter {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.items = residents;
-
-        // TODO: REMOVE THIS. JUST SEPT2016 DEMO
-        residentProfilePics = new HashMap<>();
-        // TODO END
     }
 
     @Override
@@ -73,17 +63,16 @@ public class ResidentListAdapter extends BaseAdapter {
         holder.location.setText(resident.getLabel());
 
         //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
-        String profilePicture = residentProfilePics.get(resident.getId());
+        String profilePicture = "profile" + resident.getId();
+        Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
 
-        if (profilePicture == null) {
-            profilePicture = "resident" + (residentNr % MAX_RESIDENTS);
-            residentProfilePics.put(resident.getId(), profilePicture);
-            residentNr++;
+        if(image == null) {
+            image = context.getDrawable(context.getResources().getIdentifier("profile_default", "drawable", context.getPackageName()));
         }
 
-        Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
         holder.profilePicture.setImageDrawable(image);
         // TODO END
+
 
         return view;
     }

@@ -1,242 +1,256 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusableInTouchMode="true">
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/resident_progress_indicator"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal" />
 
     <RelativeLayout
-        android:id="@+id/resident_alert_layout"
+        android:id="@+id/resident_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/red"
-        android:padding="8dp"
-        android:visibility="gone">
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:visibility="invisible">
 
-        <Button
-            android:id="@+id/resident_take_care_button"
+        <RelativeLayout
+            android:id="@+id/resident_alert_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/red"
+            android:padding="8dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/resident_take_care_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="@string/btn_take_care" />
+
+            <TextView
+                android:id="@+id/resident_location_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:text="@string/fa_map"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/resident_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/resident_location_icon"
+                android:text="B1-5"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/resident_time_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@id/resident_location"
+                android:text="@string/fa_clock_o"
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/resident_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/resident_time_icon"
+                android:layout_toStartOf="@id/resident_take_care_button"
+                android:text="4 minutes ago"
+                android:textColor="@color/white"
+
+                />
+
+
+        </RelativeLayout>
+
+        <com.example.intern.ptp.views.widgets.RoundedImageView
+            android:id="@+id/resident_profile_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/resident_alert_layout"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/resident_profile_picture_description"
+            android:src="@drawable/loading_image" />
+
+
+        <LinearLayout
+            android:id="@+id/resident_firstname_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/resident_profile_picture"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/resident_profile_picture"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/resident_firstname_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="@string/firstname" />
+
+            <TextView
+                android:id="@+id/resident_firstname"
+                style="@style/TextAppearance.Content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Angela" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/resident_lastname_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="@string/btn_take_care" />
+            android:layout_alignTop="@id/resident_firstname_layout"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/resident_firstname_layout"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/resident_lastname_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lastname" />
+
+            <TextView
+                android:id="@+id/resident_lastname"
+                style="@style/TextAppearance.Content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Merkel" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/resident_location_icon"
+            android:id="@+id/resident_nric_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="8dp"
-            android:text="@string/fa_map"
-            android:textColor="@color/white" />
+            android:layout_alignEnd="@id/resident_lastname_layout"
+            android:layout_alignStart="@id/resident_firstname_layout"
+            android:layout_below="@id/resident_firstname_layout"
+            android:layout_marginTop="10dp"
+            android:text="@string/nric" />
 
         <TextView
-            android:id="@+id/resident_location"
+            android:id="@+id/resident_nric"
+            style="@style/TextAppearance.Content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@id/resident_location_icon"
-            android:text="B1-5"
-            android:textColor="@color/white" />
+            android:layout_alignEnd="@id/resident_nric_label"
+            android:layout_alignStart="@id/resident_nric_label"
+            android:layout_below="@id/resident_nric_label"
+            android:text="SG13245823" />
 
         <TextView
-            android:id="@+id/resident_time_icon"
+            android:id="@+id/resident_birthday_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="10dp"
-            android:layout_toEndOf="@id/resident_location"
-            android:text="@string/fa_clock_o"
-            android:textColor="@color/white" />
+            android:layout_alignEnd="@id/resident_nric"
+            android:layout_alignStart="@id/resident_nric"
+            android:layout_below="@id/resident_nric"
+            android:layout_marginTop="10dp"
+            android:text="@string/birthday" />
 
         <TextView
-            android:id="@+id/resident_time"
+            android:id="@+id/resident_birthday"
+            style="@style/TextAppearance.Content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@id/resident_time_icon"
-            android:layout_toStartOf="@id/resident_take_care_button"
-            android:text="4 minutes ago"
-            android:textColor="@color/white"
+            android:layout_alignEnd="@id/resident_birthday_label"
+            android:layout_alignStart="@id/resident_birthday_label"
+            android:layout_below="@id/resident_birthday_label"
+            android:text="Jun 11, 1940" />
 
-            />
+        <TextView
+            android:id="@+id/resident_remark_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/resident_birthday"
+            android:layout_alignStart="@id/resident_birthday"
+            android:layout_below="@id/resident_birthday"
+            android:layout_marginTop="10dp"
+            android:text="@string/remark" />
 
+        <TextView
+            android:id="@+id/resident_remark"
+            style="@style/TextAppearance.Content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/resident_remark_label"
+            android:layout_alignStart="@id/resident_remark_label"
+            android:layout_below="@id/resident_remark_label"
+            android:text="Early stage Dementia; allergic to Panadol." />
 
+        <RadioGroup
+            android:id="@+id/resident_view_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/resident_lastname_layout"
+            android:layout_alignStart="@id/resident_profile_picture"
+            android:layout_below="@id/resident_remark"
+            android:layout_marginTop="16dp"
+            android:gravity="fill_vertical"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/resident_map_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:checked="true"
+                android:onClick="onToggle"
+                android:textOff="@string/map"
+                android:textOn="@string/map" />
+
+            <ToggleButton
+                android:id="@+id/resident_alert_history_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="onToggle"
+                android:textOff="@string/alert_history"
+                android:textOn="@string/alert_history" />
+
+            <ToggleButton
+                android:id="@+id/resident_next_of_kin_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:onClick="onToggle"
+                android:textOff="@string/next_of_kin"
+                android:textOn="@string/next_of_kin" />
+        </RadioGroup>
+
+        <View
+            android:id="@+id/resident_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@id/resident_view_toggle"
+            android:layout_marginTop="10dp"
+            android:background="@color/light_grey" />
+
+        <FrameLayout
+            android:id="@+id/resident_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/resident_divider" />
     </RelativeLayout>
-
-    <com.example.intern.ptp.views.widgets.RoundedImageView
-        android:id="@+id/resident_profile_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/resident_alert_layout"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/resident_profile_picture_description"
-        android:src="@drawable/resident0" />
-
-
-    <LinearLayout
-        android:id="@+id/resident_firstname_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/resident_profile_picture"
-        android:layout_marginStart="16dp"
-        android:layout_toEndOf="@id/resident_profile_picture"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/resident_firstname_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:text="@string/firstname" />
-
-        <TextView
-            android:id="@+id/resident_firstname"
-            style="@style/TextAppearance.Content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Angela" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/resident_lastname_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@id/resident_firstname_layout"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_toEndOf="@id/resident_firstname_layout"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/resident_lastname_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lastname" />
-
-        <TextView
-            android:id="@+id/resident_lastname"
-            style="@style/TextAppearance.Content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Merkel" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/resident_nric_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_lastname_layout"
-        android:layout_alignStart="@id/resident_firstname_layout"
-        android:layout_below="@id/resident_firstname_layout"
-        android:layout_marginTop="10dp"
-        android:text="@string/nric" />
-
-    <TextView
-        android:id="@+id/resident_nric"
-        style="@style/TextAppearance.Content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_nric_label"
-        android:layout_alignStart="@id/resident_nric_label"
-        android:layout_below="@id/resident_nric_label"
-        android:text="SG13245823" />
-
-    <TextView
-        android:id="@+id/resident_birthday_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_nric"
-        android:layout_alignStart="@id/resident_nric"
-        android:layout_below="@id/resident_nric"
-        android:layout_marginTop="10dp"
-        android:text="@string/birthday" />
-
-    <TextView
-        android:id="@+id/resident_birthday"
-        style="@style/TextAppearance.Content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_birthday_label"
-        android:layout_alignStart="@id/resident_birthday_label"
-        android:layout_below="@id/resident_birthday_label"
-        android:text="Jun 11, 1940" />
-
-    <TextView
-        android:id="@+id/resident_remark_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_birthday"
-        android:layout_alignStart="@id/resident_birthday"
-        android:layout_below="@id/resident_birthday"
-        android:layout_marginTop="10dp"
-        android:text="@string/remark" />
-
-    <TextView
-        android:id="@+id/resident_remark"
-        style="@style/TextAppearance.Content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_remark_label"
-        android:layout_alignStart="@id/resident_remark_label"
-        android:layout_below="@id/resident_remark_label"
-        android:text="Early stage Dementia; allergic to Panadol." />
-
-    <RadioGroup
-        android:id="@+id/resident_view_toggle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@id/resident_lastname_layout"
-        android:layout_alignStart="@id/resident_profile_picture"
-        android:layout_below="@id/resident_remark"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-        <ToggleButton
-            android:id="@+id/resident_map_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:onClick="onToggle"
-            android:textOff="@string/map"
-            android:textOn="@string/map" />
-
-        <ToggleButton
-            android:id="@+id/resident_alert_history_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="onToggle"
-            android:textOff="@string/alert_history"
-            android:textOn="@string/alert_history" />
-
-        <ToggleButton
-            android:id="@+id/resident_next_of_kin_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="onToggle"
-            android:textOff="@string/next_of_kin"
-            android:textOn="@string/next_of_kin" />
-    </RadioGroup>
-
-    <View
-        android:id="@+id/resident_divider"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_below="@id/resident_view_toggle"
-        android:layout_marginTop="10dp"
-        android:background="@color/light_grey" />
-
-    <FrameLayout
-        android:id="@+id/resident_fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/resident_divider" />
-
-</RelativeLayout>
+</FrameLayout>
