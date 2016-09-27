@@ -66,7 +66,6 @@ public class RoundedImageView extends ImageView {
                 Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
 
-        final int color = 0xffa19774;
         final Paint paint = new Paint(FILTER_BITMAP_FLAG);
         final Rect rect = new Rect(0, 0, radius, radius);
 
@@ -80,10 +79,10 @@ public class RoundedImageView extends ImageView {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(sbmp, rect, rect, paint);
 
-
         final Paint circlePaint = new Paint();
         circlePaint.setColor(Color.parseColor("#cccccc"));
         circlePaint.setStyle(Paint.Style.STROKE);
+        circlePaint.setAntiAlias(true);
         canvas.drawCircle(radius / 2,
                 radius / 2, radius / 2, circlePaint);
 

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.internal.widget.ThemeUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +33,7 @@ public class AlertListAdapter extends BaseAdapter {
     // TODO: REMOVE THIS. JUST SEPT2016 DEMO
     private static final int MAX_RESIDENTS = 4;
     private static int residentNr = 0;
-    private HashMap<String, String> residentProfilePics = new HashMap();
+    private HashMap<String, String> residentProfilePics;
 
     private final LayoutInflater inflater;
     private final SimpleDateFormat dateParser;
@@ -46,8 +45,8 @@ public class AlertListAdapter extends BaseAdapter {
     private static final int ONGOING_LABEL_ITEM_COUNT = 1;
     private static final int SOLVED_LABEL_ITEM_COUNT = 1;
 
-    private static final int VIEWTYPE_LABEL = 0;
-    private static final int VIEWTYPE_ALERT = 1;
+    private static final int VIEW_TYPE_LABEL = 0;
+    private static final int VIEW_TYPE_ALERT = 1;
 
     public AlertListAdapter(Context context, List<Alert> alerts) {
         this.context = context;
@@ -56,6 +55,7 @@ public class AlertListAdapter extends BaseAdapter {
         solvedAlerts = new ArrayList<>(alerts.size());
 
         dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        residentProfilePics = new HashMap<>();
 
         saveAlertsSorted(alerts);
     }
@@ -108,11 +108,11 @@ public class AlertListAdapter extends BaseAdapter {
     @Override
     public int getItemViewType(int position) {
         if (position == 0) {
-            return VIEWTYPE_LABEL;
+            return VIEW_TYPE_LABEL;
         } else if (ongoingAlerts.size() > 0 && position == ONGOING_LABEL_ITEM_COUNT + ongoingAlerts.size()) {
-            return VIEWTYPE_LABEL;
+            return VIEW_TYPE_LABEL;
         } else {
-            return VIEWTYPE_ALERT;
+            return VIEW_TYPE_ALERT;
         }
     }
 
@@ -126,7 +126,7 @@ public class AlertListAdapter extends BaseAdapter {
         Resources res = context.getResources();
 
         switch (getItemViewType(position)) {
-            case VIEWTYPE_LABEL: {
+            case VIEW_TYPE_LABEL: {
                 LabelViewHolder holder;
 
                 if (view != null && view.getTag() instanceof LabelViewHolder) {
@@ -142,7 +142,7 @@ public class AlertListAdapter extends BaseAdapter {
                 }
 
                 if (position == 0 && ongoingAlerts.size() > 0) {
-                    holder.icon.setText(    res.getString(R.string.fa_icon_bell));
+                    holder.icon.setText(    res.getString(R.string.fa_bell));
                     holder.icon.setTextColor(ContextCompat.getColor(context, R.color.red));
 
                     String text = String.format(Locale.getDefault(), res.getString(R.string.alerts_alert_ongoing_alerts), ongoingAlerts.size());
@@ -158,7 +158,7 @@ public class AlertListAdapter extends BaseAdapter {
                 break;
             }
 
-            case VIEWTYPE_ALERT: {
+            case VIEW_TYPE_ALERT: {
                 AlertViewHolder holder;
 
                 if (view != null && view.getTag() instanceof AlertViewHolder) {
@@ -167,6 +167,7 @@ public class AlertListAdapter extends BaseAdapter {
                     view = inflater.inflate(R.layout.item_alerts_alert, parent, false);
                     holder = new AlertViewHolder(view);
                     view.setTag(holder);
+                    holder.tookCareOfIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                     holder.locationIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                     holder.timeIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
                 }
@@ -175,6 +176,15 @@ public class AlertListAdapter extends BaseAdapter {
 
                 String title = String.format(Locale.getDefault(), res.getString(R.string.alert_title), alert.getFirstname(), alert.getLastname());
                 holder.title.setText(title);
+
+                if(alert.getUsername() != null) {
+                    holder.tookCareOfIcon.setVisibility(View.VISIBLE);
+                    holder.tookCareOf.setVisibility(View.VISIBLE);
+                    holder.tookCareOf.setText(alert.getUsername());
+                } else {
+                    holder.tookCareOfIcon.setVisibility(View.GONE);
+                    holder.tookCareOf.setVisibility(View.GONE);
+                }
 
                 holder.location.setText(alert.getLastPositionLabel());
 
@@ -270,6 +280,10 @@ public class AlertListAdapter extends BaseAdapter {
         ImageView profilePicture;
         @BindView(R.id.alerts_alert_title)
         TextView title;
+        @BindView(R.id.alert_alert_took_care_by_icon)
+        TextView tookCareOfIcon;
+        @BindView(R.id.alert_alert_took_care_by)
+        TextView tookCareOf;
         @BindView(R.id.alerts_alert_location_icon)
         TextView locationIcon;
         @BindView(R.id.alerts_alert_location)

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="fa_icon_bell">&#xf0f3;</string>
-    <string name="fa_icon_map">&#xf279;</string>
-    <string name="fa_icon_users">&#xf0c0;</string>
+    <string name="fa_bell">&#xf0f3;</string>
     <string name="fa_check_square">&#xf14a;</string>
     <string name="fa_clock_o">&#xf017;</string>
+    <string name="fa_envelope">&#xf0e0;</string>
+    <string name="fa_heart">&#xf004;</string>
+    <string name="fa_map">&#xf279;</string>
+    <string name="fa_phone_square">&#xf098;</string>
+    <string name="fa_users">&#xf0c0;</string>
 </resources>

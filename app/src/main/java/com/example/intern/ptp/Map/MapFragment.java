@@ -1,216 +1,202 @@
 package com.example.intern.ptp.Map;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 
-import com.example.intern.ptp.Location.Location;
+import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.Resident.Resident;
+import com.example.intern.ptp.Resident.ResidentActivity;
+import com.example.intern.ptp.views.widgets.LocatorMapPhotoView;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTapListener {
 
-    @BindView(R.id.mapListView)
-    ListView mapListView;
+    @BindView(R.id.iv_photo)
+    LocatorMapPhotoView mImageView;
 
-    private MapListAdapter adapter;
-    private Activity activity;
-    private ServerApi api;
+    @BindView(R.id.map_layout)
+    RelativeLayout layout;
 
-    public MapFragment() {
-        // Required empty public constructor
-    }
+    private PhotoViewAttacher mAttacher;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    /**
+     * create BroadcastReceiver to receive broadcast data from MapService
+     */
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
 
-        super.onCreate(savedInstanceState);
-        activity = this.getActivity();
+            try {
+                // get result with Preferences.map_resultTag from MapService's broadcast intent
+                String result = intent.getStringExtra(Preferences.map_resultTag);
 
-        // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
-        Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
-    }
+                // if exception occurs or inconsistent database in server
+                if (result.equalsIgnoreCase("failed")) {
+                    Preferences.kill(getActivity(), ":mapservice");
+                    Preferences.showDialog(context, "Server Error", "Please try again!");
+                    return;
+                }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // Indicate that this fragment would like to influence the set of actions in the action bar.
-        setHasOptionsMenu(true);
-    }
+                // if connection is failed
+                if (result.equalsIgnoreCase("connection_failure")) {
+                    Preferences.kill(getActivity(), ":mapservice");
+                    Preferences.showDialog(getActivity(), "Connection Failure", "Please check your network and try again!");
+                    return;
+                }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        try {
-            inflater.inflate(R.menu.menu_fragment_map, menu);
-            ActionBar actionBar = activity.getActionBar();
-            if (actionBar != null) {
-                // set title for action bar and display it
-                actionBar.setDisplayShowTitleEnabled(true);
-                actionBar.setTitle(getString(R.string.title_fragment_map));
+                // if session is expired
+                if (!result.equalsIgnoreCase("isNotExpired")) {
+                    Preferences.kill(getActivity(), ":mapservice");
+                    Preferences.goLogin(context);
+                    return;
+                }
+
+                // if successfully receive map points from server
+                List<Resident> residentList = intent.getParcelableArrayListExtra(Preferences.map_pointsTag);
+                mImageView.setResidents(residentList);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+    };
 
-        super.onCreateOptionsMenu(menu, inflater);
-    }
 
+    @Nullable
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        try {
-            int id = item.getItemId();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-            switch (id) {
-                case R.id.action_refresh_fragment_map:
-                    activity.recreate();
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+        View view = inflater.inflate(R.layout.fragment_map, null);
+        ButterKnife.bind(this, view);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_map, container, false);
-        ButterKnife.bind(this, myView);
+        Bundle args = getArguments();
 
-        adapter = new MapListAdapter(activity, new ArrayList<Location>());
-        mapListView.setAdapter(adapter);
+        final String floorId = args.getString(Preferences.floor_idTag);
+        final String url = args.getString(Preferences.floorFilePathTag);
 
         try {
-             // create an API service and set session token to request header
-            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            // use Picasso library to load the map
+            Picasso.with(getActivity())
+                    .load(url)
+                    .priority(Picasso.Priority.HIGH)
+                    .into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            try {
+                                // make the PhotoView reset when re assign bitmap
+                                mImageView.setResetable(true);
 
-            // create request object to get all floors' basic information
-            Call<List<Location>> call = api.getFloors();
-            Preferences.showLoading(activity);
-            call.enqueue(new Callback<List<Location>>() {
-                @Override
-                public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
-                    try {
-                        // if exception occurs or inconsistent database in server
-                        if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
-                            Preferences.showDialog(activity, "Server Error", "Please try again !");
-                            return;
-                        }
+                                // set bitmap to the PhotoView
+                                mImageView.setImageBitmap(bitmap);
 
-                        // if session is expired
-                        if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(activity);
-                            return;
-                        }
+                                // to be able to get coordinates of the rectangular map's 4 edges and handle zooming event
+                                mAttacher = new PhotoViewAttacher(mImageView);
+                                mAttacher.setOnMatrixChangeListener(mImageView);
+                                mAttacher.setOnViewTapListener(MapFragment.this);
 
-                        // assign data contained in mapList to mapListView
-                        adapter.updateLocations(response.body());
 
-                        // handle click event on each list view item
-                        mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Preferences.showLoading(activity);
+                                // create a new intent related to MapService
+                                Intent serviceIntent = new Intent(getActivity(), MapService.class);
 
-                                // create an API service and set session token to request header
-                                api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                                // put floor id as an extra in the above created intent
+                                serviceIntent.putExtra(Preferences.floor_idTag, floorId);
 
-                                // create request object to check session timeout
-                                Call<ResponseBody> call = api.getCheck();
-                                final int pos = position;
-                                call.enqueue(new Callback<ResponseBody>() {
-                                    @Override
-                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                        try {
-                                            // if exception occurs or inconsistent database in server
-                                            if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                Preferences.dismissLoading();
-                                                Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                                return;
-                                            }
+                                // register a broadcast receiver with the tag equals "Preferences.map_broadcastTag + floorId"
+                                getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
 
-                                            // if session is expired
-                                            if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                Preferences.goLogin(activity);
-                                                return;
-                                            }
-
-                                            // create a new intent related to MapActivity
-                                            Intent intent = new Intent(activity, MapActivity.class);
-                                            Location location = (Location) adapter.getItem(pos);
-
-                                            // put floor's file path of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floorFileParthTag, location.getFilePath());
-
-                                            // put floor id of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floor_idTag, location.getId());
-
-                                            // put floor's label of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floor_labelTag, location.getLabel());
-
-                                            // start a new MapActivity with the intent
-                                            activity.startActivity(intent);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                        Preferences.dismissLoading();
-                                        t.printStackTrace();
-                                        Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                                    }
-                                });
-
+                                // start a new MapService with the intent
+                                getActivity().startService(serviceIntent);
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                        });
+                            Preferences.dismissLoading();
+                        }
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Preferences.dismissLoading();
-                }
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+                            try {
+                                // assign a null image to mBitMap when failed loading the map
+                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
 
-                @Override
-                public void onFailure(Call<List<Location>> call, Throwable t) {
-                    Preferences.dismissLoading();
-                    t.printStackTrace();
-                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                }
-            });
+                                mImageView.setImageBitmap(bitmap);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            Preferences.dismissLoading();
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            try {
+                                // assign a loading image to mBitMap when the map is being loaded
+                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
+
+                                // set bitmap to the PhotoView
+                                mImageView.setResetable(true);
+
+                                // set bitmap to the PhotoView
+                                mImageView.setImageBitmap(bitmap);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return myView;
+
+        return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            // unregister the broadcast receiver when the activity is destroyed
+            getActivity().unregisterReceiver(mMessageReceiver);
+
+            // kill MapService process
+            Preferences.kill(getActivity(), ":mapservice");
+
+            // clean up the map
+            if (mAttacher != null) mAttacher.cleanup();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onViewTap(View view, float x, float y) {
+        PointF touchPoint = new PointF(x,y);
+
+        Resident resident = mImageView.getTouchedResident(touchPoint);
+
+        if(resident != null) {
+            Intent intent = new Intent(getActivity(), ResidentActivity.class);
+            intent.putExtra(Preferences.resident_idTag, resident.getId());
+            this.startActivityForResult(intent, 0);
+        }
     }
 }

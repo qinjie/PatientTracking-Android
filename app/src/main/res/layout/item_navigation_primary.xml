@@ -15,7 +15,7 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:textSize="18sp"
-        android:text="@string/fa_icon_bell" />
+        android:text="@string/fa_bell" />
 
     <TextView
         android:id="@+id/navigation_primary_label"
