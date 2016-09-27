@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
-import com.example.intern.ptp.Alert.AlertFragment;
+import com.example.intern.ptp.Alert.AlertListFragment;
 import com.example.intern.ptp.Map.MapListFragment;
 import com.example.intern.ptp.Nearest.NearestFragment;
 import com.example.intern.ptp.Preferences;
@@ -54,7 +54,7 @@ public class NavigationActivity extends Activity
 
         switch (position) {
             case 2: {
-                fragment = new AlertFragment();
+                fragment = new AlertListFragment();
                 break;
             }
             case 3: {
@@ -78,7 +78,7 @@ public class NavigationActivity extends Activity
                 return;
             }
             default:
-                fragment = new AlertFragment();
+                fragment = new AlertListFragment();
                 break;
         }
         // set up selected fragment

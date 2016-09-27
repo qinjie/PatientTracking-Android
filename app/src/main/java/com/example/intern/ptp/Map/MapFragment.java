@@ -158,7 +158,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                 }
             }
         };
-             
+
         mImageView.setTag(mapLoadTarget);
 
         try {

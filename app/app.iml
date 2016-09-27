@@ -146,7 +146,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-storage-common/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.firebase/firebase-storage/9.6.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.jakewharton/butterknife/8.4.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/info.hoang8f/android-segmented/1.0.6/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
@@ -200,7 +199,6 @@
     <orderEntry type="library" exported="" name="play-services-tasks-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-lite-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-awareness-9.6.1" level="project" />
-    <orderEntry type="library" exported="" name="android-segmented-1.0.6" level="project" />
     <orderEntry type="library" exported="" name="play-services-auth-9.6.1" level="project" />
     <orderEntry type="library" exported="" name="butterknife-annotations-8.4.0" level="project" />
     <orderEntry type="library" exported="" name="butterknife-8.4.0" level="project" />
