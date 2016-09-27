@@ -63,7 +63,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
             Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Preferences.notify_idTag, alert.getId());
+            intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
             // create pendding intent for the notification
             PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notification_id, intent,

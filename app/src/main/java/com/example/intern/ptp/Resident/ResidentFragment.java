@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 
@@ -35,6 +36,12 @@ import retrofit2.Response;
 
 public class ResidentFragment extends Fragment {
     private SearchView sv;
+
+    @BindView(R.id.resident_progress_indicator)
+    ProgressBar progressIndicator;
+
+    @BindView(R.id.resident_content)
+    View contentView;
 
     @BindView(R.id.resident_list)
     ListView residentList;
@@ -65,7 +72,6 @@ public class ResidentFragment extends Fragment {
                     try {
                         // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
                             Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
@@ -82,15 +88,16 @@ public class ResidentFragment extends Fragment {
                         ResidentListAdapter adapter = (ResidentListAdapter) residentList.getAdapter();
                         adapter.setResidents(residents);
 
+                        progressIndicator.setVisibility(View.INVISIBLE);
+                        contentView.setVisibility(View.VISIBLE);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Preferences.dismissLoading();
                 }
 
                 @Override
                 public void onFailure(Call<List<Resident>> call, Throwable t) {
-                    Preferences.dismissLoading();
                     t.printStackTrace();
                     Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                 }
@@ -146,14 +153,12 @@ public class ResidentFragment extends Fragment {
 
                         // create request object to check session timeout
                         Call<ResponseBody> call = api.getCheck();
-                        Preferences.showLoading(activity);
                         call.enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 try {
                                     // if exception occurs or inconsistent database in server
                                     if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                        Preferences.dismissLoading();
                                         Preferences.showDialog(activity, "Server Error", "Please try again !");
                                         return;
                                     }
@@ -169,13 +174,11 @@ public class ResidentFragment extends Fragment {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-                                Preferences.dismissLoading();
                             }
 
                             @Override
                             public void onFailure(Call<ResponseBody> call, Throwable t) {
                                 t.printStackTrace();
-                                Preferences.dismissLoading();
                                 Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                             }
                         });
@@ -235,20 +238,21 @@ public class ResidentFragment extends Fragment {
             }
         });
 
+        progressIndicator.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.INVISIBLE);
+
         try {
             // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             // create request object to get all floors' basic information
             Call<List<Location>> call = api.getFloors();
-            Preferences.showLoading(activity);
             call.enqueue(new Callback<List<Location>>() {
                 @Override
                 public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
                     try {
                         // if exception occurs or inconsistent database in server
                         if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
                             Preferences.showDialog(activity, "Server Error", "Please try again !");
                             return;
                         }
@@ -280,13 +284,11 @@ public class ResidentFragment extends Fragment {
 
                                     // create request object to check session timeout
                                     Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(activity);
                                     call.enqueue(new Callback<ResponseBody>() {
                                         @Override
                                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                             // if exception occurs or inconsistent database in server
                                             if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                Preferences.dismissLoading();
                                                 Preferences.showDialog(activity, "Server Error", "Please try again !");
                                                 return;
                                             }
@@ -307,7 +309,6 @@ public class ResidentFragment extends Fragment {
 
                                         @Override
                                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                            Preferences.dismissLoading();
                                             t.printStackTrace();
                                             Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                                         }
@@ -332,7 +333,6 @@ public class ResidentFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<List<Location>> call, Throwable t) {
-                    Preferences.dismissLoading();
                     t.printStackTrace();
                     Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
                 }

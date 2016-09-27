@@ -20,6 +20,7 @@ import com.example.intern.ptp.utils.FontManager;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public class AlertListAdapter extends BaseAdapter {
     private Context context;
     private List<Alert> ongoingAlerts;
     private List<Alert> solvedAlerts;
+    private List<String> alertTypes;
 
     private static final int ONGOING_LABEL_ITEM_COUNT = 1;
     private static final int SOLVED_LABEL_ITEM_COUNT = 1;
@@ -46,11 +48,12 @@ public class AlertListAdapter extends BaseAdapter {
     public AlertListAdapter(Context context, List<Alert> alerts) {
         this.context = context;
         inflater = LayoutInflater.from(context);
+        alertTypes = Arrays.asList(context.getResources().getStringArray(R.array.alert_types));
+
         ongoingAlerts = new ArrayList<>(alerts.size());
         solvedAlerts = new ArrayList<>(alerts.size());
 
         dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-
         saveAlertsSorted(alerts);
     }
 
@@ -171,6 +174,8 @@ public class AlertListAdapter extends BaseAdapter {
                 String title = String.format(Locale.getDefault(), res.getString(R.string.alert_title), alert.getFirstname(), alert.getLastname());
                 holder.title.setText(title);
 
+                holder.type.setText(alertTypes.get(Integer.parseInt(alert.getType())));
+
                 if (alert.getUsername() != null) {
                     holder.tookCareOfIcon.setVisibility(View.VISIBLE);
                     holder.tookCareOf.setVisibility(View.VISIBLE);
@@ -204,7 +209,7 @@ public class AlertListAdapter extends BaseAdapter {
                 Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
 
                 if(image == null) {
-                    image = context.getDrawable(context.getResources().getIdentifier("profile_default", "drawable", context.getPackageName()));
+                    image = context.getDrawable(context.getResources().getIdentifier("profile31", "drawable", context.getPackageName()));
                 }
 
                 holder.profilePicture.setImageDrawable(image);
@@ -272,6 +277,8 @@ public class AlertListAdapter extends BaseAdapter {
         ImageView profilePicture;
         @BindView(R.id.alerts_alert_title)
         TextView title;
+        @BindView(R.id.alerts_alert_type)
+        TextView type;
         @BindView(R.id.alert_alert_took_care_by_icon)
         TextView tookCareOfIcon;
         @BindView(R.id.alert_alert_took_care_by)

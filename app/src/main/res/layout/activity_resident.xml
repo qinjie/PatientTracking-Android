@@ -25,9 +25,9 @@
             <RelativeLayout
                 android:id="@+id/resident_alert_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:background="@color/red"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:visibility="gone">
 
                 <Button
@@ -35,15 +35,27 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="12dp"
                     android:text="@string/btn_take_care" />
+
+                <TextView
+                    android:id="@+id/resident_alert_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="12dp"
+                    android:text="Went out of ward"
+                    android:layout_marginTop="4dp"
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/resident_location_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="8dp"
+                    android:layout_below="@id/resident_alert_type"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="2dp"
                     android:text="@string/fa_map"
                     android:textColor="@color/white" />
 
@@ -51,7 +63,7 @@
                     android:id="@+id/resident_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:layout_below="@id/resident_alert_type"
                     android:layout_marginStart="5dp"
                     android:layout_toEndOf="@id/resident_location_icon"
                     android:text="B1-5"
@@ -61,8 +73,9 @@
                     android:id="@+id/resident_time_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:layout_below="@id/resident_alert_type"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="2dp"
                     android:layout_toEndOf="@id/resident_location"
                     android:text="@string/fa_clock_o"
                     android:textColor="@color/white" />
@@ -71,7 +84,7 @@
                     android:id="@+id/resident_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
+                    android:layout_below="@id/resident_alert_type"
                     android:layout_marginStart="5dp"
                     android:layout_toEndOf="@id/resident_time_icon"
                     android:layout_toStartOf="@id/resident_take_care_button"
@@ -85,8 +98,8 @@
 
             <com.example.intern.ptp.views.widgets.RoundedImageView
                 android:id="@+id/resident_profile_picture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_below="@id/resident_alert_layout"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
@@ -144,32 +157,12 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/resident_nric_label"
+                android:id="@+id/resident_birthday_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/resident_lastname_layout"
                 android:layout_alignStart="@id/resident_firstname_layout"
-                android:layout_below="@id/resident_firstname_layout"
-                android:layout_marginTop="10dp"
-                android:text="@string/nric" />
-
-            <TextView
-                android:id="@+id/resident_nric"
-                style="@style/TextAppearance.Content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/resident_nric_label"
-                android:layout_alignStart="@id/resident_nric_label"
-                android:layout_below="@id/resident_nric_label"
-                android:text="SG13245823" />
-
-            <TextView
-                android:id="@+id/resident_birthday_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/resident_nric"
-                android:layout_alignStart="@id/resident_nric"
-                android:layout_below="@id/resident_nric"
+                android:layout_below="@id/resident_lastname_layout"
                 android:layout_marginTop="10dp"
                 android:text="@string/birthday" />
 

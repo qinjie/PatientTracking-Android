@@ -68,4 +68,7 @@
     <string name="map">Map</string>
     <string name="alert_history">Alert History</string>
     <string name="next_of_kin">Next Of Kin</string>
+    <string name="alert_type_went_out_of_ward">Went out of ward</string>
+    <string name="alert_type_press_alarm_button">Press the alarm button</string>
+    <string name="alert_type_is_out_of_tracking">Is out of tracking</string>
 </resources>

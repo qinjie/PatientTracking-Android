@@ -197,7 +197,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
         Resident resident = mImageView.getTouchedResident(touchPoint);
 
-        if (resident != null) {
+        if (resident != null && !resident.isNurse()) {
             Intent intent = new Intent(getActivity(), ResidentActivity.class);
             intent.putExtra(Preferences.resident_idTag, resident.getId());
             this.startActivityForResult(intent, 0);

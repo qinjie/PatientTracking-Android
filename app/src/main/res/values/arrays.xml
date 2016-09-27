@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="alert_types">
+        <item>No reason</item>
+        <item>@string/alert_type_went_out_of_ward</item>
+        <item>@string/alert_type_press_alarm_button</item>
+        <item>@string/alert_type_is_out_of_tracking</item>
+    </string-array>
+</resources>

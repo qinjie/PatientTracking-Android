@@ -82,9 +82,6 @@ public class ResidentActivity extends Activity {
     @BindView(R.id.resident_lastname)
     TextView lastName;
 
-    @BindView(R.id.resident_nric)
-    TextView nric;
-
     @BindView(R.id.resident_birthday)
     TextView birthday;
 
@@ -116,9 +113,9 @@ public class ResidentActivity extends Activity {
     }
 
     private void showAlert(Alert alert) {
-        if (alert == null) {
-            return;
-        } else if (!alert.getOk().equalsIgnoreCase("0")) {
+        this.alert = alert;
+
+        if (alert == null || !alert.getOk().equalsIgnoreCase("0")) {
             alertLayout.setVisibility(View.GONE);
             return;
         }
@@ -260,7 +257,7 @@ public class ResidentActivity extends Activity {
         Drawable image = getDrawable(getResources().getIdentifier(pictureName, "drawable", getPackageName()));
 
         if (image == null) {
-            image = getDrawable(getResources().getIdentifier("profile_default", "drawable", getPackageName()));
+            image = getDrawable(getResources().getIdentifier("profile31", "drawable", getPackageName()));
         }
 
         profilePicture.setImageDrawable(image);
@@ -268,7 +265,6 @@ public class ResidentActivity extends Activity {
 
         firstName.setText(resident.getFirstname());
         lastName.setText(resident.getLastname());
-        nric.setText(resident.getNric());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         String birthdayText = resident.getBirthday();

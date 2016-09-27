@@ -67,7 +67,7 @@ public class ResidentListAdapter extends BaseAdapter {
         Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
 
         if(image == null) {
-            image = context.getDrawable(context.getResources().getIdentifier("profile_default", "drawable", context.getPackageName()));
+            image = context.getDrawable(context.getResources().getIdentifier("profile31", "drawable", context.getPackageName()));
         }
 
         holder.profilePicture.setImageDrawable(image);
