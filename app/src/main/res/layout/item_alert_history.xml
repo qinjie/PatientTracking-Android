@@ -5,12 +5,12 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/alerthistory_took_care_of"
+        android:id="@+id/alerthistory_type"
         style="@style/TextAppearance.Content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="nurse1" />
+        android:text="Went of ward" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -18,13 +18,27 @@
         android:layout_alignParentStart="true"
         android:layout_alignWithParentIfMissing="true"
         android:gravity="center_vertical"
-        android:layout_below="@id/alerthistory_took_care_of">
+        android:layout_below="@id/alerthistory_type">
+
+        <TextView
+            android:id="@+id/alerthistory_took_care_of_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/fa_heart" />
+
+        <TextView
+            android:id="@+id/alerthistory_took_care_of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="nurse1" />
 
         <TextView
             android:id="@+id/alerthistory_location_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="10dp"
             android:text="@string/fa_map" />
 
         <TextView

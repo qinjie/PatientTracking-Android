@@ -13,6 +13,7 @@ import com.example.intern.ptp.utils.FontManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -28,10 +29,12 @@ public class AlertHistoryAdapter extends BaseAdapter {
     private final SimpleDateFormat dateParser;
 
     private List<Alert> items;
+    private List<String> alertTypes;
 
     public AlertHistoryAdapter(Context context, List<Alert> items) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
+        this.alertTypes = Arrays.asList(context.getResources().getStringArray(R.array.alert_types));
         this.dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         this.items = items;
     }
@@ -62,16 +65,21 @@ public class AlertHistoryAdapter extends BaseAdapter {
             holder = new ViewHolder(view);
             view.setTag(holder);
 
+            holder.tookCareOfIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
             holder.locationIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
             holder.timeIcon.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));
         }
 
         Alert alert = items.get(position);
 
+        holder.alertType.setText(alertTypes.get(Integer.parseInt(alert.getType())));
+
         if (alert.getUsername() != null) {
+            holder.tookCareOfIcon.setVisibility(View.VISIBLE);
             holder.tookCareOf.setVisibility(View.VISIBLE);
             holder.tookCareOf.setText(alert.getUsername());
         } else {
+            holder.tookCareOfIcon.setVisibility(View.GONE);
             holder.tookCareOf.setVisibility(View.GONE);
         }
 
@@ -99,6 +107,10 @@ public class AlertHistoryAdapter extends BaseAdapter {
 
 
     static class ViewHolder {
+        @BindView(R.id.alerthistory_type)
+        TextView alertType;
+        @BindView(R.id.alerthistory_took_care_of_icon)
+        TextView tookCareOfIcon;
         @BindView(R.id.alerthistory_took_care_of)
         TextView tookCareOf;
         @BindView(R.id.alerthistory_location_icon)
