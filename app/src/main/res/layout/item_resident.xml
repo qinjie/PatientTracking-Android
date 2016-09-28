@@ -31,6 +31,7 @@
         android:layout_alignStart="@id/resident_name"
         android:layout_below="@id/resident_name"
         android:layout_marginEnd="5dp"
+        android:layout_marginTop="2dp"
         android:text="@string/fa_map" />
 
     <TextView
