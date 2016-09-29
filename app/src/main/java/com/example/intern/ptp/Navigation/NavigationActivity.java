@@ -13,7 +13,7 @@ import com.example.intern.ptp.Map.MapListFragment;
 import com.example.intern.ptp.Nearest.NearestFragment;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.Resident.ResidentFragment;
+import com.example.intern.ptp.Resident.ResidentListFragment;
 import com.example.intern.ptp.Setting.ProfileFragment;
 
 public class NavigationActivity extends Activity
@@ -62,7 +62,7 @@ public class NavigationActivity extends Activity
                 break;
             }
             case 4: {
-                fragment = new ResidentFragment();
+                fragment = new ResidentListFragment();
                 break;
             }
             case 6: {

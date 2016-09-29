@@ -20,8 +20,8 @@ import android.widget.ListView;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
-import com.example.intern.ptp.network.rest.ServerResponse;
-import com.example.intern.ptp.utils.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -181,7 +181,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 AlertService service = AlertService.getService();
-                service.getAlertCount();
+                service.getAlertCount(getActivity());
 
                 getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }

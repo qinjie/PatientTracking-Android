@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.intern.ptp.Resident.ResidentFragment">
+    tools:context="com.example.intern.ptp.Resident.ResidentListFragment">
     <item
         android:id="@+id/action_refresh_fragment_resident"
         android:orderInCategory="1"

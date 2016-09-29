@@ -3,8 +3,9 @@ package com.example.intern.ptp;
 import android.app.Application;
 
 import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.network.rest.MapService;
 import com.example.intern.ptp.network.rest.ResidentService;
-import com.example.intern.ptp.utils.BusManager;
+import com.example.intern.ptp.utils.bus.BusManager;
 import com.squareup.otto.Bus;
 
 public class PatientTrackingApplication extends Application {
@@ -15,8 +16,9 @@ public class PatientTrackingApplication extends Application {
 
         Bus bus = BusManager.getBus();
 
-        AlertService.createService(this, bus);
-        ResidentService.createService(this, bus);
+        AlertService.createService(bus);
+        ResidentService.createService(bus);
+        MapService.createService(bus);
     }
 
 }

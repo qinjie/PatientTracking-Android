@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <ProgressBar
-        android:id="@+id/resident_progress_indicator"
+        android:id="@+id/maplist_progress_indicator"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -6,6 +6,7 @@ import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -18,12 +19,11 @@ public class AlertService {
 
     private static AlertService instance;
 
-    private Context context;
     private Bus bus;
 
-    public static AlertService createService(Context context, Bus bus) {
+    public static AlertService createService(Bus bus) {
         if (instance == null) {
-            instance = new AlertService(context, bus);
+            instance = new AlertService(bus);
         }
 
         return instance;
@@ -33,12 +33,11 @@ public class AlertService {
         return instance;
     }
 
-    private AlertService(Context context, Bus bus) {
-        this.context = context;
+    private AlertService(Bus bus) {
         this.bus = bus;
     }
 
-    public void getAlerts(boolean onlyOngoing) {
+    public void getAlerts(final Context context, final boolean onlyOngoing) {
         // create an API service and set session token to request header
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
@@ -70,7 +69,7 @@ public class AlertService {
         });
     }
 
-    public void getAlertCount() {
+    public void getAlertCount(final Context context) {
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
         // create request object to check session time out
@@ -89,7 +88,7 @@ public class AlertService {
         });
     }
 
-    public void postTakeCare(String id, String username) {
+    public void postTakeCare(final Context context, String id, String username) {
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
         Call<String> call = api.setTakecare(id, username);
 

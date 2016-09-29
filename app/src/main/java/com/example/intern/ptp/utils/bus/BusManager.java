@@ -1,4 +1,4 @@
-package com.example.intern.ptp.utils;
+package com.example.intern.ptp.utils.bus;
 
 import com.squareup.otto.Bus;
 
@@ -8,7 +8,7 @@ public class BusManager {
     private static BusManager manager;
 
     private BusManager() {
-        bus = new Bus();
+        bus = new MainThreadBus();
     }
 
     public static Bus getBus() {
@@ -18,4 +18,5 @@ public class BusManager {
 
         return manager.bus;
     }
+
 }
