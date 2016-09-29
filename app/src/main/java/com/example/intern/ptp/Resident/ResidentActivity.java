@@ -28,10 +28,11 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ResidentService;
-import com.example.intern.ptp.network.rest.ServerResponse;
-import com.example.intern.ptp.utils.BusManager;
 import com.example.intern.ptp.utils.FontManager;
 import com.example.intern.ptp.utils.UserManager;
+import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.NotificationResponse;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -52,7 +53,7 @@ public class ResidentActivity extends Activity {
     private Alert alert;
     List<Fragment> fragments = new ArrayList<>();
 
-    @BindView(R.id.resident_progress_indicator)
+    @BindView(R.id.maplist_progress_indicator)
     ProgressBar progressIndicator;
 
     @BindView(R.id.resident_content)
@@ -108,8 +109,10 @@ public class ResidentActivity extends Activity {
         progressIndicator.setVisibility(View.VISIBLE);
         contentView.setVisibility(View.INVISIBLE);
 
+        String residentId = this.getIntent().getStringExtra(Preferences.resident_idTag);
+
         ResidentService service = ResidentService.getService();
-        service.getResident(this.getIntent().getStringExtra(Preferences.resident_idTag));
+        service.getResident(this, residentId);
     }
 
     private void showAlert(Alert alert) {
@@ -217,7 +220,7 @@ public class ResidentActivity extends Activity {
     @OnClick(R.id.resident_take_care_button)
     public void takeCare(View view) {
         AlertService service = AlertService.getService();
-        service.postTakeCare(alert.getId(), UserManager.getName(this));
+        service.postTakeCare(this, alert.getId(), UserManager.getName(this));
     }
 
     @Subscribe
@@ -241,11 +244,12 @@ public class ResidentActivity extends Activity {
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
                             alertLayout.setVisibility(View.GONE);
+                            alertLayout.setAlpha(1.0f);
                         }
                     });
 
             ResidentService service = ResidentService.getService();
-            service.getResident(resident.getId());
+            service.getResident(this, resident.getId());
         }
     }
 
@@ -298,6 +302,13 @@ public class ResidentActivity extends Activity {
         contentView.setVisibility(View.VISIBLE);
     }
 
+    @Subscribe
+    public void onNotificationResponse(NotificationResponse event) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+            refreshView();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -341,7 +352,7 @@ public class ResidentActivity extends Activity {
 
                 // reload activity
                 case R.id.action_refresh_resident:
-                    recreate();
+                    refreshView();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);

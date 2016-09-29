@@ -13,34 +13,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.network.rest.MapService;
+import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.NotificationResponse;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MapListFragment extends Fragment {
 
-    @BindView(R.id.mapListView)
+    @BindView(R.id.maplist_progress_indicator)
+    ProgressBar progressIndicator;
+
+    @BindView(R.id.maplist_content)
     ListView mapListView;
 
     private MapListAdapter adapter;
     private Activity activity;
     private ServerApi api;
-
-    public MapListFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class MapListFragment extends Fragment {
 
             switch (id) {
                 case R.id.action_refresh_fragment_map:
-                    activity.recreate();
+                    refreshView();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -104,112 +105,60 @@ public class MapListFragment extends Fragment {
         View myView = inflater.inflate(R.layout.fragment_maplist, container, false);
         ButterKnife.bind(this, myView);
 
+        Bus bus = BusManager.getBus();
+        bus.register(this);
+
         adapter = new MapListAdapter(activity, new ArrayList<Location>());
         mapListView.setAdapter(adapter);
+        mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(activity, MapActivity.class);
+                Location location = (Location) adapter.getItem(position);
 
-        try {
-            // create an API service and set session token to request header
-            api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                intent.putExtra(Preferences.floorFilePathTag, location.getFilePath());
+                intent.putExtra(Preferences.floor_idTag, location.getId());
+                intent.putExtra(Preferences.floor_labelTag, location.getLabel());
+                activity.startActivity(intent);
+            }
+        });
 
-            // create request object to get all floors' basic information
-            Call<List<Location>> call = api.getFloors();
-            Preferences.showLoading(activity);
-            call.enqueue(new Callback<List<Location>>() {
-                @Override
-                public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
-                    try {
-                        // if exception occurs or inconsistent database in server
-                        if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
-                            Preferences.showDialog(activity, "Server Error", "Please try again !");
-                            return;
-                        }
-
-                        // if session is expired
-                        if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(activity);
-                            return;
-                        }
-
-                        // assign data contained in mapList to mapListView
-                        adapter.updateLocations(response.body());
-
-                        // handle click event on each list view item
-                        mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                Preferences.showLoading(activity);
-
-                                // create an API service and set session token to request header
-                                api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-                                // create request object to check session timeout
-                                Call<ResponseBody> call = api.getCheck();
-                                final int pos = position;
-                                call.enqueue(new Callback<ResponseBody>() {
-                                    @Override
-                                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                        try {
-                                            // if exception occurs or inconsistent database in server
-                                            if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                Preferences.dismissLoading();
-                                                Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                                return;
-                                            }
-
-                                            // if session is expired
-                                            if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                Preferences.goLogin(activity);
-                                                return;
-                                            }
-
-                                            // create a new intent related to MapFragment
-                                            Intent intent = new Intent(activity, MapActivity.class);
-                                            Location location = (Location) adapter.getItem(pos);
-
-                                            // put floor's file path of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floorFilePathTag, location.getFilePath());
-
-                                            // put floor id of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floor_idTag, location.getId());
-
-                                            // put floor's label of the location as an extra in the above created intent
-                                            intent.putExtra(Preferences.floor_labelTag, location.getLabel());
-
-                                            // start a new MapFragment with the intent
-                                            activity.startActivity(intent);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                        Preferences.dismissLoading();
-                                        t.printStackTrace();
-                                        Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                                    }
-                                });
-
-                            }
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Preferences.dismissLoading();
-                }
-
-                @Override
-                public void onFailure(Call<List<Location>> call, Throwable t) {
-                    Preferences.dismissLoading();
-                    t.printStackTrace();
-                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        refreshView();
         return myView;
     }
+
+    private void refreshView() {
+        progressIndicator.setVisibility(View.VISIBLE);
+        mapListView.setVisibility(View.INVISIBLE);
+
+        MapService service = MapService.getService();
+        service.getFloors(getActivity());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Bus bus = BusManager.getBus();
+        bus.unregister(this);
+    }
+
+    @Subscribe
+    public void onServerResponse(ServerResponse event) {
+        if (event.getType().equals(ServerResponse.GET_FLOORS)) {
+            List<Location> locations = (List<Location>) event.getResponse();
+            adapter.updateLocations(locations);
+
+            progressIndicator.setVisibility(View.INVISIBLE);
+            mapListView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Subscribe
+    public void onNotificationRespone(NotificationResponse event) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+            refreshView();
+        }
+    }
 }
+

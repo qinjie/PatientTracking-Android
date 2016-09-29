@@ -23,8 +23,9 @@ import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.network.rest.AlertService;
-import com.example.intern.ptp.network.rest.ServerResponse;
-import com.example.intern.ptp.utils.BusManager;
+import com.example.intern.ptp.utils.bus.response.NotificationResponse;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -154,17 +155,17 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         // check whether user prefers only untaken care notificaiotns
         if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
             redCheck.setChecked(true);
-            service.getAlerts(true);
+            service.getAlerts(getActivity(), true);
         } else {
             redCheck.setChecked(false);
-            service.getAlerts(false);
+            service.getAlerts(getActivity(), false);
         }
 
         // handle check event of the RED only check box
         redCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                service.getAlerts(isChecked);
+                service.getAlerts(getActivity(), isChecked);
             }
         });
     }
@@ -238,6 +239,13 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
             onTakeCare((String) event.getResponse());
         } else if (event.getType().equals(ServerResponse.GET_ALERTS)) {
             onAlertsRefresh(event.getResponse());
+        }
+    }
+
+    @Subscribe
+    public void onNotificationResponse(NotificationResponse event) {
+        if(event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+            refreshView();
         }
     }
 

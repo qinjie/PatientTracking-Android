@@ -34,10 +34,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ResidentFragment extends Fragment {
+public class ResidentListFragment extends Fragment {
     private SearchView sv;
 
-    @BindView(R.id.resident_progress_indicator)
+    @BindView(R.id.maplist_progress_indicator)
     ProgressBar progressIndicator;
 
     @BindView(R.id.resident_content)

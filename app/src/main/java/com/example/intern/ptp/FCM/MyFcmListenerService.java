@@ -13,9 +13,12 @@ import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
+import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
+import com.squareup.otto.Bus;
 
 import java.util.Map;
 
@@ -28,7 +31,10 @@ public class MyFcmListenerService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage message) {
         Map<String, String> data = message.getData();
         sendNotification(data.get("message"));
-    }
+
+        Bus bus = BusManager.getBus();
+        bus.post(new NotificationResponse(NotificationResponse.MESSAGE_RECEIVED, message));
+     }
 
     /**
      * notify an notification on the phone of a user has logged in

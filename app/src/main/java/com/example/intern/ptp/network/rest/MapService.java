@@ -2,48 +2,50 @@ package com.example.intern.ptp.network.rest;
 
 import android.content.Context;
 
+import com.example.intern.ptp.Map.Location;
 import com.example.intern.ptp.Preferences;
-import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ResidentService {
+public class MapService {
 
-    private static ResidentService instance;
+    private static MapService instance;
 
     private Bus bus;
 
-    public static ResidentService createService(Bus bus) {
+    public static MapService createService(Bus bus) {
         if (instance == null) {
-            instance = new ResidentService(bus);
+            instance = new MapService(bus);
         }
 
         return instance;
     }
 
-    public static ResidentService getService() {
+    public static MapService getService() {
         return instance;
     }
 
-    private ResidentService(Bus bus) {
+    private MapService(Bus bus) {
         this.bus = bus;
     }
 
-    public void getResident(final Context context, final String id) {
+    public void getFloors(final Context context) {
         // create an API service and set session token to request header
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
         // create request object to get a resident's information
-        Call<Resident> call = api.getResident(id);
-        call.enqueue(new Callback<Resident>() {
+        Call<List<Location>> call = api.getFloors();
+        call.enqueue(new Callback<List<Location>>() {
             @Override
-            public void onResponse(Call<Resident> call, Response<Resident> response) {
+            public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
                 try {
                     // if exception occurs or inconsistent database in server
                     if (response.headers().get("result").equalsIgnoreCase("failed")) {
@@ -55,7 +57,7 @@ public class ResidentService {
                         Preferences.goLogin(context);
                         return;
                     }
-                    bus.post(new ServerResponse(ServerResponse.GET_RESIDENT, response.body()));
+                    bus.post(new ServerResponse(ServerResponse.GET_FLOORS, response.body()));
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,7 +65,7 @@ public class ResidentService {
             }
 
             @Override
-            public void onFailure(Call<Resident> call, Throwable t) {
+            public void onFailure(Call<List<Location>>call, Throwable t) {
                 t.printStackTrace();
                 Preferences.showDialog(context, "Connection Failure", "Please check your network and try again!");
 
@@ -71,5 +73,4 @@ public class ResidentService {
             }
         });
     }
-
 }

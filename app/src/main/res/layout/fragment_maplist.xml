@@ -4,9 +4,17 @@
     android:layout_height="match_parent"
     tools:context="com.example.intern.ptp.Map.MapListFragment">
 
+    <ProgressBar
+        android:id="@+id/maplist_progress_indicator"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal" />
+
     <ListView
-        android:id="@+id/mapListView"
+        android:id="@+id/maplist_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal|top" />
+        android:layout_gravity="center_horizontal|top"
+        android:visibility="invisible" />
 </FrameLayout>
