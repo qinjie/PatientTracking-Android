@@ -144,9 +144,9 @@ public class MapListFragment extends Fragment {
     }
 
     @Subscribe
-    public void onServerResponse(ServerResponse response) {
-        if (response.getType().equals(ServerResponse.GET_FLOORS)) {
-            List<Location> locations = (List<Location>) response.getResponse();
+    public void onServerResponse(ServerResponse event) {
+        if (event.getType().equals(ServerResponse.GET_FLOORS)) {
+            List<Location> locations = (List<Location>) event.getResponse();
             adapter.updateLocations(locations);
 
             progressIndicator.setVisibility(View.INVISIBLE);
@@ -155,8 +155,8 @@ public class MapListFragment extends Fragment {
     }
 
     @Subscribe
-    public void onNotificationRespone(NotificationResponse response) {
-        if (response.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+    public void onNotificationRespone(NotificationResponse event) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
             refreshView();
         }
     }

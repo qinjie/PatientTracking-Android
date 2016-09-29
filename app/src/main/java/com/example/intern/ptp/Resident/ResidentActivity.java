@@ -303,8 +303,8 @@ public class ResidentActivity extends Activity {
     }
 
     @Subscribe
-    public void onNotificationResponse(NotificationResponse response) {
-        if (response.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+    public void onNotificationResponse(NotificationResponse event) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
             refreshView();
         }
     }

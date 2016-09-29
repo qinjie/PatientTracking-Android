@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.UserManager;
@@ -122,8 +123,10 @@ public class NavigationDrawerFragment extends Fragment {
 
         NavigationListAdapter adapter = new NavigationListAdapter(getActivity(), items);
         mDrawerListView.setAdapter(adapter);
-
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
+        refreshView();
+
         return mDrawerListView;
     }
 
@@ -137,7 +140,7 @@ public class NavigationDrawerFragment extends Fragment {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 
-        // set a custom shadow that overlays the main content when the drawer opens
+        // set a custom shadow that overlays the main content when the drawer opens 
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
@@ -180,13 +183,9 @@ public class NavigationDrawerFragment extends Fragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
                 }
 
-                AlertService service = AlertService.getService();
-                service.getAlertCount(getActivity());
-
                 getActivity().invalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                refreshView();
             }
-
-
         };
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
@@ -205,6 +204,11 @@ public class NavigationDrawerFragment extends Fragment {
 
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private void refreshView() {
+        AlertService service = AlertService.getService();
+        service.getAlertCount(getActivity());
     }
 
     private void selectItem(int position) {
@@ -297,6 +301,13 @@ public class NavigationDrawerFragment extends Fragment {
 
             NavigationListAdapter adapter = (NavigationListAdapter) mDrawerListView.getAdapter();
             adapter.updateItemById("navigation_alerts", event.getResponse());
+        }
+    }
+
+    @Subscribe
+    public void onNotificationResponse(NotificationResponse event) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+            refreshView();
         }
     }
 }
