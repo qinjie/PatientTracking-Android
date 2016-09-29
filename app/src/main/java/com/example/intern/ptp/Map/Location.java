@@ -1,4 +1,4 @@
-package com.example.intern.ptp.Location;
+package com.example.intern.ptp.Map;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

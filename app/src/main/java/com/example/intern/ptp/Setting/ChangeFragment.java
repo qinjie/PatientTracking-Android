@@ -43,7 +43,7 @@ public class ChangeFragment extends Fragment {
     @BindView(R.id.tvpassword_confirm)
     TextView tvPassword_Confirm;
 
-    private String username, currentPassword, newPassword, confirmPassword;
+    private String username, currentPassword, newPassword;
 
     public ChangeFragment() {
         // Required empty public constructor
@@ -137,7 +137,7 @@ public class ChangeFragment extends Fragment {
         }
 
         // get input confirm password
-        confirmPassword = tvPassword_Confirm.getText().toString();
+        String confirmPassword = tvPassword_Confirm.getText().toString();
 
         // empty confirm password is not allowed
         if (confirmPassword.isEmpty()) {

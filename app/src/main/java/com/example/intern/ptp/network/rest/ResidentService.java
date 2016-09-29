@@ -4,14 +4,9 @@ import android.content.Context;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.Resident.Resident;
-import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.squareup.otto.Bus;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.intern.ptp.Location.Location;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.ServerApi;
@@ -109,7 +108,7 @@ public class MapListFragment extends Fragment {
         mapListView.setAdapter(adapter);
 
         try {
-             // create an API service and set session token to request header
+            // create an API service and set session token to request header
             api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
 
             // create request object to get all floors' basic information

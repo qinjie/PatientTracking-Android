@@ -63,7 +63,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
             Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Preferences.notify_idTag, alert.getId());
+            intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
             // create pendding intent for the notification
             PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notification_id, intent,
@@ -74,7 +74,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
             // build a notification with icon, title, content, sound, ...
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
-                    .setSmallIcon(R.drawable.ic_sos)
+                    .setSmallIcon(R.drawable.ic_bell)
                     .setContentTitle("Resident - " + name)
                     .setColor(ok ? Color.BLUE : Color.RED)
                     .setContentText(content)

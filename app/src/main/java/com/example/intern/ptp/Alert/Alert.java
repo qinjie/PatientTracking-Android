@@ -3,11 +3,8 @@ package com.example.intern.ptp.Alert;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.intern.ptp.Resident.Resident;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Date;
 
 public class Alert implements Parcelable {
     @SerializedName("id")
@@ -40,6 +37,10 @@ public class Alert implements Parcelable {
     @SerializedName("created_at")
     @Expose
     private String createdAt;
+    @SerializedName("type")
+    @Expose
+    private String type;
+
 
 
     public Alert(String id, String residentId, String firstname, String lastname, String lastPosition, String userId, String username, String ok) {
@@ -181,6 +182,13 @@ public class Alert implements Parcelable {
         this.createdAt = createdAt;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     @Override
     public int describeContents() {
@@ -199,6 +207,7 @@ public class Alert implements Parcelable {
         dest.writeString(username);
         dest.writeString(ok);
         dest.writeString(createdAt);
+        dest.writeString(type);
     }
 
     protected Alert(Parcel in) {
@@ -212,6 +221,7 @@ public class Alert implements Parcelable {
         username = in.readString();
         ok = in.readString();
         createdAt = in.readString();
+        type = in.readString();
     }
 
     public static final Creator<Alert> CREATOR = new Creator<Alert>() {

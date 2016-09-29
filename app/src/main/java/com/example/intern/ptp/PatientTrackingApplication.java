@@ -2,7 +2,6 @@ package com.example.intern.ptp;
 
 import android.app.Application;
 
-import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ResidentService;
 import com.example.intern.ptp.utils.BusManager;

@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
@@ -37,12 +38,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AlertFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class AlertListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
-    @BindView(R.id.nListView)
+    @BindView(R.id.alertlist_progress_indicator)
+    ProgressBar progressIndicator;
+
+    @BindView(R.id.alertlist_content)
+    View contentView;
+
+    @BindView(R.id.alertlist_list)
     ListView alertListView;
 
-    @BindView(R.id.redCheck)
+    @BindView(R.id.alertlist_ongoing_only)
     CheckBox redCheck;
 
     private AlertListAdapter adapter;
@@ -82,7 +89,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
             inflater.inflate(R.menu.menu_fragment_alert, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
-                // set title for action bar and display it
+                // set title for action bar and refreshView it
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_alert));
             }
@@ -103,7 +110,7 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
             switch (id) {
                 // reload fragment
                 case R.id.action_refresh_fragment_alert:
-                    display();
+                    refreshView();
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -117,18 +124,14 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_alert, container, false);
         ButterKnife.bind(this, view);
 
-        // assign data contained in alertList to alertListView
         adapter = new AlertListAdapter(activity, new ArrayList<Alert>());
         alertListView.setAdapter(adapter);
-        // handle click event on each list view item
         alertListView.setOnItemClickListener(this);
 
-        // display a list of notification basing on checked status of the above check box
-        display();
+        refreshView();
         return view;
     }
 
@@ -136,15 +139,17 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
     public void onResume() {
         super.onResume();
 
-        // refresh the notification list after coming back from ResidentFragment
-        display();
+        refreshView();
     }
 
     /**
-     * retrieve status of RED only checkbox from Shared Preferences in order to display user's preferred data
+     * retrieve status of RED only checkbox from Shared Preferences in order to refreshView user's preferred data
      */
-    private void display() {
+    private void refreshView() {
         final AlertService service = AlertService.getService();
+
+        progressIndicator.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.INVISIBLE);
 
         // check whether user prefers only untaken care notificaiotns
         if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
@@ -155,13 +160,11 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
             service.getAlerts(false);
         }
 
-
         // handle check event of the RED only check box
         redCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 service.getAlerts(isChecked);
-
             }
         });
     }
@@ -239,6 +242,9 @@ public class AlertFragment extends Fragment implements AdapterView.OnItemClickLi
     }
 
     private void onAlertsRefresh(Object response) {
+        progressIndicator.setVisibility(View.INVISIBLE);
+        contentView.setVisibility(View.VISIBLE);
+
         if (response instanceof List) {
             List<Alert> alertList = (List<Alert>) response;
             adapter.updateAlerts(alertList);

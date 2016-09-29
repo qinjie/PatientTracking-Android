@@ -109,8 +109,8 @@ public class NavigationListAdapter extends BaseAdapter {
                 holder.additionalInformation.setText(item.getAdditionalInformation());
                 holder.additionalInformation.setTextColor(ContextCompat.getColor(context, R.color.black));
 
-                if("navigation_alerts".equals(item.getId())) {
-                    if(!item.getAdditionalInformation().equals("0")) {
+                if ("navigation_alerts".equals(item.getId())) {
+                    if (!item.getAdditionalInformation().equals("0")) {
                         holder.additionalInformation.setTextColor(ContextCompat.getColor(context, R.color.red));
                     }
                 }
@@ -122,7 +122,7 @@ public class NavigationListAdapter extends BaseAdapter {
                 SecondaryViewHolder holder;
                 SecondaryNavigationItem item = (SecondaryNavigationItem) getItem(position);
 
-                if(view != null && view.getTag() instanceof  SecondaryViewHolder) {
+                if (view != null && view.getTag() instanceof SecondaryViewHolder) {
                     holder = (SecondaryViewHolder) view.getTag();
                 } else {
                     view = inflater.inflate(R.layout.item_navigation_secondary, parent, false);
@@ -141,9 +141,9 @@ public class NavigationListAdapter extends BaseAdapter {
 
     public void updateItemById(String id, Object update) {
 
-        for(NavigationItem item : items) {
-            if(item.getId() != null && item.getId().equals(id)) {
-                if(id.equals("navigation_alerts")) {
+        for (NavigationItem item : items) {
+            if (item.getId() != null && item.getId().equals(id)) {
+                if (id.equals("navigation_alerts")) {
                     ((PrimaryNavigationItem) item).setAdditionalInformation("" + update);
                     notifyDataSetChanged();
                 }

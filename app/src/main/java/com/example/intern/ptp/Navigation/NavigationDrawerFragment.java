@@ -17,9 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ServerResponse;
@@ -286,7 +284,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          */
@@ -295,7 +293,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Subscribe
     public void onServerResponse(ServerResponse event) {
-        if(event.getType().equals(ServerResponse.GET_ALERT_COUNT)) {
+        if (event.getType().equals(ServerResponse.GET_ALERT_COUNT)) {
 
             NavigationListAdapter adapter = (NavigationListAdapter) mDrawerListView.getAdapter();
             adapter.updateItemById("navigation_alerts", event.getResponse());

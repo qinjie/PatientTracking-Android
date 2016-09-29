@@ -2,31 +2,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.intern.ptp.Alert.AlertFragment">
+    tools:context="com.example.intern.ptp.Alert.AlertListFragment">
+
+    <ProgressBar
+        android:id="@+id/alertlist_progress_indicator"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal" />
 
     <LinearLayout
+        android:id="@+id/alertlist_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
         <CheckBox
-            android:id="@+id/redCheck"
+            android:id="@+id/alertlist_ongoing_only"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginTop="15dp"
+            android:layout_gravity="end"
             android:layout_marginEnd="15dp"
-            android:textColor="@color/black"
+            android:layout_marginTop="15dp"
             android:text="@string/alerts_ongoing_alerts_only"
-            />
+            android:textColor="@color/black" />
 
         <ListView
-            android:id="@+id/nListView"
+            android:id="@+id/alertlist_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal|top"
             android:divider="@android:color/transparent"
-            android:dividerHeight="0dp"
-            android:layout_gravity="center_horizontal|top" />
+            android:dividerHeight="0dp" />
 
     </LinearLayout>
 

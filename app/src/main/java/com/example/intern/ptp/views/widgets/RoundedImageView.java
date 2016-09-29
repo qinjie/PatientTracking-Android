@@ -87,7 +87,6 @@ public class RoundedImageView extends ImageView {
                 radius / 2, radius / 2, circlePaint);
 
 
-
         return output;
     }
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.intern.ptp.Location.Location;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.utils.FontManager;
 
@@ -68,8 +67,8 @@ public class MapListAdapter extends BaseAdapter {
             holder.alertIcon.setTextColor(ContextCompat.getColor(context, R.color.light_grey));
         }
 
-            return view;
-        }
+        return view;
+    }
 
     public void updateLocations(List<Location> locations) {
         this.locations = locations;

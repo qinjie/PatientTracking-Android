@@ -1,7 +1,5 @@
 package com.example.intern.ptp.utils;
 
-import android.content.Context;
-
 import com.squareup.otto.Bus;
 
 public class BusManager {
@@ -14,7 +12,7 @@ public class BusManager {
     }
 
     public static Bus getBus() {
-        if(manager == null) {
+        if (manager == null) {
             manager = new BusManager();
         }
 

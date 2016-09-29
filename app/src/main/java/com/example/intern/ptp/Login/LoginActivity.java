@@ -43,7 +43,7 @@ public class LoginActivity extends Activity {
     @BindView(R.id.password)
     EditText mPasswordView;
 
-    private String username, password, token, MAC;
+    private String username, password, MAC;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private ServerApi api;
@@ -60,7 +60,7 @@ public class LoginActivity extends Activity {
             pref = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
 
             // get session token from the Shared Preferences
-            token = pref.getString("token", "");
+            String token = pref.getString("token", "");
 
             // if a token is available then try to login
             if (!token.equalsIgnoreCase("")) {
@@ -246,7 +246,7 @@ public class LoginActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_CANCELED) {
+        if (resultCode == RESULT_CANCELED) {
             finish();
         }
     }
