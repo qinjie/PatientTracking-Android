@@ -4,6 +4,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -20,6 +22,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class MyFcmListenerService extends FirebaseMessagingService {
@@ -59,13 +63,15 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             // get firstname of the resident
             String name = alert.getFirstname();
 
+            List<String> alertTypes = Arrays.asList(getResources().getStringArray(R.array.alert_types));
+
             // prepare content for the notification
-            String content = "Resident " + name;
+            String content;
             boolean ok = !alert.getOk().equalsIgnoreCase("0");
             if (ok)
-                content += " has been taken care of.";
+                content = "Has been taken care of.";
             else
-                content += " needs your help now!";
+                content = alertTypes.get(Integer.parseInt(alert.getType()));
 
             Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -78,15 +84,20 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             // set sound for the notification
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
+            int imageIdentifier = getResources().getIdentifier("profile" + resident_id, "drawable", getPackageName());
+            Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), imageIdentifier);
+
             // build a notification with icon, title, content, sound, ...
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
+                    .setLargeIcon(largeIcon)
                     .setSmallIcon(R.drawable.ic_bell)
-                    .setContentTitle("Resident - " + name)
+                    .setContentTitle(name)
                     .setColor(ok ? Color.BLUE : Color.RED)
                     .setContentText(content)
                     .setAutoCancel(true)
                     .setSound(defaultSoundUri)
-                    .setContentIntent(pendingIntent);
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true);
 
 
             // notify the built notification
