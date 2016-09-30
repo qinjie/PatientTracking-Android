@@ -25,4 +25,9 @@ public class UserManager {
         return prefs.getString("email", "");
     }
 
+    public static boolean isLoggedIn(Context context) {
+        String username =  context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
+
+        return !username.equalsIgnoreCase("");
+    }
 }
