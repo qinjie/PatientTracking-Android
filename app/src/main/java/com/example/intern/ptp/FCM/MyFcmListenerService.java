@@ -6,15 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.example.intern.ptp.Alert.Alert;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
+import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -29,84 +30,88 @@ import java.util.Map;
 public class MyFcmListenerService extends FirebaseMessagingService {
 
     /**
-     * handle message received from Firebase server
+     * Handle message received from Firebase server
      */
     @Override
     public void onMessageReceived(RemoteMessage message) {
-        Map<String, String> data = message.getData();
-        sendNotification(data.get("message"));
 
-        Bus bus = BusManager.getBus();
-        bus.post(new NotificationResponse(NotificationResponse.MESSAGE_RECEIVED, message));
-     }
+        if (UserManager.isLoggedIn(getApplicationContext())) {
+            Map<String, String> data = message.getData();
+            Alert alert = getAlert(data.get("message"));
 
-    /**
-     * notify an notification on the phone of a user has logged in
-     */
-    private void sendNotification(String message) {
-        try {
-            // if no user has logged in, do nothing
-            String username = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
-            if (username.equalsIgnoreCase("")) {
+            if (alert == null) {
                 return;
             }
-            // user Gson to get Alert information from json-string message
-            Gson gson = new Gson();
-            Alert alert = gson.fromJson(message, Alert.class);
 
-            // get resident id
-            int resident_id = Integer.parseInt(alert.getResidentId());
+            if (alert.isOngoing()) {
+                sendNotification(alert);
+            } else {
+                cancelNotification(alert);
+            }
 
-            // get notification id
-            int notification_id = Integer.parseInt(alert.getId());
+            Bus bus = BusManager.getBus();
+            bus.post(new NotificationResponse(NotificationResponse.MESSAGE_RECEIVED, message));
+        }
+    }
 
-            // get firstname of the resident
-            String name = alert.getFirstname();
-
-            List<String> alertTypes = Arrays.asList(getResources().getStringArray(R.array.alert_types));
-
-            // prepare content for the notification
-            String content;
-            boolean ok = !alert.getOk().equalsIgnoreCase("0");
-            if (ok)
-                content = "Has been taken care of.";
-            else
-                content = alertTypes.get(Integer.parseInt(alert.getType()));
+    /**
+     * Notify an notification on the phone of a user has logged in
+     */
+    private void sendNotification(Alert alert) {
+        try {
+            int residentId = Integer.parseInt(alert.getResidentId());
+            int notificationId = Integer.parseInt(alert.getId());
 
             Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
 
-            // create pendding intent for the notification
-            PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notification_id, intent,
+            PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notificationId, intent,
                     PendingIntent.FLAG_ONE_SHOT);
 
-            // set sound for the notification
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            String contentTitle = alert.getFirstname() + " " + alert.getLastname();
 
-            int imageIdentifier = getResources().getIdentifier("profile" + resident_id, "drawable", getPackageName());
+            List<String> alertTypes = Arrays.asList(getResources().getStringArray(R.array.alert_types));
+
+            String content = alertTypes.get(Integer.parseInt(alert.getType()));
+
+            Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+            int imageIdentifier = getResources().getIdentifier("profile" + residentId, "drawable", getPackageName());
             Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), imageIdentifier);
 
-            // build a notification with icon, title, content, sound, ...
+            int notificationColor =  ContextCompat.getColor(getApplicationContext(), R.color.red);
+
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
                     .setLargeIcon(largeIcon)
                     .setSmallIcon(R.drawable.ic_bell)
-                    .setContentTitle(name)
-                    .setColor(ok ? Color.BLUE : Color.RED)
+                    .setContentTitle(contentTitle)
+                    .setColor(notificationColor)
                     .setContentText(content)
                     .setAutoCancel(true)
-                    .setSound(defaultSoundUri)
+                    .setSound(notificationSound)
                     .setContentIntent(pendingIntent)
                     .setOngoing(true);
 
-
-            // notify the built notification
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(Preferences.notify_idTag, resident_id, notificationBuilder.build());
-
+            notificationManager.notify(Preferences.notify_idTag, residentId, notificationBuilder.build());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     * Cancel a notification when the user or other users took care of the alert
+     */
+    private void cancelNotification(Alert alert) {
+        int residentId = Integer.parseInt(alert.getResidentId());
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(Preferences.notify_idTag, residentId);
+    }
+
+    private Alert getAlert(String message) {
+        Gson gson = new Gson();
+        return gson.fromJson(message, Alert.class);
     }
 }

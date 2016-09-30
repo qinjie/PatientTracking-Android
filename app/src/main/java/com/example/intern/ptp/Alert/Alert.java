@@ -190,6 +190,10 @@ public class Alert implements Parcelable {
         this.type = type;
     }
 
+    public boolean isOngoing() {
+        return getOk().equalsIgnoreCase("0");
+    }
+
     @Override
     public int describeContents() {
         return 0;

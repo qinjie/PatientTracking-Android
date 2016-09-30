@@ -22,7 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -198,17 +197,17 @@ public class AlertListAdapter extends BaseAdapter {
 
                 holder.time.setText(timeSinceAlarm);
 
-                if (!alert.getOk().equalsIgnoreCase("0")) {
-                    holder.takeCareButton.setVisibility(View.INVISIBLE);
-                } else {
+                if (alert.isOngoing()) {
                     holder.takeCareButton.setVisibility(View.VISIBLE);
+                } else {
+                    holder.takeCareButton.setVisibility(View.INVISIBLE);
                 }
 
                 //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
                 String profilePicture = "profile" + alert.getResidentId();
                 Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
 
-                if(image == null) {
+                if (image == null) {
                     image = context.getDrawable(context.getResources().getIdentifier("profile31", "drawable", context.getPackageName()));
                 }
 
@@ -251,12 +250,10 @@ public class AlertListAdapter extends BaseAdapter {
     private void saveAlertsSorted(List<Alert> alerts) {
 
         for (Alert alert : alerts) {
-            boolean isSolved = !alert.getOk().equalsIgnoreCase("0");
-
-            if (isSolved) {
-                solvedAlerts.add(alert);
-            } else {
+            if (alert.isOngoing()) {
                 ongoingAlerts.add(alert);
+            } else {
+                solvedAlerts.add(alert);
             }
         }
     }

@@ -118,7 +118,7 @@ public class ResidentActivity extends Activity {
     private void showAlert(Alert alert) {
         this.alert = alert;
 
-        if (alert == null || !alert.getOk().equalsIgnoreCase("0")) {
+        if (alert == null || !alert.isOngoing()) {
             alertLayout.setVisibility(View.GONE);
             return;
         }
