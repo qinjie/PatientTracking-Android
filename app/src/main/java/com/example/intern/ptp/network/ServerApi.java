@@ -7,7 +7,7 @@ import com.example.intern.ptp.Login.LoginResult;
 import com.example.intern.ptp.Map.Location;
 import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.Resident.SearchParam;
-import com.example.intern.ptp.Setting.ChangeInfo;
+import com.example.intern.ptp.Setting.PasswordChangeInfo;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public interface ServerApi {
 
     // change password
     @POST("user/change")
-    Call<String> setPassword(@Body ChangeInfo param);
+    Call<String> setPassword(@Body PasswordChangeInfo param);
 
     // get email of a user
     @POST("user/email")

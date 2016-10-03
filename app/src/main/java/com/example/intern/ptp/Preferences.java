@@ -224,7 +224,7 @@ public class Preferences {
     }
 
     /**
-     * display a dialog with title and message parameters
+     * search a dialog with title and message parameters
      */
     public static void showDialog(final Context context, String title, String message) {
         try {

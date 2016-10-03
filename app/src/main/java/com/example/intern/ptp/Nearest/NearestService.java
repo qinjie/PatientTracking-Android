@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.intern.ptp.Preferences;
-import com.example.intern.ptp.Resident.Resident;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.intern.ptp.network.rest.MapService;
+import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 public class NearestService extends IntentService {
 
@@ -20,65 +18,64 @@ public class NearestService extends IntentService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Bus bus = BusManager.getBus();
+        bus.register(this);
+    }
+
+    @Override
     protected void onHandleIntent(Intent intent) {
-        try {
-            // get username from Shared Preferences
-            final String username = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
+        final String username = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
 
-            while (true) {
-                try {
-                    // create an API service and set session token to request header
-                    ServerApi api = ServiceGenerator.createService(ServerApi.class, getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+        MapService service = MapService.getService();
 
-                    // create request object to get information of the resident nearest to the user corresponding to the username
-                    Call<Resident> call = api.getNearest(username);
-                    call.enqueue(new Callback<Resident>() {
-                        @Override
-                        public void onResponse(Call<Resident> call, Response<Resident> response) {
-                            try {
-                                // create an intent corresponding to broadcast receiver in the NearestFragment with the same tag equals "Preferences.nearest_broadcastTag + username"
-                                Intent intent = new Intent(Preferences.nearest_broadcastTag + username);
+        while (true) {
+            try {
+                service.getNearest(getApplicationContext(), username);
 
-                                // create a bundle to be able to put object as an extra to the intent
-                                Bundle bundle = new Bundle();
-
-                                // put result header from response to the bundle as an extra string
-                                bundle.putString(Preferences.nearest_resultTag, response.headers().get("result"));
-
-                                // put the nearest resident object to the above created bundle as an parcelable extra because it is not primitive data type
-                                bundle.putParcelable(Preferences.nearest_residentTag, response.body());
-
-                                // put bundle to to intent as an extra
-                                intent.putExtras(bundle);
-
-                                // broadcast the intent to the broadcast service in the NearestFragment
-                                NearestService.this.sendBroadcast(intent);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Resident> call, Throwable t) {
-                            t.printStackTrace();
-                            // create an intent corresponding to broadcast service in the NearestFragment with the same tag equals "Preferences.nearest_broadcastTag + username"
-                            Intent intent = new Intent(Preferences.nearest_broadcastTag + username);
-
-                            // notify that the connection is failed by putting to the intent an extra string
-                            intent.putExtra(Preferences.nearest_resultTag, "connection_failure");
-
-                            // broadcast the intent to the broadcast service in the NearestFragment
-                            NearestService.this.sendBroadcast(intent);
-                        }
-                    });
-                    Thread.sleep(Preferences.nearest_request_period);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Thread.sleep(Preferences.nearest_request_period);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+    }
 
+    @Subscribe
+    public void onServerResponse(ServerResponse event) {
+        if (event.getType().equals(ServerResponse.GET_NEAREST_RESIDENT)) {
+            broadcastNearestResident((NearestResidentResult) event.getResponse());
+        } else if (event.getType().equals(ServerResponse.SERVER_ERROR)) {
+            if (event.getResponse() instanceof NearestResidentResult) {
+                broadcastError((NearestResidentResult) event.getResponse());
+            }
+        }
+    }
+
+    private void broadcastNearestResident(NearestResidentResult result) {
+        Intent intent = new Intent(Preferences.nearest_broadcastTag + result.getUsername());
+
+        Bundle bundle = new Bundle();
+        bundle.putString(Preferences.nearest_resultTag, result.getResult());
+        bundle.putParcelable(Preferences.nearest_residentTag, result.getResident());
+        intent.putExtras(bundle);
+
+        NearestService.this.sendBroadcast(intent);
+    }
+
+    private void broadcastError(NearestResidentResult result) {
+        Intent intent = new Intent(Preferences.nearest_broadcastTag + result.getUsername());
+        intent.putExtra(Preferences.nearest_resultTag, result.getResult());
+
+        NearestService.this.sendBroadcast(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Bus bus = BusManager.getBus();
+        bus.unregister(this);
     }
 }

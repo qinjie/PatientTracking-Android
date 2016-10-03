@@ -10,11 +10,11 @@ import android.widget.Toast;
 
 import com.example.intern.ptp.Alert.AlertListFragment;
 import com.example.intern.ptp.Map.MapListFragment;
-import com.example.intern.ptp.Nearest.NearestFragment;
+import com.example.intern.ptp.Nearest.NearestResidentFragment;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentListFragment;
-import com.example.intern.ptp.Setting.ProfileFragment;
+import com.example.intern.ptp.Setting.PasswordChangeFragment;
 
 public class NavigationActivity extends Activity
         implements
@@ -66,11 +66,11 @@ public class NavigationActivity extends Activity
                 break;
             }
             case 6: {
-                fragment = new NearestFragment();
+                fragment = new NearestResidentFragment();
                 break;
             }
             case 7: {
-                fragment = new ProfileFragment();
+                fragment = new PasswordChangeFragment();
                 break;
             }
             case 8: {

@@ -324,10 +324,10 @@ public class ResidentActivity extends Activity {
             getMenuInflater().inflate(R.menu.menu_activity_resident, menu);
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
-                // display predefined title for action bar
+                // search predefined title for action bar
                 actionBar.setDisplayShowTitleEnabled(true);
 
-                // display go-back-home arrow at the left most of the action bar
+                // search go-back-home arrow at the left most of the action bar
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
         } catch (Exception e) {
