@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.intern.ptp.Setting.ChangeFragment">
+    tools:context="com.example.intern.ptp.Setting.PasswordChangeFragment">
     <item
         android:id="@+id/action_refresh_fragment_change"
         android:title="@string/action_settings"

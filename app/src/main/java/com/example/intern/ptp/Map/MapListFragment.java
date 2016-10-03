@@ -66,7 +66,7 @@ public class MapListFragment extends Fragment {
             inflater.inflate(R.menu.menu_fragment_map, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
-                // set title for action bar and display it
+                // set title for action bar and search it
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_map));
             }
@@ -145,7 +145,7 @@ public class MapListFragment extends Fragment {
 
     @Subscribe
     public void onServerResponse(ServerResponse event) {
-        if (event.getType().equals(ServerResponse.GET_FLOORS)) {
+        if (event.getType().equals(ServerResponse.GET_FLOOR_LIST)) {
             List<Location> locations = (List<Location>) event.getResponse();
             adapter.updateLocations(locations);
 

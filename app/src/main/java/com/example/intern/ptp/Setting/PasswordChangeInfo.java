@@ -3,7 +3,7 @@ package com.example.intern.ptp.Setting;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ChangeInfo {
+public class PasswordChangeInfo {
     @SerializedName("username")
     @Expose
     private String username;
@@ -17,7 +17,7 @@ public class ChangeInfo {
     @Expose
     private String macAddress;
 
-    public ChangeInfo(String username, String currentPassword, String newPassword, String macAddress) {
+    public PasswordChangeInfo(String username, String currentPassword, String newPassword, String macAddress) {
         this.username = username;
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;

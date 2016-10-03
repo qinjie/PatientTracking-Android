@@ -41,14 +41,14 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
     private PhotoViewAttacher mAttacher;
 
     /**
-     * create BroadcastReceiver to receive broadcast data from MapService
+     * create BroadcastReceiver to receive broadcast data from MapPointsService
      */
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
 
             try {
-                // get result with Preferences.map_resultTag from MapService's broadcast intent
+                // get result with Preferences.map_resultTag from MapPointsService's broadcast intent
                 String result = intent.getStringExtra(Preferences.map_resultTag);
 
                 // if exception occurs or inconsistent database in server
@@ -112,8 +112,8 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                     mAttacher.setOnViewTapListener(MapFragment.this);
 
 
-                    // create a new intent related to MapService
-                    Intent serviceIntent = new Intent(getActivity(), MapService.class);
+                    // create a new intent related to MapPointsService
+                    Intent serviceIntent = new Intent(getActivity(), MapPointsService.class);
 
                     // put floor id as an extra in the above created intent
                     serviceIntent.putExtra(Preferences.floor_idTag, floorId);
@@ -121,7 +121,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                     // register a broadcast receiver with the tag equals "Preferences.map_broadcastTag + floorId"
                     getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
 
-                    // start a new MapService with the intent
+                    // start a new MapPointsService with the intent
                     getActivity().startService(serviceIntent);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -181,7 +181,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             // unregister the broadcast receiver when the activity is destroyed
             getActivity().unregisterReceiver(mMessageReceiver);
 
-            // kill MapService process
+            // kill MapPointsService process
             Preferences.kill(getActivity(), ":mapservice");
 
             // clean up the map

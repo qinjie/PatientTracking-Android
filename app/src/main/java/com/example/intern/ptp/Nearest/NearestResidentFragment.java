@@ -21,17 +21,11 @@ import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.Resident.ResidentActivity;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class NearestFragment extends Fragment {
+public class NearestResidentFragment extends Fragment {
 
     @BindView(R.id.tvResident)
     TextView tvResident;
@@ -40,7 +34,6 @@ public class NearestFragment extends Fragment {
     TextView tvDistance;
 
     private Activity activity;
-    private ServerApi api;
     private String username;
     private boolean red = true;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -79,50 +72,9 @@ public class NearestFragment extends Fragment {
                         tvResident.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                try {
-                                    // create an API service and set session token to request header
-                                    api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-
-                                    // create request object to check session timeout
-                                    Call<ResponseBody> call = api.getCheck();
-                                    Preferences.showLoading(activity);
-                                    call.enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                            try {
-                                                // if exception occurs or inconsistent database in server
-                                                if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                                                    Preferences.dismissLoading();
-                                                    Preferences.showDialog(activity, "Server Error", "Please try again !");
-                                                    return;
-                                                }
-
-                                                // if session is expired
-                                                if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                                                    Preferences.goLogin(activity);
-                                                    return;
-                                                }
-
-                                                Intent intent = new Intent(activity, ResidentActivity.class);
-                                                intent.putExtra(Preferences.resident_idTag, resident.getId());
-                                                startActivity(intent);
-                                            } catch (Exception e) {
-                                                Preferences.dismissLoading();
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                                            Preferences.dismissLoading();
-                                            t.printStackTrace();
-                                            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    Preferences.dismissLoading();
-                                    e.printStackTrace();
-                                }
+                                Intent intent = new Intent(activity, ResidentActivity.class);
+                                intent.putExtra(Preferences.resident_idTag, resident.getId());
+                                startActivity(intent);
                             }
                         });
                     }
@@ -142,7 +94,7 @@ public class NearestFragment extends Fragment {
         }
     };
 
-    public NearestFragment() {
+    public NearestResidentFragment() {
         // Required empty public constructor
     }
 
@@ -168,7 +120,7 @@ public class NearestFragment extends Fragment {
         try {
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
-                // set title for action bar and display it
+                // set title for action bar and search it
                 actionBar.setDisplayShowTitleEnabled(true);
                 actionBar.setTitle(getString(R.string.title_fragment_neasrest_resident));
             }
