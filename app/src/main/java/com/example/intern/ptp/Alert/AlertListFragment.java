@@ -175,53 +175,10 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         long viewId = view.getId();
 
         if (viewId == R.id.alerts_alert_take_care_button) {
-            // create an API service and set session token to request header
-            ServerApi api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
             final Alert alert = (Alert) adapter.getItem(position);
 
-            // create request object to send a take-care-action request to server
-            Call<String> call = api.setTakecare(alert.getId(), activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
-            Preferences.showLoading(activity);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    try {
-                        // if exception occurs or inconsistent database in server
-                        if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
-                            Preferences.showDialog(activity, "Server Error", "Please try again !");
-                            return;
-                        }
-
-                        // if session is expired
-                        if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(activity);
-                            return;
-                        }
-
-                        // get response from server
-                        String res = response.body();
-
-                        // if successfully sent take-care-action request to server
-                        if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
-                            alert.setOk("1");
-                            alert.setUserId(UserManager.getId(getActivity()));
-                            alert.setUsername(UserManager.getName(getActivity()));
-                            adapter.updateAlerts();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Preferences.dismissLoading();
-                }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                    Preferences.dismissLoading();
-                    t.printStackTrace();
-                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                }
-            });
+            AlertService service = AlertService.getService();
+            service.postTakeCare(getActivity(), alert, UserManager.getName(getActivity()));
         } else {
             Alert alert = (Alert) adapter.getItem(position);
 
@@ -236,7 +193,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
-            onTakeCare((String) event.getResponse());
+            onTakeCare((Alert) event.getResponse());
         } else if (event.getType().equals(ServerResponse.GET_ALERTS)) {
             onAlertsRefresh(event.getResponse());
         }
@@ -259,7 +216,12 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         }
     }
 
-    private void onTakeCare(String success) {
+    private void onTakeCare(Alert alert) {
+        if(!alert.isOngoing()) {
+            alert.setUserId(UserManager.getId(getActivity()));
+            alert.setUsername(UserManager.getName(getActivity()));
+        }
 
+        adapter.updateAlerts();
     }
 }

@@ -198,9 +198,19 @@ public class AlertListAdapter extends BaseAdapter {
                 holder.time.setText(timeSinceAlarm);
 
                 if (alert.isOngoing()) {
+                    holder.takeCareLayout.setVisibility(View.VISIBLE);
                     holder.takeCareButton.setVisibility(View.VISIBLE);
+                    holder.takeCareButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            view.setVisibility(View.INVISIBLE);
+                            ((ListView) parent).performItemClick(view, position, 0); // Let the event be handled in onItemClick()
+                        }
+                    });
+
                 } else {
-                    holder.takeCareButton.setVisibility(View.INVISIBLE);
+                    holder.takeCareLayout.setVisibility(View.INVISIBLE);
                 }
 
                 //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
@@ -213,14 +223,6 @@ public class AlertListAdapter extends BaseAdapter {
 
                 holder.profilePicture.setImageDrawable(image);
                 // TODO END
-
-                holder.takeCareButton.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        ((ListView) parent).performItemClick(v, position, 0); // Let the event be handled in onItemClick()
-                    }
-                });
             }
         }
 
@@ -288,6 +290,8 @@ public class AlertListAdapter extends BaseAdapter {
         TextView timeIcon;
         @BindView(R.id.alerts_alert_time)
         TextView time;
+        @BindView(R.id.alerts_alert_take_care_layout)
+        View takeCareLayout;
         @BindView(R.id.alerts_alert_take_care_button)
         Button takeCareButton;
 

@@ -220,7 +220,7 @@ public class ResidentActivity extends Activity {
     @OnClick(R.id.resident_take_care_button)
     public void takeCare(View view) {
         AlertService service = AlertService.getService();
-        service.postTakeCare(this, alert.getId(), UserManager.getName(this));
+        service.postTakeCare(this, alert, UserManager.getName(this));
     }
 
     @Subscribe
@@ -228,14 +228,13 @@ public class ResidentActivity extends Activity {
         if (event.getType().equals(ServerResponse.GET_RESIDENT)) {
             onResidentRefresh((Resident) event.getResponse());
         } else if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
-            onTakeCare((String) event.getResponse());
+            onTakeCare((Alert) event.getResponse());
         }
     }
 
-    public void onTakeCare(String success) {
+    public void onTakeCare(Alert alert) {
         // if successfully sent take-care-action request to server
-        if (success.equalsIgnoreCase("success") || !success.equalsIgnoreCase("failed")) {
-            alert.setOk("1");
+        if (!alert.isOngoing()) {
             alertLayout.animate()
                     .translationY(0)
                     .alpha(0.0f)

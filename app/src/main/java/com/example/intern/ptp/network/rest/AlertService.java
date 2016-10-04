@@ -88,39 +88,35 @@ public class AlertService {
         });
     }
 
-    public void postTakeCare(final Context context, String id, String username) {
+    public void postTakeCare(final Context context, final Alert alert, final String username) {
         ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
-        Call<String> call = api.setTakecare(id, username);
+        Call<String> call = api.setTakecare(alert.getId(), username);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                try {
-                    // if exception occurs or inconsistent database in server
-                    if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                        Preferences.dismissLoading();
-                        Preferences.showDialog(context, "Server Error", "Please try again !");
-                        return;
-                    }
-
-                    // if session is expired
-                    if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                        Preferences.goLogin(context);
-                        return;
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                // if exception occurs or inconsistent database in server
+                if (response.headers().get("result").equalsIgnoreCase("failed")) {
+                    return;
                 }
 
-                bus.post(new ServerResponse(ServerResponse.POST_TAKE_CARE, response.body()));
+                // if session is expired
+                if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
+                    Preferences.goLogin(context);
+                    return;
+                }
+
+                String res = response.body();
+
+                if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
+                    alert.setOk("1");
+                }
+
+                bus.post(new ServerResponse(ServerResponse.POST_TAKE_CARE, alert));
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Preferences.dismissLoading();
-                t.printStackTrace();
-
                 bus.post(new ServerResponse(ServerResponse.SERVER_ERROR, t));
             }
         });
