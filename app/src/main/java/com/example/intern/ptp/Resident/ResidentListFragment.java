@@ -98,13 +98,24 @@ public class ResidentListFragment extends Fragment {
                 actionBar.setTitle(getString(R.string.title_fragment_resident));
             }
 
-            // get SearchView in action bar
-            sv = (SearchView) menu.findItem(R.id.search).getActionView();
-
-            // set hint for the SearchView
+            MenuItem searchMenuItem = menu.findItem(R.id.search);
+            sv = (SearchView) searchMenuItem.getActionView();
             sv.setQueryHint(getString(R.string.search_hint));
 
-            // handle search event of the SearchView
+
+            searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                    search(new SearchParam("", ((Location) mapSpinner.getSelectedItem()).getId(), "name", "asc"));
+                    return true;
+                }
+            });
+
             sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(final String query) {
@@ -221,7 +232,10 @@ public class ResidentListFragment extends Fragment {
         floorAdapter.addAll(locations);
         floorAdapter.notifyDataSetChanged();
 
-        search(new SearchParam("", ((Location) mapSpinner.getSelectedItem()).getId(), "name", "asc"));
+        mapSpinner.setSelection(0);
+        Location location = ((Location) mapSpinner.getSelectedItem());
+
+        search(new SearchParam("", location.getId(), "name", "asc"));
     }
 
     @Override
