@@ -14,6 +14,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
@@ -74,6 +75,9 @@ public class ResidentActivity extends Activity {
     @BindView(R.id.resident_time)
     TextView alertTime;
 
+    @BindView(R.id.resident_take_care_button)
+    Button alertTakeCareButton;
+
     @BindView(R.id.resident_profile_picture)
     ImageView profilePicture;
 
@@ -124,6 +128,7 @@ public class ResidentActivity extends Activity {
         }
 
         alertLayout.setVisibility(View.VISIBLE);
+        alertTakeCareButton.setVisibility(View.VISIBLE);
         alertLocationIcon.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         alertTimeIcon.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         alertLocation.setText(alert.getLastPositionLabel());
@@ -219,6 +224,8 @@ public class ResidentActivity extends Activity {
 
     @OnClick(R.id.resident_take_care_button)
     public void takeCare(View view) {
+        view.setVisibility(View.INVISIBLE);
+
         AlertService service = AlertService.getService();
         service.postTakeCare(this, alert, UserManager.getName(this));
     }
@@ -233,7 +240,7 @@ public class ResidentActivity extends Activity {
     }
 
     public void onTakeCare(Alert alert) {
-        // if successfully sent take-care-action request to server
+
         if (!alert.isOngoing()) {
             alertLayout.animate()
                     .translationY(0)
@@ -249,6 +256,8 @@ public class ResidentActivity extends Activity {
 
             ResidentService service = ResidentService.getService();
             service.getResident(this, resident.getId());
+        } else {
+            showAlert(alert);
         }
     }
 
