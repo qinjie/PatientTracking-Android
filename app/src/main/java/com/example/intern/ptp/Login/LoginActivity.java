@@ -7,9 +7,12 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.example.intern.ptp.Navigation.NavigationActivity;
 import com.example.intern.ptp.Preferences;
@@ -30,10 +33,16 @@ public class LoginActivity extends Activity {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    @BindView(R.id.username)
+    @BindView(R.id.login_progress_indicator)
+    ProgressBar progressIndicator;
+
+    @BindView(R.id.login_content)
+    View contentView;
+
+    @BindView(R.id.login_username)
     EditText mUsernameView;
 
-    @BindView(R.id.password)
+    @BindView(R.id.login_password)
     EditText mPasswordView;
 
     private String username, password, MAC;
@@ -42,6 +51,12 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.setContentView(R.layout.activity_login);
+
+        ButterKnife.bind(this);
 
         Bus bus = BusManager.getBus();
         bus.register(this);
@@ -57,9 +72,13 @@ public class LoginActivity extends Activity {
 
         // if a token is available then try to login
         if (!token.equalsIgnoreCase("")) {
+            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
             AuthenticationService service = AuthenticationService.getService();
             service.checkToken(this);
-
+        } else {
+            progressIndicator.setVisibility(View.INVISIBLE);
+            contentView.setVisibility(View.VISIBLE);
         }
 
         setLayout();
@@ -69,12 +88,6 @@ public class LoginActivity extends Activity {
      * set layout for the activity
      */
     public void setLayout() {
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        this.setContentView(R.layout.activity_login);
-
-        ButterKnife.bind(this);
-
         // get username stored in the Shared Preferences
         username = pref.getString("username", "");
 
@@ -95,9 +108,10 @@ public class LoginActivity extends Activity {
     /**
      * attempt to request a login to the app
      */
-    @OnClick(R.id.button)
+    @OnClick(R.id.login_submit)
     public void attemptLogin() {
-
+        progressIndicator.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.INVISIBLE);
 
         // get input username
         username = mUsernameView.getText().toString();
@@ -155,12 +169,17 @@ public class LoginActivity extends Activity {
             startActivityForResult(intent, 0);
 
             // if username or password is wrong, notify user by a dialog
-        } else if (result.getResult().equalsIgnoreCase("wrong")) {
-            Preferences.dismissLoading();
-            Preferences.showDialog(this, null, "Wrong username or password!");
         } else {
-            Preferences.dismissLoading();
-            Preferences.showDialog(this, "Server Error", "Please try again!");
+            progressIndicator.setVisibility(View.INVISIBLE);
+            contentView.setVisibility(View.VISIBLE);
+
+            if (result.getResult().equalsIgnoreCase("wrong")) {
+                Preferences.dismissLoading();
+                Preferences.showDialog(this, null, "Wrong username or password!");
+            } else {
+                Preferences.dismissLoading();
+                Preferences.showDialog(this, "Server Error", "Please try again!");
+            }
         }
     }
 
