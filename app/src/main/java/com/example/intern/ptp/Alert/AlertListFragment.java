@@ -20,13 +20,12 @@ import android.widget.ProgressBar;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.utils.ProgressManager;
+import com.example.intern.ptp.utils.UserManager;
+import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.example.intern.ptp.utils.bus.BusManager;
-import com.example.intern.ptp.utils.UserManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -35,9 +34,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AlertListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
@@ -57,13 +53,18 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
     private Activity activity;
 
+    private ProgressManager progressManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         activity = this.getActivity();
 
         Bus bus = BusManager.getBus();
         bus.register(this);
+
+        progressManager = new ProgressManager();
 
         // check whether the device has successfully sent a registered FCM token to server, if not and a FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
@@ -87,6 +88,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
+            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment);
             inflater.inflate(R.menu.menu_fragment_alert, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
@@ -110,7 +112,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
             switch (id) {
                 // reload fragment
-                case R.id.action_refresh_fragment_alert:
+                case R.id.action_refresh_fragment:
                     refreshView();
                     return true;
                 default:
@@ -132,6 +134,8 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         alertListView.setAdapter(adapter);
         alertListView.setOnItemClickListener(this);
 
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
+
         refreshView();
         return view;
     }
@@ -149,10 +153,9 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     private void refreshView() {
         final AlertService service = AlertService.getService();
 
-        progressIndicator.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.INVISIBLE);
+        progressManager.indicateProgress(adapter.getCount() == 0);
 
-        // check whether user prefers only untaken care notificaiotns
+        // check whether user prefers only untaken care notifications
         if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
             redCheck.setChecked(true);
             service.getAlerts(getActivity(), true);
@@ -201,14 +204,13 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
     @Subscribe
     public void onNotificationResponse(NotificationResponse event) {
-        if(event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
             refreshView();
         }
     }
 
     private void onAlertsRefresh(Object response) {
-        progressIndicator.setVisibility(View.INVISIBLE);
-        contentView.setVisibility(View.VISIBLE);
+        progressManager.stopProgress();
 
         if (response instanceof List) {
             List<Alert> alertList = (List<Alert>) response;
@@ -217,7 +219,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     }
 
     private void onTakeCare(Alert alert) {
-        if(!alert.isOngoing()) {
+        if (!alert.isOngoing()) {
             alert.setUserId(UserManager.getId(getActivity()));
             alert.setUsername(UserManager.getName(getActivity()));
         }

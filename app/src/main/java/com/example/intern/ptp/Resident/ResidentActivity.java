@@ -30,6 +30,7 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ResidentService;
 import com.example.intern.ptp.utils.FontManager;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
@@ -52,7 +53,8 @@ public class ResidentActivity extends Activity {
 
     private Resident resident;
     private Alert alert;
-    List<Fragment> fragments = new ArrayList<>();
+    private List<Fragment> fragments = new ArrayList<>();
+    private ProgressManager progressManager;
 
     @BindView(R.id.maplist_progress_indicator)
     ProgressBar progressIndicator;
@@ -105,13 +107,15 @@ public class ResidentActivity extends Activity {
         Bus bus = BusManager.getBus();
         bus.register(this);
 
+        progressManager = new ProgressManager();
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
+
         toggleGroup.setOnCheckedChangeListener(toggleListener);
         refreshView();
     }
 
     private void refreshView() {
-        progressIndicator.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.INVISIBLE);
+        progressManager.indicateProgress(resident == null);
 
         String residentId = this.getIntent().getStringExtra(Preferences.resident_idTag);
 
@@ -306,8 +310,7 @@ public class ResidentActivity extends Activity {
             }
         }
 
-        progressIndicator.setVisibility(View.INVISIBLE);
-        contentView.setVisibility(View.VISIBLE);
+        progressManager.stopProgress();
     }
 
     @Subscribe
@@ -329,6 +332,7 @@ public class ResidentActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         try {
+            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_resident);
             getMenuInflater().inflate(R.menu.menu_activity_resident, menu);
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
