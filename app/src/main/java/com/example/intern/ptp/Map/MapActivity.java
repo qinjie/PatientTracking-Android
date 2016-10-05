@@ -52,7 +52,6 @@ public class MapActivity extends Activity {
 
             switch (id) {
                 case android.R.id.home:
-                    Preferences.dismissLoading();
                     this.finish();
                     return true;
                 default:
@@ -84,7 +83,6 @@ public class MapActivity extends Activity {
     }
 
     public void onBackPressed() {
-        Preferences.dismissLoading();
         this.finish();
     }
 }

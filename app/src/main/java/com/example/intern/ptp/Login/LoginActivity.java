@@ -174,10 +174,8 @@ public class LoginActivity extends Activity {
             contentView.setVisibility(View.VISIBLE);
 
             if (result.getResult().equalsIgnoreCase("wrong")) {
-                Preferences.dismissLoading();
                 Preferences.showDialog(this, null, "Wrong username or password!");
             } else {
-                Preferences.dismissLoading();
                 Preferences.showDialog(this, "Server Error", "Please try again!");
             }
         }

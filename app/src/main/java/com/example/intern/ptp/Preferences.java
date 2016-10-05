@@ -67,12 +67,6 @@ public class Preferences {
     // tag for checking whether the user has received all untaken care notification from server after the user logs in
     public static final String first_login_alert_statusTag = "Resident_Tracking.first_login_alert_status";
 
-    // a common ProgressDialog for the app
-    public static ProgressDialog loading;
-
-    // whether the ProgressDialog is on screen
-    public static boolean isShownLoading = false;
-
     // whether there is a dialog on screen
     public static boolean isDialog = false;
 
@@ -97,12 +91,6 @@ public class Preferences {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
 
-            // make sure the loading dialog off
-            if (isShownLoading) {
-                isShownLoading = false;
-                loading.dismiss();
-            }
-
             // start a new LoginActivity and remove all other activities in stack
             Intent intent = new Intent(context, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -112,33 +100,6 @@ public class Preferences {
         }
     }
 
-    /**
-     * show loading dialog
-     */
-    public static void showLoading(final Context context) {
-        try {
-            if (!isShownLoading) {
-                isShownLoading = true;
-                loading = ProgressDialog.show(context, context.getString(R.string.loading_title), context.getString(R.string.loading_message));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * turn off loading dialog
-     */
-    public static void dismissLoading() {
-        try {
-            if (isShownLoading) {
-                isShownLoading = false;
-                loading.dismiss();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * kill a process

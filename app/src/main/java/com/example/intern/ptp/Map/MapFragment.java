@@ -126,7 +126,6 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Preferences.dismissLoading();
             }
 
             @Override
