@@ -18,6 +18,7 @@ import com.example.intern.ptp.Navigation.NavigationActivity;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AuthenticationService;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.google.android.gms.common.ConnectionResult;
@@ -47,6 +48,7 @@ public class LoginActivity extends Activity {
 
     private String username, password, MAC;
     private SharedPreferences pref;
+    private ProgressManager progressManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,9 @@ public class LoginActivity extends Activity {
         this.setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
+
+        progressManager = new ProgressManager();
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
 
         Bus bus = BusManager.getBus();
         bus.register(this);
@@ -77,8 +82,7 @@ public class LoginActivity extends Activity {
             AuthenticationService service = AuthenticationService.getService();
             service.checkToken(this);
         } else {
-            progressIndicator.setVisibility(View.INVISIBLE);
-            contentView.setVisibility(View.VISIBLE);
+            progressManager.stopProgress();
         }
 
         setLayout();
@@ -168,17 +172,15 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent(this, NavigationActivity.class);
             startActivityForResult(intent, 0);
 
-            // if username or password is wrong, notify user by a dialog
         } else {
-            progressIndicator.setVisibility(View.INVISIBLE);
-            contentView.setVisibility(View.VISIBLE);
-
             if (result.getResult().equalsIgnoreCase("wrong")) {
                 Preferences.showDialog(this, null, "Wrong username or password!");
             } else {
                 Preferences.showDialog(this, "Server Error", "Please try again!");
             }
         }
+
+        progressManager.stopProgress();
     }
 
     @Override
@@ -199,6 +201,8 @@ public class LoginActivity extends Activity {
                 Intent intent = new Intent(this, NavigationActivity.class);
                 startActivityForResult(intent, 0);
             }
+
+            progressManager.stopProgress();
 
         } else if (event.getType().equals(ServerResponse.POST_LOGIN)) {
             login((LoginResult) event.getResponse());
