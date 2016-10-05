@@ -14,13 +14,14 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.ProgressBar;
 
 import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.Resident;
 import com.example.intern.ptp.Resident.ResidentActivity;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.views.widgets.LocatorMapPhotoView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -32,13 +33,15 @@ import butterknife.ButterKnife;
 
 public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTapListener {
 
-    @BindView(R.id.iv_photo)
-    LocatorMapPhotoView mImageView;
+    @BindView(R.id.map_progress_indicator)
+    ProgressBar progressIndicator;
 
-    @BindView(R.id.map_layout)
-    RelativeLayout layout;
+    @BindView(R.id.map_photo)
+    LocatorMapPhotoView photoView;
 
-    private PhotoViewAttacher mAttacher;
+    private PhotoViewAttacher photoAttacher;
+
+    private ProgressManager progressManager;
 
     /**
      * create BroadcastReceiver to receive broadcast data from MapPointsService
@@ -74,7 +77,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
                 // if successfully receive map points from server
                 List<Resident> residentList = intent.getParcelableArrayListExtra(Preferences.map_pointsTag);
-                mImageView.setResidents(residentList);
+                photoView.setResidents(residentList);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -82,6 +85,12 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
         }
     };
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        progressManager = new ProgressManager();
+    }
 
     @Nullable
     @Override
@@ -90,6 +99,8 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
         View view = inflater.inflate(R.layout.fragment_map, null);
         ButterKnife.bind(this, view);
+
+        progressManager.initLoadingIndicator(photoView, progressIndicator);
 
         Bundle args = getArguments();
 
@@ -101,15 +112,15 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 try {
                     // make the PhotoView reset when re assign bitmap
-                    mImageView.setResetable(true);
+                    photoView.setResetable(true);
 
                     // set bitmap to the PhotoView
-                    mImageView.setImageBitmap(bitmap);
+                    photoView.setImageBitmap(bitmap);
 
                     // to be able to get coordinates of the rectangular map's 4 edges and handle zooming event
-                    mAttacher = new PhotoViewAttacher(mImageView);
-                    mAttacher.setOnMatrixChangeListener(mImageView);
-                    mAttacher.setOnViewTapListener(MapFragment.this);
+                    photoAttacher = new PhotoViewAttacher(photoView);
+                    photoAttacher.setOnMatrixChangeListener(photoView);
+                    photoAttacher.setOnViewTapListener(MapFragment.this);
 
 
                     // create a new intent related to MapPointsService
@@ -123,43 +134,37 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
                     // start a new MapPointsService with the intent
                     getActivity().startService(serviceIntent);
+
+                    progressManager.stopProgress();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Preferences.dismissLoading();
             }
 
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
                 try {
-                    // assign a null image to mBitMap when failed loading the map
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
-
-                    mImageView.setImageBitmap(bitmap);
+                    progressManager.stopProgress();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Preferences.dismissLoading();
             }
 
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
                 try {
-                    // assign a loading image to mBitMap when the map is being loaded
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loading_image);
+                    // assign a null image to mBitMap when failed loading the map
+                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
 
-                    // set bitmap to the PhotoView
-                    mImageView.setResetable(true);
-
-                    // set bitmap to the PhotoView
-                    mImageView.setImageBitmap(bitmap);
+                    photoView.setImageBitmap(bitmap);
+                    progressManager.indicateProgress(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
 
-        mImageView.setTag(mapLoadTarget);
+        photoView.setTag(mapLoadTarget);
 
         try {
             // use Picasso library to load the map
@@ -185,7 +190,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             Preferences.kill(getActivity(), ":mapservice");
 
             // clean up the map
-            if (mAttacher != null) mAttacher.cleanup();
+            if (photoAttacher != null) photoAttacher.cleanup();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -195,7 +200,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
     public void onViewTap(View view, float x, float y) {
         PointF touchPoint = new PointF(x, y);
 
-        Resident resident = mImageView.getTouchedResident(touchPoint);
+        Resident resident = photoView.getTouchedResident(touchPoint);
 
         if (resident != null && !resident.isNurse()) {
             Intent intent = new Intent(getActivity(), ResidentActivity.class);

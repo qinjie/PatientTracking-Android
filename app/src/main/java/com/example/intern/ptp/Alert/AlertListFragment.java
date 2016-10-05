@@ -20,13 +20,12 @@ import android.widget.ProgressBar;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.ResidentActivity;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.network.rest.AlertService;
+import com.example.intern.ptp.utils.ProgressManager;
+import com.example.intern.ptp.utils.UserManager;
+import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.example.intern.ptp.utils.bus.BusManager;
-import com.example.intern.ptp.utils.UserManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -35,9 +34,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AlertListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
@@ -57,13 +53,18 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
     private Activity activity;
 
+    private ProgressManager progressManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         activity = this.getActivity();
 
         Bus bus = BusManager.getBus();
         bus.register(this);
+
+        progressManager = new ProgressManager();
 
         // check whether the device has successfully sent a registered FCM token to server, if not and a FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
@@ -87,6 +88,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
+            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment);
             inflater.inflate(R.menu.menu_fragment_alert, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
@@ -110,7 +112,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
             switch (id) {
                 // reload fragment
-                case R.id.action_refresh_fragment_alert:
+                case R.id.action_refresh_fragment:
                     refreshView();
                     return true;
                 default:
@@ -132,6 +134,8 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         alertListView.setAdapter(adapter);
         alertListView.setOnItemClickListener(this);
 
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
+
         refreshView();
         return view;
     }
@@ -149,10 +153,9 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     private void refreshView() {
         final AlertService service = AlertService.getService();
 
-        progressIndicator.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.INVISIBLE);
+        progressManager.indicateProgress(adapter.getCount() == 0);
 
-        // check whether user prefers only untaken care notificaiotns
+        // check whether user prefers only untaken care notifications
         if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
             redCheck.setChecked(true);
             service.getAlerts(getActivity(), true);
@@ -175,53 +178,10 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         long viewId = view.getId();
 
         if (viewId == R.id.alerts_alert_take_care_button) {
-            // create an API service and set session token to request header
-            ServerApi api = ServiceGenerator.createService(ServerApi.class, activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
             final Alert alert = (Alert) adapter.getItem(position);
 
-            // create request object to send a take-care-action request to server
-            Call<String> call = api.setTakecare(alert.getId(), activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", ""));
-            Preferences.showLoading(activity);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    try {
-                        // if exception occurs or inconsistent database in server
-                        if (response.headers().get("result").equalsIgnoreCase("failed")) {
-                            Preferences.dismissLoading();
-                            Preferences.showDialog(activity, "Server Error", "Please try again !");
-                            return;
-                        }
-
-                        // if session is expired
-                        if (!response.headers().get("result").equalsIgnoreCase("isNotExpired")) {
-                            Preferences.goLogin(activity);
-                            return;
-                        }
-
-                        // get response from server
-                        String res = response.body();
-
-                        // if successfully sent take-care-action request to server
-                        if (res.equalsIgnoreCase("success") || !res.equalsIgnoreCase("failed")) {
-                            alert.setOk("1");
-                            alert.setUserId(UserManager.getId(getActivity()));
-                            alert.setUsername(UserManager.getName(getActivity()));
-                            adapter.updateAlerts();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    Preferences.dismissLoading();
-                }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                    Preferences.dismissLoading();
-                    t.printStackTrace();
-                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
-                }
-            });
+            AlertService service = AlertService.getService();
+            service.postTakeCare(getActivity(), alert, UserManager.getName(getActivity()));
         } else {
             Alert alert = (Alert) adapter.getItem(position);
 
@@ -236,7 +196,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
-            onTakeCare((String) event.getResponse());
+            onTakeCare((Alert) event.getResponse());
         } else if (event.getType().equals(ServerResponse.GET_ALERTS)) {
             onAlertsRefresh(event.getResponse());
         }
@@ -244,14 +204,13 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
     @Subscribe
     public void onNotificationResponse(NotificationResponse event) {
-        if(event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
             refreshView();
         }
     }
 
     private void onAlertsRefresh(Object response) {
-        progressIndicator.setVisibility(View.INVISIBLE);
-        contentView.setVisibility(View.VISIBLE);
+        progressManager.stopProgress();
 
         if (response instanceof List) {
             List<Alert> alertList = (List<Alert>) response;
@@ -259,7 +218,12 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         }
     }
 
-    private void onTakeCare(String success) {
+    private void onTakeCare(Alert alert) {
+        if (!alert.isOngoing()) {
+            alert.setUserId(UserManager.getId(getActivity()));
+            alert.setUsername(UserManager.getName(getActivity()));
+        }
 
+        adapter.updateAlerts();
     }
 }

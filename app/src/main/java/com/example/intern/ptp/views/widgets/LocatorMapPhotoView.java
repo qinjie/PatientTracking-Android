@@ -49,6 +49,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         circlePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+        displayRect = getDisplayRect();
     }
 
     @Override

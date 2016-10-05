@@ -17,8 +17,8 @@ import android.widget.ProgressBar;
 
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.rest.MapService;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
@@ -41,13 +41,15 @@ public class MapListFragment extends Fragment {
 
     private MapListAdapter adapter;
     private Activity activity;
-    private ServerApi api;
+    private ProgressManager progressManager;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
+        progressManager = new ProgressManager();
 
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
@@ -63,6 +65,7 @@ public class MapListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
+            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment_maplist);
             inflater.inflate(R.menu.menu_fragment_map, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
@@ -86,7 +89,7 @@ public class MapListFragment extends Fragment {
             int id = item.getItemId();
 
             switch (id) {
-                case R.id.action_refresh_fragment_map:
+                case R.id.action_refresh_fragment_maplist:
                     refreshView();
                     return true;
                 default:
@@ -108,6 +111,8 @@ public class MapListFragment extends Fragment {
         Bus bus = BusManager.getBus();
         bus.register(this);
 
+        progressManager.initLoadingIndicator(mapListView, progressIndicator);
+
         adapter = new MapListAdapter(activity, new ArrayList<Location>());
         mapListView.setAdapter(adapter);
         mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -128,8 +133,7 @@ public class MapListFragment extends Fragment {
     }
 
     private void refreshView() {
-        progressIndicator.setVisibility(View.VISIBLE);
-        mapListView.setVisibility(View.INVISIBLE);
+        progressManager.indicateProgress(adapter.getCount() == 0);
 
         MapService service = MapService.getService();
         service.getFloors(getActivity());
@@ -149,8 +153,7 @@ public class MapListFragment extends Fragment {
             List<Location> locations = (List<Location>) event.getResponse();
             adapter.updateLocations(locations);
 
-            progressIndicator.setVisibility(View.INVISIBLE);
-            mapListView.setVisibility(View.VISIBLE);
+            progressManager.stopProgress();
         }
     }
 

@@ -37,7 +37,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
         if (UserManager.isLoggedIn(getApplicationContext())) {
             Map<String, String> data = message.getData();
-            Alert alert = getAlert(data.get("message"));
+            Alert alert = parseAlert(data.get("message"));
 
             if (alert == null) {
                 return;
@@ -110,7 +110,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         notificationManager.cancel(Preferences.notify_idTag, residentId);
     }
 
-    private Alert getAlert(String message) {
+    private Alert parseAlert(String message) {
         Gson gson = new Gson();
         return gson.fromJson(message, Alert.class);
     }

@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.example.intern.ptp.Alert.AlertListFragment;
@@ -27,10 +28,10 @@ public class NavigationActivity extends Activity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(this);
         super.onCreate(savedInstanceState);
+
 
         try {
             setContentView(R.layout.activity_navigation);

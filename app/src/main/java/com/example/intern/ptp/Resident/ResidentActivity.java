@@ -14,6 +14,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
@@ -29,6 +30,7 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.rest.AlertService;
 import com.example.intern.ptp.network.rest.ResidentService;
 import com.example.intern.ptp.utils.FontManager;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
@@ -51,7 +53,8 @@ public class ResidentActivity extends Activity {
 
     private Resident resident;
     private Alert alert;
-    List<Fragment> fragments = new ArrayList<>();
+    private List<Fragment> fragments = new ArrayList<>();
+    private ProgressManager progressManager;
 
     @BindView(R.id.maplist_progress_indicator)
     ProgressBar progressIndicator;
@@ -73,6 +76,9 @@ public class ResidentActivity extends Activity {
 
     @BindView(R.id.resident_time)
     TextView alertTime;
+
+    @BindView(R.id.resident_take_care_button)
+    Button alertTakeCareButton;
 
     @BindView(R.id.resident_profile_picture)
     ImageView profilePicture;
@@ -101,13 +107,15 @@ public class ResidentActivity extends Activity {
         Bus bus = BusManager.getBus();
         bus.register(this);
 
+        progressManager = new ProgressManager();
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
+
         toggleGroup.setOnCheckedChangeListener(toggleListener);
         refreshView();
     }
 
     private void refreshView() {
-        progressIndicator.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.INVISIBLE);
+        progressManager.indicateProgress(resident == null);
 
         String residentId = this.getIntent().getStringExtra(Preferences.resident_idTag);
 
@@ -124,6 +132,7 @@ public class ResidentActivity extends Activity {
         }
 
         alertLayout.setVisibility(View.VISIBLE);
+        alertTakeCareButton.setVisibility(View.VISIBLE);
         alertLocationIcon.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         alertTimeIcon.setTypeface(FontManager.getTypeface(this, FontManager.FONTAWESOME));
         alertLocation.setText(alert.getLastPositionLabel());
@@ -219,8 +228,10 @@ public class ResidentActivity extends Activity {
 
     @OnClick(R.id.resident_take_care_button)
     public void takeCare(View view) {
+        view.setVisibility(View.INVISIBLE);
+
         AlertService service = AlertService.getService();
-        service.postTakeCare(this, alert.getId(), UserManager.getName(this));
+        service.postTakeCare(this, alert, UserManager.getName(this));
     }
 
     @Subscribe
@@ -228,14 +239,13 @@ public class ResidentActivity extends Activity {
         if (event.getType().equals(ServerResponse.GET_RESIDENT)) {
             onResidentRefresh((Resident) event.getResponse());
         } else if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
-            onTakeCare((String) event.getResponse());
+            onTakeCare((Alert) event.getResponse());
         }
     }
 
-    public void onTakeCare(String success) {
-        // if successfully sent take-care-action request to server
-        if (success.equalsIgnoreCase("success") || !success.equalsIgnoreCase("failed")) {
-            alert.setOk("1");
+    public void onTakeCare(Alert alert) {
+
+        if (!alert.isOngoing()) {
             alertLayout.animate()
                     .translationY(0)
                     .alpha(0.0f)
@@ -250,6 +260,8 @@ public class ResidentActivity extends Activity {
 
             ResidentService service = ResidentService.getService();
             service.getResident(this, resident.getId());
+        } else {
+            showAlert(alert);
         }
     }
 
@@ -298,8 +310,7 @@ public class ResidentActivity extends Activity {
             }
         }
 
-        progressIndicator.setVisibility(View.INVISIBLE);
-        contentView.setVisibility(View.VISIBLE);
+        progressManager.stopProgress();
     }
 
     @Subscribe
@@ -321,6 +332,7 @@ public class ResidentActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         try {
+            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_resident);
             getMenuInflater().inflate(R.menu.menu_activity_resident, menu);
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {

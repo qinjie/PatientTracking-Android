@@ -50,7 +50,7 @@
         <service
             android:name=".Map.MapPointsService"
             android:exported="false"
-            android:process=":mapservice" />
+            android:process=":mappointsservice" />
 
         <service
             android:name=".Nearest.NearestService"
