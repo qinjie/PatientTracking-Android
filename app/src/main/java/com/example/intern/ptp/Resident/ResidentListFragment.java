@@ -17,15 +17,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
 import com.example.intern.ptp.Map.Location;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.ServerApi;
-import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.network.rest.MapService;
 import com.example.intern.ptp.network.rest.ResidentService;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
@@ -36,9 +34,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ResidentListFragment extends Fragment {
     private SearchView sv;
@@ -59,6 +54,8 @@ public class ResidentListFragment extends Fragment {
 
     private ArrayAdapter<Location> floorAdapter;
 
+    private ProgressManager progressManager;
+
     /**
      * search resident by a SearchParam and search result on a table namely resident list table
      */
@@ -76,6 +73,8 @@ public class ResidentListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
 
+        progressManager = new ProgressManager();
+
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
     }
@@ -90,6 +89,7 @@ public class ResidentListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
+            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment_residentlist);
             inflater.inflate(R.menu.menu_fragment_resident, menu);
             ActionBar actionBar = getActivity().getActionBar();
             if (actionBar != null) {
@@ -144,7 +144,7 @@ public class ResidentListFragment extends Fragment {
 
         switch (id) {
             // reload fragment
-            case R.id.action_refresh_fragment_resident:
+            case R.id.action_refresh_fragment_residentlist:
                 refreshView();
                 return true;
             default:
@@ -161,6 +161,8 @@ public class ResidentListFragment extends Fragment {
 
         Bus bus = BusManager.getBus();
         bus.register(this);
+
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
 
         residentList.setAdapter(new ResidentListAdapter(getActivity(), new ArrayList<Resident>()));
         residentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -197,8 +199,7 @@ public class ResidentListFragment extends Fragment {
     }
 
     private void refreshView() {
-        progressIndicator.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.INVISIBLE);
+        progressManager.indicateProgress(floorAdapter.getCount() == 0);
 
         MapService service = MapService.getService();
         service.getFloors(getActivity());
@@ -221,8 +222,7 @@ public class ResidentListFragment extends Fragment {
         ResidentListAdapter adapter = (ResidentListAdapter) residentList.getAdapter();
         adapter.setResidents(residents);
 
-        progressIndicator.setVisibility(View.INVISIBLE);
-        contentView.setVisibility(View.VISIBLE);
+        progressManager.stopProgress();
     }
 
     private void updateFloors(List<Location> locations) {

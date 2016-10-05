@@ -75,39 +75,16 @@ public class PasswordChangeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
-            inflater.inflate(R.menu.menu_fragment_change, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
                 // set title for action bar and search it
                 actionBar.setDisplayShowTitleEnabled(true);
-                actionBar.setTitle(getString(R.string.title_fragment_change));
+                actionBar.setTitle(getString(R.string.title_fragment_profile));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        try {
-            int id = item.getItemId();
-
-            switch (id) {
-                // reload fragment
-                case R.id.action_refresh_fragment_change:
-                    activity.recreate();
-                    return true;
-                default:
-                    return super.onOptionsItemSelected(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     @Override
