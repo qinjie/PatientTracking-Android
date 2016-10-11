@@ -5,14 +5,17 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.intern.ptp.Preferences;
+import com.example.intern.ptp.Resident.Resident;
+import com.example.intern.ptp.Resident.ResidentActivity;
 
 
-public class MapActivity extends Activity {
+public class MapActivity extends Activity implements MapFragment.OnResidentTouchListener {
 
     Fragment mapFragment;
 
@@ -84,5 +87,12 @@ public class MapActivity extends Activity {
 
     public void onBackPressed() {
         this.finish();
+    }
+
+    @Override
+    public void onResidentTouched(Resident resident) {
+        Intent intent = new Intent(this, ResidentActivity.class);
+        intent.putExtra(Preferences.resident_idTag, resident.getId());
+        this.startActivityForResult(intent, 0);
     }
 }

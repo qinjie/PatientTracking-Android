@@ -50,7 +50,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             }
 
             Bus bus = BusManager.getBus();
-            bus.post(new NotificationResponse(NotificationResponse.MESSAGE_RECEIVED, message));
+            bus.post(new NotificationResponse(NotificationResponse.MESSAGE_RECEIVED, alert));
         }
     }
 

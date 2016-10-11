@@ -20,7 +20,6 @@ import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.Resident.Resident;
-import com.example.intern.ptp.Resident.ResidentActivity;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.views.widgets.LocatorMapPhotoView;
 import com.squareup.picasso.Picasso;
@@ -42,6 +41,8 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
     private PhotoViewAttacher photoAttacher;
 
     private ProgressManager progressManager;
+
+    private OnResidentTouchListener onResidentTouchListener;
 
     /**
      * create BroadcastReceiver to receive broadcast data from MapPointsService
@@ -104,6 +105,10 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
 
         Bundle args = getArguments();
 
+        if (getActivity() instanceof OnResidentTouchListener) {
+            onResidentTouchListener = (OnResidentTouchListener) getActivity();
+        }
+
         final String floorId = args.getString(Preferences.floor_idTag);
         final String url = args.getString(Preferences.floorFilePathTag);
 
@@ -111,10 +116,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 try {
-                    // make the PhotoView reset when re assign bitmap
                     photoView.setResetable(true);
-
-                    // set bitmap to the PhotoView
                     photoView.setImageBitmap(bitmap);
 
                     // to be able to get coordinates of the rectangular map's 4 edges and handle zooming event
@@ -122,17 +124,10 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                     photoAttacher.setOnMatrixChangeListener(photoView);
                     photoAttacher.setOnViewTapListener(MapFragment.this);
 
-
                     // create a new intent related to MapPointsService
                     Intent serviceIntent = new Intent(getActivity(), MapPointsService.class);
-
-                    // put floor id as an extra in the above created intent
                     serviceIntent.putExtra(Preferences.floor_idTag, floorId);
-
-                    // register a broadcast receiver with the tag equals "Preferences.map_broadcastTag + floorId"
                     getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
-
-                    // start a new MapPointsService with the intent
                     getActivity().startService(serviceIntent);
 
                     progressManager.stopProgress();
@@ -203,9 +198,13 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
         Resident resident = photoView.getTouchedResident(touchPoint);
 
         if (resident != null && !resident.isNurse()) {
-            Intent intent = new Intent(getActivity(), ResidentActivity.class);
-            intent.putExtra(Preferences.resident_idTag, resident.getId());
-            this.startActivityForResult(intent, 0);
+            if (onResidentTouchListener != null) {
+                onResidentTouchListener.onResidentTouched(resident);
+            }
         }
+    }
+
+    public interface OnResidentTouchListener {
+        void onResidentTouched(Resident resident);
     }
 }
