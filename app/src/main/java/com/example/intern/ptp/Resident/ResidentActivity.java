@@ -49,7 +49,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ResidentActivity extends Activity {
+public class ResidentActivity extends Activity implements MapFragment.OnResidentTouchListener {
 
     private Resident resident;
     private Alert alert;
@@ -111,13 +111,14 @@ public class ResidentActivity extends Activity {
         progressManager.initLoadingIndicator(contentView, progressIndicator);
 
         toggleGroup.setOnCheckedChangeListener(toggleListener);
-        refreshView();
-    }
-
-    private void refreshView() {
-        progressManager.indicateProgress(resident == null);
 
         String residentId = this.getIntent().getStringExtra(Preferences.resident_idTag);
+
+        refreshView(residentId);
+    }
+
+    private void refreshView(String residentId) {
+        progressManager.indicateProgress(resident == null);
 
         ResidentService service = ResidentService.getService();
         service.getResident(this, residentId);
@@ -316,7 +317,11 @@ public class ResidentActivity extends Activity {
     @Subscribe
     public void onNotificationResponse(NotificationResponse event) {
         if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
-            refreshView();
+            Alert alert = (Alert) event.getResponse();
+
+            if(resident != null && resident.getId().equals(alert.getResidentId())) {
+                refreshView(resident.getId());
+            }
         }
     }
 
@@ -330,7 +335,6 @@ public class ResidentActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         try {
             progressManager.initRefreshingIndicator(menu, R.id.action_refresh_resident);
             getMenuInflater().inflate(R.menu.menu_activity_resident, menu);
@@ -364,7 +368,7 @@ public class ResidentActivity extends Activity {
 
                 // reload activity
                 case R.id.action_refresh_resident:
-                    refreshView();
+                    refreshView(resident.getId());
                     return true;
                 default:
                     return super.onOptionsItemSelected(item);
@@ -373,5 +377,10 @@ public class ResidentActivity extends Activity {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public void onResidentTouched(Resident resident) {
+        refreshView(resident.getId());
     }
 }
