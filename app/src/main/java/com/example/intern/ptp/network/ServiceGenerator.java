@@ -67,7 +67,7 @@ public class ServiceGenerator {
                         bus.post(new ServerResponse(ServerResponse.ERROR_UNKNOWN, null));
                     }
 
-                    if (!result.equalsIgnoreCase("isNotExpired")) {
+                    else if (!result.equalsIgnoreCase("isNotExpired")) {
                         bus.post(new ServerResponse(ServerResponse.ERROR_TOKEN_EXPIRED, null));
                     }
                 }

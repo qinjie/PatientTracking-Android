@@ -36,7 +36,7 @@ public class PatientTrackingApplication extends Application {
         if (event.getType().equals(ServerResponse.ERROR_TOKEN_EXPIRED)) {
             Preferences.goLogin(this);
         } else if (event.getType().equals(ServerResponse.ERROR_UNKNOWN)) {
-            Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT);
+            Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
 
