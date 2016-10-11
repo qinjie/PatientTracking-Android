@@ -1,6 +1,9 @@
 package com.example.intern.ptp.network;
 
-import com.example.intern.ptp.Preferences;
+import com.example.intern.ptp.utils.Preferences;
+import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.squareup.otto.Bus;
 
 import java.io.IOException;
 
@@ -51,6 +54,28 @@ public class ServiceGenerator {
                 }
             });
         }
+
+        httpClient.addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Response response = chain.proceed(chain.request());
+                Bus bus = BusManager.getBus();
+                String result = response.headers().get("result");
+
+                if (result != null) {
+                    if (result.equalsIgnoreCase("failed")) {
+                        bus.post(new ServerResponse(ServerResponse.ERROR_UNKNOWN, null));
+                    }
+
+                    if (!result.equalsIgnoreCase("isNotExpired")) {
+                        bus.post(new ServerResponse(ServerResponse.ERROR_TOKEN_EXPIRED, null));
+                    }
+                }
+
+                return response;
+            }
+        });
+
 
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = builder.client(client).build();

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.intern.ptp.Login.LoginActivity">
+    tools:context="com.example.intern.ptp.LoginActivity">
 
     <ProgressBar
         android:id="@+id/login_progress_indicator"

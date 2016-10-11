@@ -2,7 +2,6 @@ package com.example.intern.ptp.utils.bus.response;
 
 public class ServerResponse extends BusResponse {
 
-    public static final String SERVER_ERROR = "server_error";
     public static final String GET_ALERT_COUNT = "get_alert_count";
     public static final String GET_ALERTS = "get_alerts";
     public static final String GET_RESIDENT = "get_resident";
@@ -14,6 +13,8 @@ public class ServerResponse extends BusResponse {
     public static final String GET_NEAREST_RESIDENT = "get_nearest_resident";
     public static final String GET_RESIDENT_LIST = "get_resident_list";
     public static final String POST_CHANGE_PASSWORD = "post_change_password";
+    public static final String ERROR_TOKEN_EXPIRED = "error_token_expired";
+    public static final String ERROR_UNKNOWN = "unknown_error";
 
     public ServerResponse(String type, Object response) {
         super(type, response);

@@ -72,4 +72,5 @@
     <string name="alert_type_went_out_of_ward">Went out of ward</string>
     <string name="alert_type_press_alarm_button">Press the alarm button</string>
     <string name="alert_type_is_out_of_tracking">Is out of tracking</string>
+    <string name="error_unknown_server_error">Whoops server error. Please try again.</string>
 </resources>

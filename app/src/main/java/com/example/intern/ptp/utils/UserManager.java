@@ -3,8 +3,6 @@ package com.example.intern.ptp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.intern.ptp.Preferences;
-
 public class UserManager {
 
     public static String getName(Context context) {

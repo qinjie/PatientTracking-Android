@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.intern.ptp.Alert.AlertListFragment">
+    tools:context="com.example.intern.ptp.fragments.AlertListFragment">
     <item
         android:id="@+id/action_refresh_fragment"
         android:title="@string/action_settings"

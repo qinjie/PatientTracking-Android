@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.intern.ptp.Map.MapListFragment">
+    tools:context="com.example.intern.ptp.fragments.MapListFragment">
 
     <ProgressBar
         android:id="@+id/maplist_progress_indicator"
