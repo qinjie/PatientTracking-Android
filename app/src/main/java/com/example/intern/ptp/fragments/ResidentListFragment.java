@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.ResidentActivity;
@@ -28,6 +29,7 @@ import com.example.intern.ptp.network.models.SearchParam;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.views.adapter.ResidentListAdapter;
 import com.squareup.otto.Bus;
@@ -212,13 +214,18 @@ public class ResidentListFragment extends Fragment {
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.GET_RESIDENT_LIST)) {
-            List<Resident> residents = (List<Resident>) event.getResponse();
+            List<Resident> residents = (List<Resident>) event.getMessage();
             updateResidents(residents);
         } else if (event.getType().equals(ServerResponse.GET_FLOOR_LIST)) {
-            List<Location> locations = (List<Location>) event.getResponse();
+            List<Location> locations = (List<Location>) event.getMessage();
             updateFloors(locations);
-        } else if (event.getType().equals(ServerResponse.ERROR_UNKNOWN)) {
-            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
+        }
+    }
+
+    @Subscribe
+    public void onServerError(ServerError serverError) {
+        if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
 

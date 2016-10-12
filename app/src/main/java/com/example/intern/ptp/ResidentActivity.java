@@ -34,7 +34,7 @@ import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
-import com.example.intern.ptp.utils.bus.response.NotificationResponse;
+import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -239,9 +239,9 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.GET_RESIDENT)) {
-            onResidentRefresh((Resident) event.getResponse());
+            onResidentRefresh((Resident) event.getMessage());
         } else if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
-            onTakeCare((Alert) event.getResponse());
+            onTakeCare((Alert) event.getMessage());
         }
     }
 
@@ -316,9 +316,9 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     }
 
     @Subscribe
-    public void onNotificationResponse(NotificationResponse event) {
-        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
-            Alert alert = (Alert) event.getResponse();
+    public void onNotificationResponse(NotificationMessage event) {
+        if (event.getType().equals(NotificationMessage.MESSAGE_RECEIVED)) {
+            Alert alert = (Alert) event.getMessage();
 
             if (resident != null && resident.getId().equals(alert.getResidentId())) {
                 refreshView(resident.getId());

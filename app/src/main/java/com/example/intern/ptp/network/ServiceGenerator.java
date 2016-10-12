@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 
@@ -71,7 +72,7 @@ public class ServiceGenerator {
                     if (result.equalsIgnoreCase("failed")) {
                         throw new IOException();
                     } else if (!result.equalsIgnoreCase("isNotExpired")) {
-                        bus.post(new ServerResponse(ServerResponse.ERROR_TOKEN_EXPIRED, null));
+                        bus.post(new ServerError<>(ServerError.ERROR_TOKEN_EXPIRED, null));
                     }
                 }
 

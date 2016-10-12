@@ -19,6 +19,7 @@ import com.example.intern.ptp.network.models.LoginResult;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.views.navigation.NavigationActivity;
 import com.google.android.gms.common.ConnectionResult;
@@ -195,7 +196,7 @@ public class LoginActivity extends Activity {
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.POST_CHECK_TOKEN)) {
-            boolean isTokenValid = (Boolean) event.getResponse();
+            boolean isTokenValid = (Boolean) event.getMessage();
 
             if (isTokenValid) {
                 Intent intent = new Intent(this, NavigationActivity.class);
@@ -205,7 +206,14 @@ public class LoginActivity extends Activity {
             progressManager.stopProgress();
 
         } else if (event.getType().equals(ServerResponse.POST_LOGIN)) {
-            login((LoginResult) event.getResponse());
+            login((LoginResult) event.getMessage());
+        }
+    }
+
+    @Subscribe
+    public void onServerError(ServerError serverError) {
+        if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            progressManager.stopProgress();
         }
     }
 

@@ -22,7 +22,7 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.client.AlertClient;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
-import com.example.intern.ptp.utils.bus.response.NotificationResponse;
+import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -300,13 +300,13 @@ public class NavigationDrawerFragment extends Fragment {
         if (event.getType().equals(ServerResponse.GET_ALERT_COUNT)) {
 
             NavigationListAdapter adapter = (NavigationListAdapter) mDrawerListView.getAdapter();
-            adapter.updateItemById("navigation_alerts", event.getResponse());
+            adapter.updateItemById("navigation_alerts", event.getMessage());
         }
     }
 
     @Subscribe
-    public void onNotificationResponse(NotificationResponse event) {
-        if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
+    public void onNotificationResponse(NotificationMessage event) {
+        if (event.getType().equals(NotificationMessage.MESSAGE_RECEIVED)) {
             refreshView();
         }
     }

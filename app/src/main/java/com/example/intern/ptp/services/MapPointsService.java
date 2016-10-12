@@ -8,6 +8,7 @@ import com.example.intern.ptp.network.models.MapPointsResult;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -76,9 +77,14 @@ public class MapPointsService extends IntentService {
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.GET_MAP_POINTS)) {
-            broadcastMapPoints((MapPointsResult) event.getResponse());
-        } else if (event.getType().equals(ServerResponse.ERROR_UNKNOWN)) {
-            broadcastError((MapPointsResult) event.getResponse());
+            broadcastMapPoints((MapPointsResult) event.getMessage());
+        }
+    }
+
+    @Subscribe
+    public void onServerError(ServerError serverError) {
+        if (serverError.getType().equals(ServerError.ERROR_TOKEN_EXPIRED)) {
+            broadcastError((MapPointsResult) serverError.getMessage());
         }
     }
 

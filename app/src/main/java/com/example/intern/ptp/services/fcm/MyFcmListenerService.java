@@ -17,7 +17,7 @@ import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
-import com.example.intern.ptp.utils.bus.response.NotificationResponse;
+import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -50,7 +50,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             }
 
             Bus bus = BusManager.getBus();
-            bus.post(new NotificationResponse(NotificationResponse.MESSAGE_RECEIVED, alert));
+            bus.post(new NotificationMessage(NotificationMessage.MESSAGE_RECEIVED, alert));
         }
     }
 

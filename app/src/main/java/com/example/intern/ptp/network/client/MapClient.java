@@ -9,6 +9,7 @@ import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.network.models.MapPointsResult;
 import com.example.intern.ptp.network.models.NearestResidentResult;
 import com.example.intern.ptp.network.models.Resident;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 
@@ -77,7 +78,7 @@ public class MapClient {
                     result.setFloorId(floorId);
                     result.setResult("connection_failure");
 
-                    bus.post(new ServerResponse(ServerResponse.ERROR_UNKNOWN, result));
+                    bus.post(new ServerError<>(ServerError.ERROR_UNKNOWN, this, result));
                 }
             });
 
@@ -109,7 +110,7 @@ public class MapClient {
                 nearestResident.setUsername(username);
                 nearestResident.setResult("connection_failure");
 
-                bus.post(new ServerResponse(ServerResponse.ERROR_UNKNOWN, nearestResident));
+                bus.post(new ServerError<>(ServerError.ERROR_UNKNOWN, this, nearestResident));
             }
         });
     }

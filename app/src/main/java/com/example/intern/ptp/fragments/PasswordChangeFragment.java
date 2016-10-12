@@ -15,12 +15,14 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.client.UserClient;
 import com.example.intern.ptp.network.models.PasswordChangeInfo;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -163,7 +165,7 @@ public class PasswordChangeFragment extends Fragment {
     @Subscribe
     public void onServerResponse(ServerResponse event) {
         if (event.getType().equals(ServerResponse.POST_CHANGE_PASSWORD)) {
-            String result = (String) event.getResponse();
+            String result = (String) event.getMessage();
 
             if (result.equalsIgnoreCase("success")) {
                 Preferences.showDialog(activity, null, "Changed successfully !");
@@ -171,8 +173,13 @@ public class PasswordChangeFragment extends Fragment {
             } else if (result.equalsIgnoreCase("wrong")) {
                 Preferences.showDialog(activity, null, "Wrong password !");
             }
-        } else if (event.getType().equals(ServerResponse.ERROR_UNKNOWN)) {
-            Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
+        }
+    }
+
+    @Subscribe
+    public void onServerError(ServerError serverError) {
+        if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
 
