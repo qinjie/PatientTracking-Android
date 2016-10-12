@@ -42,7 +42,6 @@ public class Alert implements Parcelable {
     private String type;
 
 
-
     public Alert(String id, String residentId, String firstname, String lastname, String lastPosition, String userId, String username, String ok) {
         this.id = id;
         this.residentId = residentId;

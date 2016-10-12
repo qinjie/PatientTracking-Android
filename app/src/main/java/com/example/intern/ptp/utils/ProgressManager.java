@@ -25,7 +25,7 @@ public class ProgressManager {
     }
 
     public void indicateProgress(boolean isInitialLoading) {
-        if(isInitialLoading) {
+        if (isInitialLoading) {
             setLoadingState(true);
         } else {
             setRefreshState(true);
@@ -38,8 +38,8 @@ public class ProgressManager {
     }
 
     private void setLoadingState(final boolean loading) {
-        if(contentView != null && indicatorView != null) {
-            if(loading) {
+        if (contentView != null && indicatorView != null) {
+            if (loading) {
                 contentView.setVisibility(View.INVISIBLE);
                 indicatorView.setVisibility(View.VISIBLE);
             } else {

@@ -4,9 +4,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.network.client.MapService;
+import com.example.intern.ptp.network.client.MapClient;
 import com.example.intern.ptp.network.models.NearestResidentResult;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
@@ -30,7 +30,7 @@ public class NearestService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         final String username = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
 
-        MapService service = MapService.getService();
+        MapClient service = MapClient.getClient();
 
         while (true) {
             try {

@@ -3,11 +3,11 @@ package com.example.intern.ptp;
 import android.app.Application;
 import android.widget.Toast;
 
-import com.example.intern.ptp.network.client.AlertService;
-import com.example.intern.ptp.network.client.AuthenticationService;
-import com.example.intern.ptp.network.client.MapService;
-import com.example.intern.ptp.network.client.ResidentService;
-import com.example.intern.ptp.network.client.UserService;
+import com.example.intern.ptp.network.client.AlertClient;
+import com.example.intern.ptp.network.client.AuthenticationClient;
+import com.example.intern.ptp.network.client.MapClient;
+import com.example.intern.ptp.network.client.ResidentClient;
+import com.example.intern.ptp.network.client.UserClient;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
@@ -23,11 +23,11 @@ public class PatientTrackingApplication extends Application {
         Bus bus = BusManager.getBus();
         bus.register(this);
 
-        AlertService.createService(bus);
-        AuthenticationService.createService(bus);
-        MapService.createService(bus);
-        ResidentService.createService(bus);
-        UserService.createService(bus);
+        AlertClient.createClient(bus);
+        AuthenticationClient.createClient(bus);
+        MapClient.createClient(bus);
+        ResidentClient.createClient(bus);
+        UserClient.createClient(bus);
     }
 
 
@@ -39,5 +39,4 @@ public class PatientTrackingApplication extends Application {
             Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
-
 }

@@ -18,18 +18,18 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 
-import com.example.intern.ptp.ResidentActivity;
-import com.example.intern.ptp.views.adapter.ResidentListAdapter;
-import com.example.intern.ptp.network.models.Location;
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.client.MapService;
-import com.example.intern.ptp.network.client.ResidentService;
+import com.example.intern.ptp.ResidentActivity;
+import com.example.intern.ptp.network.client.MapClient;
+import com.example.intern.ptp.network.client.ResidentClient;
+import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.network.models.SearchParam;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.example.intern.ptp.views.adapter.ResidentListAdapter;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -65,7 +65,7 @@ public class ResidentListFragment extends Fragment {
      */
     public void search(SearchParam param) {
         try {
-            ResidentService service = ResidentService.getService();
+            ResidentClient service = ResidentClient.getClient();
             service.listResidents(activity, param);
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,7 +205,7 @@ public class ResidentListFragment extends Fragment {
     private void refreshView() {
         progressManager.indicateProgress(floorAdapter.getCount() == 0);
 
-        MapService service = MapService.getService();
+        MapClient service = MapClient.getClient();
         service.getFloors(getActivity());
     }
 
@@ -214,7 +214,7 @@ public class ResidentListFragment extends Fragment {
         if (event.getType().equals(ServerResponse.GET_RESIDENT_LIST)) {
             List<Resident> residents = (List<Resident>) event.getResponse();
             updateResidents(residents);
-        } else if(event.getType().equals(ServerResponse.GET_FLOOR_LIST)) {
+        } else if (event.getType().equals(ServerResponse.GET_FLOOR_LIST)) {
             List<Location> locations = (List<Location>) event.getResponse();
             updateFloors(locations);
         } else if (event.getType().equals(ServerResponse.ERROR_UNKNOWN)) {

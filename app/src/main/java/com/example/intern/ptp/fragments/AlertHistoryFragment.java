@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.example.intern.ptp.views.adapter.AlertHistoryListAdapter;
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.models.Alert;
+import com.example.intern.ptp.utils.Preferences;
+import com.example.intern.ptp.views.adapter.AlertHistoryListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

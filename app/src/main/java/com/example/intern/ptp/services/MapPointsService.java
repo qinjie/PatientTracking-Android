@@ -3,10 +3,10 @@ package com.example.intern.ptp.services;
 import android.app.IntentService;
 import android.content.Intent;
 
-import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.network.models.Resident;
-import com.example.intern.ptp.network.client.MapService;
+import com.example.intern.ptp.network.client.MapClient;
 import com.example.intern.ptp.network.models.MapPointsResult;
+import com.example.intern.ptp.network.models.Resident;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
@@ -40,7 +40,7 @@ public class MapPointsService extends IntentService {
             // get username from Shared Preferences
             String username = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
 
-            MapService service = MapService.getService();
+            MapClient service = MapClient.getClient();
 
             while (true) {
                 try {

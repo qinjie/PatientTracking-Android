@@ -19,11 +19,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.client.AlertService;
+import com.example.intern.ptp.network.client.AlertClient;
+import com.example.intern.ptp.utils.UserManager;
+import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.example.intern.ptp.utils.bus.BusManager;
-import com.example.intern.ptp.utils.UserManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -207,7 +207,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void refreshView() {
-        AlertService service = AlertService.getService();
+        AlertClient service = AlertClient.getClient();
         service.getAlertCount(getActivity());
     }
 

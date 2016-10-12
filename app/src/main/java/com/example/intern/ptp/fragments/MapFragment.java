@@ -17,10 +17,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.intern.library.PhotoViewAttacher;
-import com.example.intern.ptp.services.MapPointsService;
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.models.Resident;
+import com.example.intern.ptp.services.MapPointsService;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.views.widgets.LocatorMapPhotoView;
 import com.squareup.picasso.Picasso;

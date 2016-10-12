@@ -24,8 +24,14 @@ public class UserManager {
     }
 
     public static boolean isLoggedIn(Context context) {
-        String username =  context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
+        String username = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
 
         return !username.equalsIgnoreCase("");
+    }
+
+    public static String getSessionToken(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
+
+        return prefs.getString("token", "");
     }
 }

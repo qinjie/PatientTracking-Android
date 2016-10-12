@@ -17,17 +17,17 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import com.example.intern.ptp.views.adapter.AlertListAdapter;
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.ResidentActivity;
-import com.example.intern.ptp.network.client.AlertService;
+import com.example.intern.ptp.network.client.AlertClient;
 import com.example.intern.ptp.network.models.Alert;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.example.intern.ptp.views.adapter.AlertListAdapter;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -153,7 +153,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
      * retrieve status of RED only checkbox from Shared Preferences in order to refreshView user's preferred data
      */
     private void refreshView() {
-        final AlertService service = AlertService.getService();
+        final AlertClient service = AlertClient.getClient();
 
         progressManager.indicateProgress(adapter.getCount() == 0);
 
@@ -182,7 +182,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
         if (viewId == R.id.alerts_alert_take_care_button) {
             final Alert alert = (Alert) adapter.getItem(position);
 
-            AlertService service = AlertService.getService();
+            AlertClient service = AlertClient.getClient();
             service.postTakeCare(getActivity(), alert, UserManager.getName(getActivity()));
         } else {
             Alert alert = (Alert) adapter.getItem(position);

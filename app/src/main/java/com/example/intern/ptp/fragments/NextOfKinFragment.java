@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.views.adapter.NextOfKinListAdapter;
 import com.example.intern.ptp.network.models.NextOfKin;
+import com.example.intern.ptp.utils.Preferences;
+import com.example.intern.ptp.views.adapter.NextOfKinListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

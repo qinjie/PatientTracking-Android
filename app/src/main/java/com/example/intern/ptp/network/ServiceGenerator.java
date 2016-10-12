@@ -1,6 +1,9 @@
 package com.example.intern.ptp.network;
 
+import android.content.Context;
+
 import com.example.intern.ptp.utils.Preferences;
+import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
@@ -17,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ServiceGenerator {
 
 
-    public static final String API_BASE_URL = Preferences.root;
+    private static final String API_BASE_URL = Preferences.root;
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
@@ -38,7 +41,9 @@ public class ServiceGenerator {
     /**
      * create an API service related to an API interface and set "token" header for requests
      */
-    public static <S> S createService(Class<S> serviceClass, final String token) {
+    public static <S> S createService(Class<S> serviceClass, Context context) {
+        final String token = UserManager.getSessionToken(context);
+
         if (token != null) {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
@@ -64,10 +69,8 @@ public class ServiceGenerator {
 
                 if (result != null) {
                     if (result.equalsIgnoreCase("failed")) {
-                        bus.post(new ServerResponse(ServerResponse.ERROR_UNKNOWN, null));
-                    }
-
-                    else if (!result.equalsIgnoreCase("isNotExpired")) {
+                        throw new IOException();
+                    } else if (!result.equalsIgnoreCase("isNotExpired")) {
                         bus.post(new ServerResponse(ServerResponse.ERROR_TOKEN_EXPIRED, null));
                     }
                 }

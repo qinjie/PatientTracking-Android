@@ -13,14 +13,14 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.example.intern.ptp.views.navigation.NavigationActivity;
-import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.network.client.AuthenticationService;
+import com.example.intern.ptp.network.client.AuthenticationClient;
 import com.example.intern.ptp.network.models.LoginInfo;
 import com.example.intern.ptp.network.models.LoginResult;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.example.intern.ptp.views.navigation.NavigationActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.otto.Bus;
@@ -79,7 +79,7 @@ public class LoginActivity extends Activity {
         if (!token.equalsIgnoreCase("")) {
             this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-            AuthenticationService service = AuthenticationService.getService();
+            AuthenticationClient service = AuthenticationClient.getClient();
             service.checkToken(this);
         } else {
             progressManager.stopProgress();
@@ -135,7 +135,7 @@ public class LoginActivity extends Activity {
             return;
         }
 
-        AuthenticationService service = AuthenticationService.getService();
+        AuthenticationClient service = AuthenticationClient.getClient();
         service.login(this, new LoginInfo(username, password, MAC));
     }
 

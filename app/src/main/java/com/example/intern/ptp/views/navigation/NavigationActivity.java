@@ -8,13 +8,13 @@ import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
+import com.example.intern.ptp.R;
 import com.example.intern.ptp.fragments.AlertListFragment;
 import com.example.intern.ptp.fragments.MapListFragment;
 import com.example.intern.ptp.fragments.NearestResidentFragment;
-import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.R;
-import com.example.intern.ptp.fragments.ResidentListFragment;
 import com.example.intern.ptp.fragments.PasswordChangeFragment;
+import com.example.intern.ptp.fragments.ResidentListFragment;
+import com.example.intern.ptp.utils.Preferences;
 
 public class NavigationActivity extends Activity
         implements

@@ -2,12 +2,12 @@ package com.example.intern.ptp.network;
 
 import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.network.models.FCMInfo;
+import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.network.models.LoginInfo;
 import com.example.intern.ptp.network.models.LoginResult;
-import com.example.intern.ptp.network.models.Location;
+import com.example.intern.ptp.network.models.PasswordChangeInfo;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.network.models.SearchParam;
-import com.example.intern.ptp.network.models.PasswordChangeInfo;
 
 import java.util.List;
 

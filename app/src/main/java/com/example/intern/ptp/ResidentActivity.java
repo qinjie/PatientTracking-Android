@@ -22,15 +22,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.example.intern.ptp.fragments.NextOfKinFragment;
-import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.fragments.AlertHistoryFragment;
 import com.example.intern.ptp.fragments.MapFragment;
-import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.network.client.AlertService;
-import com.example.intern.ptp.network.client.ResidentService;
+import com.example.intern.ptp.fragments.NextOfKinFragment;
+import com.example.intern.ptp.network.client.AlertClient;
+import com.example.intern.ptp.network.client.ResidentClient;
+import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.utils.FontManager;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
@@ -121,7 +121,7 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     private void refreshView(String residentId) {
         progressManager.indicateProgress(resident == null);
 
-        ResidentService service = ResidentService.getService();
+        ResidentClient service = ResidentClient.getClient();
         service.getResident(this, residentId);
     }
 
@@ -232,7 +232,7 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     public void takeCare(View view) {
         view.setVisibility(View.INVISIBLE);
 
-        AlertService service = AlertService.getService();
+        AlertClient service = AlertClient.getClient();
         service.postTakeCare(this, alert, UserManager.getName(this));
     }
 
@@ -260,7 +260,7 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
                         }
                     });
 
-            ResidentService service = ResidentService.getService();
+            ResidentClient service = ResidentClient.getClient();
             service.getResident(this, resident.getId());
         } else {
             showAlert(alert);
@@ -320,7 +320,7 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
         if (event.getType().equals(NotificationResponse.MESSAGE_RECEIVED)) {
             Alert alert = (Alert) event.getResponse();
 
-            if(resident != null && resident.getId().equals(alert.getResidentId())) {
+            if (resident != null && resident.getId().equals(alert.getResidentId())) {
                 refreshView(resident.getId());
             }
         }

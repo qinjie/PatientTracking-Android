@@ -16,10 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.client.UserService;
+import com.example.intern.ptp.network.client.UserClient;
 import com.example.intern.ptp.network.models.PasswordChangeInfo;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
@@ -138,7 +138,7 @@ public class PasswordChangeFragment extends Fragment {
                                 WifiInfo wInfo = wifiManager.getConnectionInfo();
                                 final String macAddress = wInfo.getMacAddress();
 
-                                UserService userService = UserService.getService();
+                                UserClient userService = UserClient.getClient();
                                 userService.changePassword(getActivity(), new PasswordChangeInfo(username, currentPassword, newPassword, macAddress));
 
                             } catch (Exception e) {

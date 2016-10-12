@@ -11,9 +11,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
 import com.example.intern.ptp.LoginActivity;
-import com.example.intern.ptp.network.models.FCMInfo;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
+import com.example.intern.ptp.network.models.FCMInfo;
 
 import java.util.List;
 
@@ -150,7 +150,7 @@ public class Preferences {
                 }
 
                 // create an API service and set session token to request header
-                ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+                ServerApi api = ServiceGenerator.createService(ServerApi.class, context);
 
                 // create request object to send FCM token to server
                 Call<String> call = api.setFCMToken(new FCMInfo(macAddress, fcmToken));
@@ -219,7 +219,7 @@ public class Preferences {
                 return;
 
             // create an API service and set session token to request header
-            ServerApi api = ServiceGenerator.createService(ServerApi.class, context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("token", ""));
+            ServerApi api = ServiceGenerator.createService(ServerApi.class, context);
 
             // create request object to request all untaken care alerts from server
             Call<String> call = api.notifyUntakenCareAlerts(macAddress);

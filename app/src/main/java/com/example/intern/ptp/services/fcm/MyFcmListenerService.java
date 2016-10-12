@@ -11,10 +11,10 @@ import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 
-import com.example.intern.ptp.network.models.Alert;
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.ResidentActivity;
+import com.example.intern.ptp.network.models.Alert;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
@@ -80,7 +80,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             int imageIdentifier = getResources().getIdentifier("profile" + residentId, "drawable", getPackageName());
             Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), imageIdentifier);
 
-            int notificationColor =  ContextCompat.getColor(getApplicationContext(), R.color.red);
+            int notificationColor = ContextCompat.getColor(getApplicationContext(), R.color.red);
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
                     .setLargeIcon(largeIcon)

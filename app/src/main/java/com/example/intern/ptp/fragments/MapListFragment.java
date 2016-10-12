@@ -16,15 +16,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.example.intern.ptp.MapActivity;
-import com.example.intern.ptp.views.adapter.MapListAdapter;
-import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.client.MapService;
+import com.example.intern.ptp.network.client.MapClient;
 import com.example.intern.ptp.network.models.Location;
+import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationResponse;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.example.intern.ptp.views.adapter.MapListAdapter;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -138,7 +138,7 @@ public class MapListFragment extends Fragment {
     private void refreshView() {
         progressManager.indicateProgress(adapter.getCount() == 0);
 
-        MapService service = MapService.getService();
+        MapClient service = MapClient.getClient();
         service.getFloors(getActivity());
     }
 

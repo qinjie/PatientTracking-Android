@@ -17,11 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.intern.ptp.R;
+import com.example.intern.ptp.ResidentActivity;
+import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.services.NearestService;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.R;
-import com.example.intern.ptp.network.models.Resident;
-import com.example.intern.ptp.ResidentActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
