@@ -3,7 +3,7 @@
     tools:context="com.example.intern.ptp.fragments.MapListFragment">
     <item
         android:id="@+id/action_refresh_fragment_maplist"
-        android:title="@string/action_settings"
+        android:title="@string/action_refresh"
         android:orderInCategory="100"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:showAsAction="ifRoom" />

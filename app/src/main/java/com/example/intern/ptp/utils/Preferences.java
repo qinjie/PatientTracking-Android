@@ -9,8 +9,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.widget.Toast;
 
 import com.example.intern.ptp.LoginActivity;
+import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.ServerApi;
 import com.example.intern.ptp.network.ServiceGenerator;
 import com.example.intern.ptp.network.models.FCMInfo;
@@ -174,35 +176,10 @@ public class Preferences {
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
                         t.printStackTrace();
-                        Preferences.showDialog(context, "Connection Failure", "Please check your network and try again!");
+                        Toast.makeText(context, R.string.error_connection_failure, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * search a dialog with title and message parameters
-     */
-    public static void showDialog(final Context context, String title, String message) {
-        try {
-            if (isDialog) {
-                isDialog = false;
-                return;
-            }
-            isDialog = true;
-            new AlertDialog.Builder(context)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -236,7 +213,7 @@ public class Preferences {
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
                     t.printStackTrace();
-                    Preferences.showDialog(context, "Connection Failure", "Please check your network and try again!");
+                    Toast.makeText(context, R.string.error_connection_failure, Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (Exception e) {

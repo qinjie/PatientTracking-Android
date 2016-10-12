@@ -3,7 +3,7 @@
     tools:context="com.example.intern.ptp.fragments.AlertListFragment">
     <item
         android:id="@+id/action_refresh_fragment"
-        android:title="@string/action_settings"
+        android:title="@string/action_refresh"
         android:orderInCategory="200"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:showAsAction="ifRoom" />

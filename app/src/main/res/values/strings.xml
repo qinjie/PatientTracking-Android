@@ -1,21 +1,8 @@
 <resources>
     <string name="app_name">Resident Tracking</string>
 
-    <string name="title_section1">Resident List</string>
-    <string name="title_section2">Location List</string>
-    <string name="title_section3">Map List</string>
-    <string name="title_section4">Alert List</string>
-    <string name="title_section5">Nearest Resident</string>
-    <string name="title_section6">Profile</string>
-    <string name="title_section7">Change Password</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_example">Example action</string>
-
-    <string name="action_settings">Refresh</string>
-
+    <string name="navigation_drawer_open">Open navigation</string>
+    <string name="navigation_drawer_close">Close navigation</string>
 
     <string name="action_refresh">Refresh</string>
     <string name="action_locations">View locations list</string>
@@ -28,10 +15,9 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
 
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
+    <string name="validation_username">Please enter your username</string>
+    <string name="validation_password">Please enter your password</string>
+    <string name="error_incorrect_password">Your username or password is incorrect</string>
 
     <string name="title_fragment_resident">Residents</string>
     <string name="title_fragment_location">Location List</string>
@@ -46,10 +32,6 @@
     <string name="title_activity_map">Map</string>
     <string name="title_activity_alert">Alert</string>
 
-    <string name="loading_title">Processing Data &#8230;</string>
-    <string name="loading_message">Please Wait</string>
-    <string name="title_activity_alert_dialog">AlertDialogActivity</string>
-
     <string name="ic_sos">Alert image</string>
     <string name="logout">Logout</string>
     <string name="alerts_alert_profile_picture">Resident\'s profile picture</string>
@@ -59,11 +41,9 @@
     <string name="alert_title">%1$s %2$s</string>
     <string name="alerts_ongoing_alerts_only">Hide Solved Alerts</string>
     <string name="backbutton_exit_warning">Please click BACK again to exit</string>
-    <string name="quota">To live well, live long and with peace of mind</string>
     <string name="resident_profile_picture_description">Profile picture</string>
     <string name="firstname">Firstname</string>
     <string name="lastname">Lastname</string>
-    <string name="nric">NRIC</string>
     <string name="birthday">Birthday</string>
     <string name="remark">Remark</string>
     <string name="map">Map</string>
@@ -73,4 +53,10 @@
     <string name="alert_type_press_alarm_button">Press the alarm button</string>
     <string name="alert_type_is_out_of_tracking">Is out of tracking</string>
     <string name="error_unknown_server_error">Whoops server error. Please try again.</string>
+    <string name="error_connection_failure">Please check your network and try again.</string>
+    <string name="validation_current_password">Please enter your current password.</string>
+    <string name="validation_new_password">Please enter your new password.</string>
+    <string name="validation_confirm_password">Please confirm your new password.</string>
+    <string name="validation_match_password">New and Confirm Password do not match.</string>
+    <string name="success_change_password">Password successfully changed</string>
 </resources>

@@ -104,7 +104,7 @@ public class PasswordChangeFragment extends Fragment {
 
         // empty current password is not allowed
         if (currentPassword.isEmpty()) {
-            Preferences.showDialog(activity, null, "Please enter your current password !");
+            Toast.makeText(getActivity(), R.string.validation_current_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -113,7 +113,7 @@ public class PasswordChangeFragment extends Fragment {
 
         // empty new password is not allowed
         if (newPassword.isEmpty()) {
-            Preferences.showDialog(activity, null, "Please enter your new password !");
+            Toast.makeText(getActivity(), R.string.validation_new_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -122,7 +122,7 @@ public class PasswordChangeFragment extends Fragment {
 
         // empty confirm password is not allowed
         if (confirmPassword.isEmpty()) {
-            Preferences.showDialog(activity, null, "Please confirm your new password !");
+            Toast.makeText(getActivity(), R.string.validation_confirm_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -158,7 +158,7 @@ public class PasswordChangeFragment extends Fragment {
                     .show();
 
         } else {
-            Preferences.showDialog(activity, null, "New and Confirm Password do not match. Please try again!");
+            Toast.makeText(getActivity(), R.string.validation_match_password, Toast.LENGTH_SHORT).show();;
         }
     }
 
@@ -168,10 +168,10 @@ public class PasswordChangeFragment extends Fragment {
             String result = (String) event.getMessage();
 
             if (result.equalsIgnoreCase("success")) {
-                Preferences.showDialog(activity, null, "Changed successfully !");
+                Toast.makeText(getActivity(), R.string.success_change_password, Toast.LENGTH_SHORT).show();
 
             } else if (result.equalsIgnoreCase("wrong")) {
-                Preferences.showDialog(activity, null, "Wrong password !");
+                Toast.makeText(getActivity(), R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.R;
@@ -59,14 +60,14 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                 // if exception occurs or inconsistent database in server
                 if (result.equalsIgnoreCase("failed")) {
                     Preferences.kill(getActivity(), ":mapservice");
-                    Preferences.showDialog(context, "Server Error", "Please try again!");
+                    Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 // if connection is failed
                 if (result.equalsIgnoreCase("connection_failure")) {
                     Preferences.kill(getActivity(), ":mapservice");
-                    Preferences.showDialog(getActivity(), "Connection Failure", "Please check your network and try again!");
+                    Toast.makeText(getActivity(), R.string.error_connection_failure, Toast.LENGTH_SHORT).show();
                     return;
                 }
 

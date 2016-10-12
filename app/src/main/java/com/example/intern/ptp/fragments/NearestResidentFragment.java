@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.ResidentActivity;
@@ -48,14 +49,14 @@ public class NearestResidentFragment extends Fragment {
                 // if exception occurs or inconsistent database in server
                 if (result.equalsIgnoreCase("failed")) {
                     Preferences.kill(activity, ":nearestservice");
-                    Preferences.showDialog(context, "Server Error", "Please try again!");
+                    Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 // if connection is failed
                 if (result.equalsIgnoreCase("connection_failure")) {
                     Preferences.kill(activity, ":nearestservice");
-                    Preferences.showDialog(activity, "Connection Failure", "Please check your network and try again!");
+                    Toast.makeText(getActivity(), R.string.error_connection_failure, Toast.LENGTH_SHORT).show();
                     return;
                 }
 

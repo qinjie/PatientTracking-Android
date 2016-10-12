@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.intern.ptp.network.client.AuthenticationClient;
 import com.example.intern.ptp.network.models.LoginInfo;
@@ -123,7 +124,7 @@ public class LoginActivity extends Activity {
 
         // empty username is not allowed
         if (username.isEmpty()) {
-            Preferences.showDialog(this, null, "Please enter your username!");
+            Toast.makeText(this, R.string.validation_username, Toast.LENGTH_SHORT).show();;
             return;
         }
 
@@ -132,7 +133,7 @@ public class LoginActivity extends Activity {
 
         // empty password is not allowed
         if (password.isEmpty()) {
-            Preferences.showDialog(this, null, "Please enter your password!");
+            Toast.makeText(this, R.string.validation_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -173,12 +174,8 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent(this, NavigationActivity.class);
             startActivityForResult(intent, 0);
 
-        } else {
-            if (result.getResult().equalsIgnoreCase("wrong")) {
-                Preferences.showDialog(this, null, "Wrong username or password!");
-            } else {
-                Preferences.showDialog(this, "Server Error", "Please try again!");
-            }
+        } else if (result.getResult().equalsIgnoreCase("wrong")) {
+            Toast.makeText(this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
         }
 
         progressManager.stopProgress();
