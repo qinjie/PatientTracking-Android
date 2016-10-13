@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.intern.ptp.network.client.AuthenticationClient;
 import com.example.intern.ptp.network.models.LoginInfo;
 import com.example.intern.ptp.network.models.LoginResult;
+import com.example.intern.ptp.utils.PlayServiceUtils;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
@@ -33,9 +34,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class LoginActivity extends Activity {
-
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
     @BindView(R.id.login_progress_indicator)
     ProgressBar progressIndicator;
 
@@ -55,9 +53,6 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         this.setContentView(R.layout.activity_login);
 
         ButterKnife.bind(this);
@@ -68,24 +63,8 @@ public class LoginActivity extends Activity {
         Bus bus = BusManager.getBus();
         bus.register(this);
 
-        // check Google Play Services plug-in to be able to register to FCM server and receive message from it
-        checkPlayServices();
-
         // get Shared Preferences of the app
         pref = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
-
-        // get session token from the Shared Preferences
-        String token = pref.getString("token", "");
-
-        // if a token is available then try to login
-        if (!token.equalsIgnoreCase("")) {
-            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-            AuthenticationClient service = AuthenticationClient.getClient();
-            service.checkToken(this);
-        } else {
-            progressManager.stopProgress();
-        }
 
         setLayout();
     }
@@ -139,24 +118,6 @@ public class LoginActivity extends Activity {
 
         AuthenticationClient service = AuthenticationClient.getClient();
         service.login(this, new LoginInfo(username, password, MAC));
-    }
-
-    /**
-     * check Google Play Services plug-in
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                this.finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     private void login(LoginResult result) {

@@ -4,6 +4,12 @@
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
+    
+    <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+    </style>
 
     <style name="TextAppearance.Label" parent="TextAppearance.AppCompat">
         <item name="android:textSize">14sp</item>

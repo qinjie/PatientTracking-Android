@@ -6,7 +6,6 @@ import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
-import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 
 import java.io.IOException;

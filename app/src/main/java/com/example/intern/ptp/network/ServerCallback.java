@@ -1,5 +1,8 @@
 package com.example.intern.ptp.network;
 
+import android.os.Debug;
+
+import com.example.intern.ptp.BuildConfig;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
@@ -15,6 +18,10 @@ public abstract class ServerCallback<T> implements Callback<T> {
     @Override
     public void onFailure(Call<T> call, Throwable t) {
         this.call = call;
+
+        if (BuildConfig.DEBUG) {
+            t.printStackTrace();
+        }
 
         Bus bus = BusManager.getBus();
         bus.post(new ServerError<T>(ServerError.ERROR_UNKNOWN, this));

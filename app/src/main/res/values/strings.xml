@@ -59,4 +59,6 @@
     <string name="validation_confirm_password">Please confirm your new password.</string>
     <string name="validation_match_password">New and Confirm Password do not match.</string>
     <string name="success_change_password">Password successfully changed</string>
+    <string name="error_title_login_failed">Login Failed</string>
+    <string name="error_message_login_failed">Network connection unavailable.\nPlease check that you have a data connection and try again.</string>
 </resources>
