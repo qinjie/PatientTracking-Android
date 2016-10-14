@@ -1,5 +1,6 @@
 package com.example.intern.ptp.utils;
 
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,14 +38,22 @@ public class ProgressManager {
         setRefreshState(false);
     }
 
+    public void stopProgressDelayed(int delay) {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ProgressManager.this.stopProgress();
+            }
+        }, delay);
+    }
+
     private void setLoadingState(final boolean loading) {
         if (contentView != null && indicatorView != null) {
             if (loading) {
-                contentView.setVisibility(View.INVISIBLE);
-                indicatorView.setVisibility(View.VISIBLE);
+                AnimUtils.crossFade(contentView, indicatorView, AnimUtils.ANIMATION_SHORT);
             } else {
-                contentView.setVisibility(View.VISIBLE);
-                indicatorView.setVisibility(View.INVISIBLE);
+                AnimUtils.crossFade(indicatorView, contentView, AnimUtils.ANIMATION_SHORT);
             }
         }
     }

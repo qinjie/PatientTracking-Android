@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.intern.ptp.fragments.AlertHistoryFragment;
@@ -35,6 +36,7 @@ import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationMessage;
+import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -242,6 +244,14 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
             onResidentRefresh((Resident) event.getMessage());
         } else if (event.getType().equals(ServerResponse.POST_TAKE_CARE)) {
             onTakeCare((Alert) event.getMessage());
+        }
+    }
+
+    @Subscribe
+    public void onServerError(ServerError serverError) {
+        if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+            progressManager.stopProgress();
         }
     }
 

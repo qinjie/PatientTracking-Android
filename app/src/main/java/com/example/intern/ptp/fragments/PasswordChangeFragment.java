@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.client.UserClient;
 import com.example.intern.ptp.network.models.PasswordChangeInfo;
 import com.example.intern.ptp.utils.Preferences;
+import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
@@ -35,6 +37,12 @@ public class PasswordChangeFragment extends Fragment {
 
     private Activity activity;
 
+    @BindView(R.id.password_change_progress_indicator)
+    ProgressBar progressIndicator;
+
+    @BindView(R.id.password_change_content)
+    View contentView;
+
     @BindView(R.id.tvpassword_current)
     TextView tvPassWord_Current;
 
@@ -45,6 +53,8 @@ public class PasswordChangeFragment extends Fragment {
     TextView tvPassword_Confirm;
 
     private String username, currentPassword, newPassword;
+
+    private ProgressManager progressManager;
 
     public PasswordChangeFragment() {
         // Required empty public constructor
@@ -57,6 +67,8 @@ public class PasswordChangeFragment extends Fragment {
 
         Bus bus = BusManager.getBus();
         bus.register(this);
+
+        progressManager = new ProgressManager();
 
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
@@ -88,8 +100,10 @@ public class PasswordChangeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_change, container, false);
+        View myView = inflater.inflate(R.layout.fragment_password_change, container, false);
         ButterKnife.bind(this, myView);
+
+        progressManager.initLoadingIndicator(contentView, progressIndicator);
 
         return myView;
     }
@@ -140,11 +154,14 @@ public class PasswordChangeFragment extends Fragment {
                                 WifiInfo wInfo = wifiManager.getConnectionInfo();
                                 final String macAddress = wInfo.getMacAddress();
 
+                                progressManager.indicateProgress(true);
+
                                 UserClient userService = UserClient.getClient();
                                 userService.changePassword(getActivity(), new PasswordChangeInfo(username, currentPassword, newPassword, macAddress));
 
                             } catch (Exception e) {
 
+                                progressManager.stopProgress();
                                 e.printStackTrace();
                             }
                         }
@@ -173,12 +190,15 @@ public class PasswordChangeFragment extends Fragment {
             } else if (result.equalsIgnoreCase("wrong")) {
                 Toast.makeText(getActivity(), R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
             }
+
+            progressManager.stopProgress();
         }
     }
 
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            progressManager.stopProgress();
             Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }

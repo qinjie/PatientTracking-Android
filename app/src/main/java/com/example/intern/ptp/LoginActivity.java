@@ -7,9 +7,8 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -17,15 +16,12 @@ import android.widget.Toast;
 import com.example.intern.ptp.network.client.AuthenticationClient;
 import com.example.intern.ptp.network.models.LoginInfo;
 import com.example.intern.ptp.network.models.LoginResult;
-import com.example.intern.ptp.utils.PlayServiceUtils;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.views.navigation.NavigationActivity;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -95,15 +91,14 @@ public class LoginActivity extends Activity {
      */
     @OnClick(R.id.login_submit)
     public void attemptLogin() {
-        progressIndicator.setVisibility(View.VISIBLE);
-        contentView.setVisibility(View.INVISIBLE);
 
         // get input username
         username = mUsernameView.getText().toString();
 
         // empty username is not allowed
         if (username.isEmpty()) {
-            Toast.makeText(this, R.string.validation_username, Toast.LENGTH_SHORT).show();;
+            Toast.makeText(this, R.string.validation_username, Toast.LENGTH_SHORT).show();
+            ;
             return;
         }
 
@@ -115,6 +110,8 @@ public class LoginActivity extends Activity {
             Toast.makeText(this, R.string.validation_password, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        progressManager.indicateProgress(true);
 
         AuthenticationClient service = AuthenticationClient.getClient();
         service.login(this, new LoginInfo(username, password, MAC));
@@ -135,11 +132,12 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent(this, NavigationActivity.class);
             startActivityForResult(intent, 0);
 
+            progressManager.stopProgressDelayed(100);
+
         } else if (result.getResult().equalsIgnoreCase("wrong")) {
             Toast.makeText(this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
+            progressManager.stopProgress();
         }
-
-        progressManager.stopProgress();
     }
 
     @Override
@@ -171,6 +169,7 @@ public class LoginActivity extends Activity {
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
             progressManager.stopProgress();
         }
     }

@@ -165,6 +165,7 @@ public class MapListFragment extends Fragment {
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
+            progressManager.stopProgress();
             Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
