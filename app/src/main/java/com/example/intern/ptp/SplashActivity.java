@@ -4,17 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.WindowManager;
 
 import com.example.intern.ptp.network.client.AuthenticationClient;
-import com.example.intern.ptp.network.models.LoginResult;
 import com.example.intern.ptp.utils.ConnectivityUtils;
 import com.example.intern.ptp.utils.PlayServiceUtils;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.example.intern.ptp.views.navigation.NavigationActivity;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -77,7 +74,7 @@ public class SplashActivity extends Activity {
     }
 
     private void startAuthenticatedArea() {
-        Intent intent = new Intent(this, NavigationActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivityForResult(intent, 0);
         finish();
     }

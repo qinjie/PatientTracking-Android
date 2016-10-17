@@ -1,4 +1,4 @@
-package com.example.intern.ptp.views.navigation;
+package com.example.intern.ptp;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -15,8 +15,9 @@ import com.example.intern.ptp.fragments.NearestResidentFragment;
 import com.example.intern.ptp.fragments.PasswordChangeFragment;
 import com.example.intern.ptp.fragments.ResidentListFragment;
 import com.example.intern.ptp.utils.Preferences;
+import com.example.intern.ptp.views.navigation.NavigationDrawerFragment;
 
-public class NavigationActivity extends Activity
+public class MainActivity extends Activity
         implements
         NavigationDrawerFragment.NavigationDrawerCallbacks {
 

@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -21,7 +20,6 @@ import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.example.intern.ptp.views.navigation.NavigationActivity;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -128,8 +126,8 @@ public class LoginActivity extends Activity {
             editor.putString("email", result.getEmail());
             editor.apply();
 
-            // start NavigationActivity
-            Intent intent = new Intent(this, NavigationActivity.class);
+            // start MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
             startActivityForResult(intent, 0);
 
             progressManager.stopProgressDelayed(100);
@@ -155,7 +153,7 @@ public class LoginActivity extends Activity {
             boolean isTokenValid = (Boolean) event.getMessage();
 
             if (isTokenValid) {
-                Intent intent = new Intent(this, NavigationActivity.class);
+                Intent intent = new Intent(this, MainActivity.class);
                 startActivityForResult(intent, 0);
             }
 
