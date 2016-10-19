@@ -21,7 +21,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class AlertHistoryFragment extends Fragment {
+public class AlertHistoryFragment extends BaseFragment {
 
     @BindView(R.id.alerthistory_list)
     ListView alertHistoryList;
@@ -31,16 +31,18 @@ public class AlertHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.fragment_alert_history, null);
-        ButterKnife.bind(this, view);
+        return inflater.inflate(R.layout.fragment_alert_history, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         Bundle args = getArguments();
         ArrayList<Alert> alerts = args.getParcelableArrayList(Preferences.BUNDLE_KEY_ALERT);
 
         ListAdapter adapter = new AlertHistoryListAdapter(getActivity(), alerts);
         alertHistoryList.setAdapter(adapter);
-
-        return view;
     }
 
     public void refresh(List<Alert> alerts) {

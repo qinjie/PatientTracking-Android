@@ -27,7 +27,7 @@ import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.network.models.SearchParam;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.ProgressManager;
+import com.example.intern.ptp.utils.StateManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
@@ -41,14 +41,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ResidentListFragment extends Fragment {
+public class ResidentListFragment extends BaseFragment {
     private SearchView sv;
-
-    @BindView(R.id.maplist_progress_indicator)
-    ProgressBar progressIndicator;
-
-    @BindView(R.id.resident_content)
-    View contentView;
 
     @BindView(R.id.resident_list)
     ListView residentList;
@@ -59,8 +53,6 @@ public class ResidentListFragment extends Fragment {
     private Activity activity;
 
     private ArrayAdapter<Location> floorAdapter;
-
-    private ProgressManager progressManager;
 
     /**
      * search resident by a SearchParam and search result on a table namely resident list table
@@ -79,8 +71,6 @@ public class ResidentListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
 
-        progressManager = new ProgressManager();
-
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
     }
@@ -95,7 +85,6 @@ public class ResidentListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
-            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment_residentlist);
             inflater.inflate(R.menu.menu_fragment_resident, menu);
             ActionBar actionBar = getActivity().getActionBar();
             if (actionBar != null) {
@@ -150,7 +139,7 @@ public class ResidentListFragment extends Fragment {
 
         switch (id) {
             // reload fragment
-            case R.id.action_refresh_fragment_residentlist:
+            case R.id.action_refresh:
                 refreshView();
                 return true;
             default:
@@ -161,14 +150,12 @@ public class ResidentListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_resident, container, false);
-        ButterKnife.bind(this, myView);
+        return inflater.inflate(R.layout.fragment_resident, container, false);
+    }
 
-        Bus bus = BusManager.getBus();
-        bus.register(this);
-
-        progressManager.initLoadingIndicator(contentView, progressIndicator);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         residentList.setAdapter(new ResidentListAdapter(getActivity(), new ArrayList<Resident>()));
         residentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -200,12 +187,10 @@ public class ResidentListFragment extends Fragment {
         });
 
         refreshView();
-
-        return myView;
     }
 
     private void refreshView() {
-        progressManager.indicateProgress(floorAdapter.getCount() == 0);
+        showProgress(floorAdapter.getCount() == 0);
 
         MapClient service = MapClient.getClient();
         service.getFloors(getActivity());
@@ -226,6 +211,8 @@ public class ResidentListFragment extends Fragment {
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
             Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+
+            showContent();
         }
     }
 
@@ -233,7 +220,7 @@ public class ResidentListFragment extends Fragment {
         ResidentListAdapter adapter = (ResidentListAdapter) residentList.getAdapter();
         adapter.setResidents(residents);
 
-        progressManager.stopProgress();
+        showContent();
     }
 
     private void updateFloors(List<Location> locations) {
@@ -249,11 +236,4 @@ public class ResidentListFragment extends Fragment {
         search(new SearchParam("", location.getId(), "name", "asc"));
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Bus bus = BusManager.getBus();
-        bus.unregister(this);
-    }
 }

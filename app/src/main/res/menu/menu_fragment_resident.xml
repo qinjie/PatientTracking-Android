@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.intern.ptp.fragments.ResidentListFragment">
     <item
-        android:id="@+id/action_refresh_fragment_residentlist"
+        android:id="@+id/action_refresh"
         android:orderInCategory="1"
         android:showAsAction="ifRoom"
         android:icon="@drawable/ic_refresh_white_24dp"

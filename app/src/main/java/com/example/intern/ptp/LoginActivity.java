@@ -1,39 +1,26 @@
 package com.example.intern.ptp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.intern.ptp.network.client.AuthenticationClient;
 import com.example.intern.ptp.network.models.LoginInfo;
 import com.example.intern.ptp.network.models.LoginResult;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.ProgressManager;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LoginActivity extends Activity {
-    @BindView(R.id.login_progress_indicator)
-    ProgressBar progressIndicator;
-
-    @BindView(R.id.login_content)
-    View contentView;
-
+public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_username)
     EditText mUsernameView;
 
@@ -42,20 +29,11 @@ public class LoginActivity extends Activity {
 
     private String username, password, MAC;
     private SharedPreferences pref;
-    private ProgressManager progressManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_login);
-
-        ButterKnife.bind(this);
-
-        progressManager = new ProgressManager();
-        progressManager.initLoadingIndicator(contentView, progressIndicator);
-
-        Bus bus = BusManager.getBus();
-        bus.register(this);
 
         // get Shared Preferences of the app
         pref = getApplicationContext().getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
@@ -96,7 +74,6 @@ public class LoginActivity extends Activity {
         // empty username is not allowed
         if (username.isEmpty()) {
             Toast.makeText(this, R.string.validation_username, Toast.LENGTH_SHORT).show();
-            ;
             return;
         }
 
@@ -109,7 +86,7 @@ public class LoginActivity extends Activity {
             return;
         }
 
-        progressManager.indicateProgress(true);
+        showProgress(true);
 
         AuthenticationClient service = AuthenticationClient.getClient();
         service.login(this, new LoginInfo(username, password, MAC));
@@ -130,11 +107,11 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivityForResult(intent, 0);
 
-            progressManager.stopProgressDelayed(100);
+            showContentDelayed(100);
 
         } else if (result.getResult().equalsIgnoreCase("wrong")) {
             Toast.makeText(this, R.string.error_incorrect_password, Toast.LENGTH_SHORT).show();
-            progressManager.stopProgress();
+            showContent();
         }
     }
 
@@ -157,7 +134,7 @@ public class LoginActivity extends Activity {
                 startActivityForResult(intent, 0);
             }
 
-            progressManager.stopProgress();
+            showContent();
 
         } else if (event.getType().equals(ServerResponse.POST_LOGIN)) {
             login((LoginResult) event.getMessage());
@@ -168,16 +145,7 @@ public class LoginActivity extends Activity {
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
             Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
-            progressManager.stopProgress();
+            showContent();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Bus bus = BusManager.getBus();
-        bus.unregister(this);
-
     }
 }

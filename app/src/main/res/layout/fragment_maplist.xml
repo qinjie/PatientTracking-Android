@@ -5,14 +5,14 @@
     tools:context="com.example.intern.ptp.fragments.MapListFragment">
 
     <ProgressBar
-        android:id="@+id/maplist_progress_indicator"
+        android:id="@+id/progress_indicator"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal" />
 
     <ListView
-        android:id="@+id/maplist_content"
+        android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal|top"

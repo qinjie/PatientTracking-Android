@@ -27,7 +27,7 @@ import com.example.intern.ptp.utils.Preferences;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class NearestResidentFragment extends Fragment {
+public class NearestResidentFragment extends BaseFragment {
 
     @BindView(R.id.tvResident)
     TextView tvResident;
@@ -154,8 +154,12 @@ public class NearestResidentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_nearest, container, false);
-        ButterKnife.bind(this, myView);
+        return inflater.inflate(R.layout.fragment_nearest, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         try {
             // register a broadcast receiver with the tag equals "Preferences.nearest_broadcastTag + username"
@@ -166,7 +170,6 @@ public class NearestResidentFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return myView;
     }
 
     public void onResume() {

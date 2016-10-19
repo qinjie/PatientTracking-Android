@@ -3,7 +3,6 @@ package com.example.intern.ptp;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,13 +30,10 @@ import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.utils.FontManager;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.text.ParseException;
@@ -49,21 +44,13 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ResidentActivity extends Activity implements MapFragment.OnResidentTouchListener {
+public class ResidentActivity extends BaseActivity implements MapFragment.OnResidentTouchListener {
 
     private Resident resident;
     private Alert alert;
     private List<Fragment> fragments = new ArrayList<>();
-    private ProgressManager progressManager;
-
-    @BindView(R.id.maplist_progress_indicator)
-    ProgressBar progressIndicator;
-
-    @BindView(R.id.resident_content)
-    View contentView;
 
     @BindView(R.id.resident_alert_layout)
     RelativeLayout alertLayout;
@@ -105,13 +92,6 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resident);
-        ButterKnife.bind(this);
-
-        Bus bus = BusManager.getBus();
-        bus.register(this);
-
-        progressManager = new ProgressManager();
-        progressManager.initLoadingIndicator(contentView, progressIndicator);
 
         toggleGroup.setOnCheckedChangeListener(toggleListener);
 
@@ -121,7 +101,7 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     }
 
     private void refreshView(String residentId) {
-        progressManager.indicateProgress(resident == null);
+        showProgress(resident == null);
 
         ResidentClient service = ResidentClient.getClient();
         service.getResident(this, residentId);
@@ -250,8 +230,13 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
-            Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
-            progressManager.stopProgress();
+
+            if (resident == null) {
+                showError(getResources().getString(R.string.error_unknown_server_error));
+            } else {
+                Toast.makeText(this, R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+                showContent();
+            }
         }
     }
 
@@ -322,7 +307,7 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
             }
         }
 
-        progressManager.stopProgress();
+        showContent();
     }
 
     @Subscribe
@@ -337,17 +322,10 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Bus bus = BusManager.getBus();
-        bus.unregister(this);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
         try {
-            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_resident);
             getMenuInflater().inflate(R.menu.menu_activity_resident, menu);
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
@@ -372,17 +350,18 @@ public class ResidentActivity extends Activity implements MapFragment.OnResident
             int id = item.getItemId();
 
             switch (id) {
-                case android.R.id.home:
-                    // app icon in action bar clicked; goto parent activity.
+                case android.R.id.home: {
                     this.finish();
                     return true;
-
-                // reload activity
-                case R.id.action_refresh_resident:
-                    refreshView(resident.getId());
+                }
+                case R.id.action_refresh: {
+                    String residentId = resident != null ? resident.getId() : null;
+                    refreshView(residentId);
                     return true;
-                default:
+                }
+                default: {
                     return super.onOptionsItemSelected(item);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

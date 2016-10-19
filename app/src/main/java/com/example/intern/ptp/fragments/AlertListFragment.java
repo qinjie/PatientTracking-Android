@@ -2,7 +2,6 @@ package com.example.intern.ptp.fragments;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.intern.ptp.R;
@@ -23,29 +21,19 @@ import com.example.intern.ptp.ResidentActivity;
 import com.example.intern.ptp.network.client.AlertClient;
 import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.UserManager;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.views.adapter.AlertListAdapter;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class AlertListFragment extends Fragment implements AdapterView.OnItemClickListener {
-
-    @BindView(R.id.alertlist_progress_indicator)
-    ProgressBar progressIndicator;
-
-    @BindView(R.id.alertlist_content)
-    View contentView;
+public class AlertListFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
     @BindView(R.id.alertlist_list)
     ListView alertListView;
@@ -57,7 +45,6 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
     private Activity activity;
 
-    private ProgressManager progressManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,21 +52,8 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
         activity = this.getActivity();
 
-        Bus bus = BusManager.getBus();
-        bus.register(this);
-
-        progressManager = new ProgressManager();
-
         // check whether the device has successfully sent a registered FCM token to server, if not and a FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Bus bus = BusManager.getBus();
-        bus.unregister(this);
     }
 
     @Override
@@ -91,8 +65,9 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
         try {
-            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment);
             inflater.inflate(R.menu.menu_fragment_alert, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
@@ -116,7 +91,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
 
             switch (id) {
                 // reload fragment
-                case R.id.action_refresh_fragment:
+                case R.id.action_refresh:
                     refreshView();
                     return true;
                 default:
@@ -131,17 +106,19 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_alert, container, false);
-        ButterKnife.bind(this, view);
+
+        return inflater.inflate(R.layout.fragment_alert, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         adapter = new AlertListAdapter(activity, new ArrayList<Alert>());
         alertListView.setAdapter(adapter);
         alertListView.setOnItemClickListener(this);
 
-        progressManager.initLoadingIndicator(contentView, progressIndicator);
-
         refreshView();
-        return view;
     }
 
     @Override
@@ -157,7 +134,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     private void refreshView() {
         final AlertClient service = AlertClient.getClient();
 
-        progressManager.indicateProgress(adapter.getCount() == 0);
+        showProgress(adapter.getCount() == 0);
 
         // check whether user prefers only untaken care notifications
         if (!activity.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("red_only", "0").equalsIgnoreCase("0")) {
@@ -209,7 +186,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
-            progressManager.stopProgress();
+            showContent();
             Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
@@ -222,7 +199,7 @@ public class AlertListFragment extends Fragment implements AdapterView.OnItemCli
     }
 
     private void onAlertsRefresh(Object response) {
-        progressManager.stopProgress();
+        showContent();
 
         if (response instanceof List) {
             List<Alert> alertList = (List<Alert>) response;

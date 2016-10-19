@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class NextOfKinFragment extends Fragment {
+public class NextOfKinFragment extends BaseFragment {
 
     @BindView(R.id.nextofkin_list)
     ListView nextOfKinList;
@@ -30,16 +30,18 @@ public class NextOfKinFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.fragment_next_of_kin, null);
-        ButterKnife.bind(this, view);
+        return inflater.inflate(R.layout.fragment_next_of_kin, null);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         Bundle arguments = getArguments();
         ArrayList<NextOfKin> nextOfKins = arguments.getParcelableArrayList(Preferences.BUNDLE_KEY_NEXT_OF_KINS);
 
         NextOfKinListAdapter adapter = new NextOfKinListAdapter(getActivity(), nextOfKins);
         nextOfKinList.setAdapter(adapter);
-
-        return view;
     }
 
     public void refresh(List<NextOfKin> nextOfKins) {

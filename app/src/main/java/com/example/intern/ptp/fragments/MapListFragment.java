@@ -2,7 +2,6 @@ package com.example.intern.ptp.fragments;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.intern.ptp.MapActivity;
@@ -21,7 +19,6 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.client.MapClient;
 import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.example.intern.ptp.utils.bus.response.ServerError;
@@ -34,19 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class MapListFragment extends Fragment {
+public class MapListFragment extends BaseFragment {
 
-    @BindView(R.id.maplist_progress_indicator)
-    ProgressBar progressIndicator;
-
-    @BindView(R.id.maplist_content)
+    @BindView(R.id.content_view)
     ListView mapListView;
 
     private MapListAdapter adapter;
     private Activity activity;
-    private ProgressManager progressManager;
 
 
     @Override
@@ -54,7 +46,6 @@ public class MapListFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
         activity = this.getActivity();
-        progressManager = new ProgressManager();
 
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(activity);
@@ -70,7 +61,6 @@ public class MapListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
-            progressManager.initRefreshingIndicator(menu, R.id.action_refresh_fragment_maplist);
             inflater.inflate(R.menu.menu_fragment_map, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
@@ -94,7 +84,7 @@ public class MapListFragment extends Fragment {
             int id = item.getItemId();
 
             switch (id) {
-                case R.id.action_refresh_fragment_maplist:
+                case R.id.action_refresh:
                     refreshView();
                     return true;
                 default:
@@ -109,14 +99,12 @@ public class MapListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View myView = inflater.inflate(R.layout.fragment_maplist, container, false);
-        ButterKnife.bind(this, myView);
+        return inflater.inflate(R.layout.fragment_maplist, container, false);
+    }
 
-        Bus bus = BusManager.getBus();
-        bus.register(this);
-
-        progressManager.initLoadingIndicator(mapListView, progressIndicator);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         adapter = new MapListAdapter(activity, new ArrayList<Location>());
         mapListView.setAdapter(adapter);
@@ -134,22 +122,13 @@ public class MapListFragment extends Fragment {
         });
 
         refreshView();
-        return myView;
     }
 
     private void refreshView() {
-        progressManager.indicateProgress(adapter.getCount() == 0);
+        showProgress(adapter.getCount() == 0);
 
         MapClient service = MapClient.getClient();
         service.getFloors(getActivity());
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Bus bus = BusManager.getBus();
-        bus.unregister(this);
     }
 
     @Subscribe
@@ -158,20 +137,20 @@ public class MapListFragment extends Fragment {
             List<Location> locations = (List<Location>) event.getMessage();
             adapter.updateLocations(locations);
 
-            progressManager.stopProgress();
+            showContent();
         }
     }
 
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
-            progressManager.stopProgress();
+            showContent();
             Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Subscribe
-    public void onNotificationRespone(NotificationMessage event) {
+    public void onNotificationResponse(NotificationMessage event) {
         if (event.getType().equals(NotificationMessage.MESSAGE_RECEIVED)) {
             refreshView();
         }

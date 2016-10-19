@@ -1,7 +1,6 @@
 package com.example.intern.ptp;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -15,7 +14,7 @@ import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.utils.Preferences;
 
 
-public class MapActivity extends Activity implements MapFragment.OnResidentTouchListener {
+public class MapActivity extends BaseActivity implements MapFragment.OnResidentTouchListener {
 
     Fragment mapFragment;
 

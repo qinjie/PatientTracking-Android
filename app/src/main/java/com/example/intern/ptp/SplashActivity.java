@@ -1,6 +1,5 @@
 package com.example.intern.ptp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,20 +8,15 @@ import com.example.intern.ptp.network.client.AuthenticationClient;
 import com.example.intern.ptp.utils.ConnectivityUtils;
 import com.example.intern.ptp.utils.PlayServiceUtils;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bus bus = BusManager.getBus();
-        bus.register(this);
 
         if (!ConnectivityUtils.isConnected(this)) {
             ConnectivityUtils.showConnectionFailureDialog(this);
@@ -77,13 +71,5 @@ public class SplashActivity extends Activity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivityForResult(intent, 0);
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Bus bus = BusManager.getBus();
-        bus.unregister(this);
     }
 }

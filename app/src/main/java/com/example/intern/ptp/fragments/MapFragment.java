@@ -1,6 +1,5 @@
 package com.example.intern.ptp.fragments;
 
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +21,6 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.services.MapPointsService;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.ProgressManager;
 import com.example.intern.ptp.views.widgets.LocatorMapPhotoView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -30,19 +28,13 @@ import com.squareup.picasso.Target;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTapListener {
+public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnViewTapListener {
 
-    @BindView(R.id.map_progress_indicator)
-    ProgressBar progressIndicator;
-
-    @BindView(R.id.map_photo)
+    @BindView(R.id.content_view)
     LocatorMapPhotoView photoView;
 
     private PhotoViewAttacher photoAttacher;
-
-    private ProgressManager progressManager;
 
     private OnResidentTouchListener onResidentTouchListener;
 
@@ -88,22 +80,18 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
         }
     };
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        progressManager = new ProgressManager();
-    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.fragment_map, null);
-        ButterKnife.bind(this, view);
+        return inflater.inflate(R.layout.fragment_map, null);
+    }
 
-        progressManager.initLoadingIndicator(photoView, progressIndicator);
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         Bundle args = getArguments();
 
@@ -132,7 +120,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                     getActivity().registerReceiver(mMessageReceiver, new IntentFilter(Preferences.map_broadcastTag + floorId));
                     getActivity().startService(serviceIntent);
 
-                    progressManager.stopProgress();
+                    showContent();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -141,7 +129,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
                 try {
-                    progressManager.stopProgress();
+                    showContent();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -154,7 +142,7 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
                     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
 
                     photoView.setImageBitmap(bitmap);
-                    progressManager.indicateProgress(true);
+                    showProgress(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -173,12 +161,12 @@ public class MapFragment extends Fragment implements PhotoViewAttacher.OnViewTap
             e.printStackTrace();
         }
 
-        return view;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         try {
             // unregister the broadcast receiver when the activity is destroyed
             getActivity().unregisterReceiver(mMessageReceiver);

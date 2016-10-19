@@ -1,6 +1,5 @@
 package com.example.intern.ptp;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Toast;
 
-import com.example.intern.ptp.R;
 import com.example.intern.ptp.fragments.AlertListFragment;
 import com.example.intern.ptp.fragments.MapListFragment;
 import com.example.intern.ptp.fragments.NearestResidentFragment;
@@ -17,7 +15,7 @@ import com.example.intern.ptp.fragments.ResidentListFragment;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.views.navigation.NavigationDrawerFragment;
 
-public class MainActivity extends Activity
+public class MainActivity extends BaseActivity
         implements
         NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -31,7 +29,6 @@ public class MainActivity extends Activity
         // check whether the device has successfully sent a registered FCM token to server, if not and the FCM token is available then send it
         Preferences.checkFcmTokenAndFirstLoginAlertStatus(this);
         super.onCreate(savedInstanceState);
-
 
         try {
             setContentView(R.layout.activity_navigation);
@@ -85,7 +82,7 @@ public class MainActivity extends Activity
         // set up selected fragment
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.content_view, fragment)
                 .commit();
     }
 
