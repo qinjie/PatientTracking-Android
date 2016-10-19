@@ -107,7 +107,7 @@ public class AlertListFragment extends BaseFragment implements AdapterView.OnIte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.fragment_alert, container, false);
+        return inflater.inflate(R.layout.fragment_alertlist, container, false);
     }
 
     @Override
@@ -186,8 +186,13 @@ public class AlertListFragment extends BaseFragment implements AdapterView.OnIte
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
-            showContent();
-            Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+
+            if(adapter.getCount() > 0) {
+                showContent();
+                Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+            } else {
+                showError(getString(R.string.error_unknown_server_error));
+            }
         }
     }
 

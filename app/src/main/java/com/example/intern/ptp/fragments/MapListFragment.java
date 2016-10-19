@@ -144,8 +144,13 @@ public class MapListFragment extends BaseFragment {
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
-            showContent();
-            Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+
+            if(adapter.getCount() > 0) {
+                showContent();
+                Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+            } else {
+                showError(getString(R.string.error_unknown_server_error));
+            }
         }
     }
 

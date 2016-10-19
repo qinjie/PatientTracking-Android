@@ -4,6 +4,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.intern.ptp.fragments.AlertListFragment">
 
+    <com.example.intern.ptp.views.widgets.ErrorView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
     <ProgressBar
         android:id="@+id/progress_indicator"
         style="?android:attr/progressBarStyle"

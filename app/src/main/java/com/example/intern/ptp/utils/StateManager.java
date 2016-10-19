@@ -17,6 +17,10 @@ public class StateManager {
     private ErrorView errorView;
 
     public void showProgress(boolean isInitialLoading) {
+        if(errorView != null) {
+            errorView.setVisibility(View.INVISIBLE);
+        }
+
         if (isInitialLoading) {
             setLoadingState(true);
         } else {

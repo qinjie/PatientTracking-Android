@@ -2,7 +2,6 @@ package com.example.intern.ptp.fragments;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,19 +25,15 @@ import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.network.models.SearchParam;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.StateManager;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.views.adapter.ResidentListAdapter;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ResidentListFragment extends BaseFragment {
     private SearchView sv;
@@ -150,7 +144,7 @@ public class ResidentListFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_resident, container, false);
+        return inflater.inflate(R.layout.fragment_residentlist, container, false);
     }
 
     @Override
@@ -210,9 +204,13 @@ public class ResidentListFragment extends BaseFragment {
     @Subscribe
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
-            Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
 
-            showContent();
+            if (floorAdapter.getCount() > 0) {
+                Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
+                showContent();
+            } else {
+                showError(getString(R.string.error_unknown_server_error));
+            }
         }
     }
 
