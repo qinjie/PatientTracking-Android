@@ -13,47 +13,55 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <activity
-            android:name=".Navigation.NavigationActivity"
-            android:label="@string/app_name" />
-        <activity
-            android:name=".Login.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible">
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".Resident.ResidentActivity"
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/LoginTheme"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".ResidentActivity"
             android:label="@string/title_activity_resident"
             android:launchMode="singleTask" />
 
-        <service android:name=".FCM.MyFcmListenerService">
+        <service android:name=".services.fcm.MyFcmListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service android:name=".FCM.MyInstanceIDListenerService">
+        <service android:name=".services.fcm.MyInstanceIDListenerService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name=".Map.MapActivity"
+            android:name=".MapActivity"
             android:label="@string/title_activity_map"
             android:launchMode="singleTask" />
 
         <service
-            android:name=".Map.MapPointsService"
+            android:name=".services.MapPointsService"
             android:exported="false"
             android:process=":mappointsservice" />
 
         <service
-            android:name=".Nearest.NearestService"
+            android:name=".services.NearestService"
             android:exported="false"
             android:process=":nearestservice" />
 

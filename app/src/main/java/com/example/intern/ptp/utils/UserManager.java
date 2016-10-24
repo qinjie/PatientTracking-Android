@@ -3,8 +3,6 @@ package com.example.intern.ptp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.intern.ptp.Preferences;
-
 public class UserManager {
 
     public static String getName(Context context) {
@@ -26,8 +24,14 @@ public class UserManager {
     }
 
     public static boolean isLoggedIn(Context context) {
-        String username =  context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
+        String username = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString("username", "");
 
         return !username.equalsIgnoreCase("");
+    }
+
+    public static String getSessionToken(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag);
+
+        return prefs.getString("token", "");
     }
 }

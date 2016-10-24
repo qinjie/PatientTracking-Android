@@ -1,9 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.intern.ptp.Resident.ResidentActivity">
+    tools:context="com.example.intern.ptp.ResidentActivity">
     <item
-        android:id="@+id/action_refresh_resident"
-        android:title="@string/action_settings"
+        android:id="@+id/action_refresh"
+        android:title="@string/action_refresh"
         android:orderInCategory="100"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:showAsAction="ifRoom" />

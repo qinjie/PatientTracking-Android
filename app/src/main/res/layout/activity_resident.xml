@@ -4,14 +4,14 @@
     android:layout_height="match_parent">
 
     <ProgressBar
-        android:id="@+id/maplist_progress_indicator"
+        android:id="@+id/progress_indicator"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal" />
 
     <ScrollView
-        android:id="@+id/resident_content"
+        android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -123,8 +123,7 @@
                 android:layout_below="@id/resident_alert_layout"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:contentDescription="@string/resident_profile_picture_description"
-                />
+                android:contentDescription="@string/resident_profile_picture_description" />
 
 
             <LinearLayout
@@ -273,4 +272,11 @@
                 android:minHeight="200dp" />
         </RelativeLayout>
     </ScrollView>
+
+    <com.example.intern.ptp.views.widgets.ErrorView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
 </FrameLayout>

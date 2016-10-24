@@ -13,7 +13,7 @@ import android.util.AttributeSet;
 
 import com.example.intern.library.PhotoView;
 import com.example.intern.library.PhotoViewAttacher;
-import com.example.intern.ptp.Resident.Resident;
+import com.example.intern.ptp.network.models.Resident;
 
 import java.util.ArrayList;
 import java.util.List;

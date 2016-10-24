@@ -1,13 +1,13 @@
 package com.example.intern.ptp.network;
 
-import com.example.intern.ptp.Alert.Alert;
-import com.example.intern.ptp.FCM.FCMInfo;
-import com.example.intern.ptp.Login.LoginInfo;
-import com.example.intern.ptp.Login.LoginResult;
-import com.example.intern.ptp.Map.Location;
-import com.example.intern.ptp.Resident.Resident;
-import com.example.intern.ptp.Resident.SearchParam;
-import com.example.intern.ptp.Setting.PasswordChangeInfo;
+import com.example.intern.ptp.network.models.Alert;
+import com.example.intern.ptp.network.models.FCMInfo;
+import com.example.intern.ptp.network.models.Location;
+import com.example.intern.ptp.network.models.LoginInfo;
+import com.example.intern.ptp.network.models.LoginResult;
+import com.example.intern.ptp.network.models.PasswordChangeInfo;
+import com.example.intern.ptp.network.models.Resident;
+import com.example.intern.ptp.network.models.SearchParam;
 
 import java.util.List;
 
