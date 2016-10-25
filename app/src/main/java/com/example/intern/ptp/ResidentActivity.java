@@ -28,6 +28,7 @@ import com.example.intern.ptp.network.client.AlertClient;
 import com.example.intern.ptp.network.client.ResidentClient;
 import com.example.intern.ptp.network.models.Alert;
 import com.example.intern.ptp.network.models.Resident;
+import com.example.intern.ptp.utils.DemoUtil;
 import com.example.intern.ptp.utils.FontManager;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
@@ -265,14 +266,8 @@ public class ResidentActivity extends BaseActivity implements MapFragment.OnResi
     public void onResidentRefresh(Resident resident) {
         this.resident = resident;
 
-        // TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
-        String pictureName = "profile" + resident.getId();
-        Drawable image = getDrawable(getResources().getIdentifier(pictureName, "drawable", getPackageName()));
-
-        if (image == null) {
-            image = getDrawable(getResources().getIdentifier("profile31", "drawable", getPackageName()));
-        }
-
+        // TODO: REMOVE THIS. IS JUST FOR OLD API
+        Drawable image = DemoUtil.getResidentProfileDrawable(this, resident.getId());
         profilePicture.setImageDrawable(image);
         // TODO END
 

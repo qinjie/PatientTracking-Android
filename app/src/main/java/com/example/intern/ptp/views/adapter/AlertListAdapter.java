@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.models.Alert;
+import com.example.intern.ptp.utils.DemoUtil;
 import com.example.intern.ptp.utils.FontManager;
 
 import java.text.ParseException;
@@ -214,14 +215,9 @@ public class AlertListAdapter extends BaseAdapter {
                     holder.takeCareLayout.setVisibility(View.INVISIBLE);
                 }
 
-                //TODO: REMOVE THIS. IS JUST FOR 2016 SEPT DEMO
-                String profilePicture = "profile" + alert.getResidentId();
-                Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
+                //TODO: REMOVE THIS. IS JUST FOR OLD API
 
-                if (image == null) {
-                    image = context.getDrawable(context.getResources().getIdentifier("profile31", "drawable", context.getPackageName()));
-                }
-
+                Drawable image = DemoUtil.getResidentProfileDrawable(context, alert.getResidentId());
                 holder.profilePicture.setImageDrawable(image);
                 // TODO END
             }
