@@ -31,9 +31,8 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private RectF displayRect;
     private List<Resident> residents;
 
-    private float originalWidth;
     private float scale;
-    private double screenWidth;
+    private double bottomSideDisplayInch;
 
     private static final float SCALED_CIRCLE_SIZE = 13f;
     private static final float SCALED_PROFILE_IMAGE_SIZE = 18f;
@@ -66,14 +65,13 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         double density = metrics.density * 160;
         double x = Math.pow(metrics.widthPixels / density, 2);
         double y = Math.pow(metrics.heightPixels / density, 2);
-        originalWidth = metrics.widthPixels;
 
         int orientation = getContext().getResources().getConfiguration().orientation;
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            screenWidth = Math.sqrt(Math.min(x,y));
+            bottomSideDisplayInch = Math.sqrt(Math.min(x, y));
         } else {
-            screenWidth = Math.sqrt(Math.max(x,y));
+            bottomSideDisplayInch = Math.sqrt(Math.max(x, y));
         }
     }
 
@@ -113,6 +111,9 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     }
 
     private float calculateScale() {
+        Bitmap b = ((BitmapDrawable) getDrawable()).getBitmap();
+        float originalWidth = b.getWidth();
+
         float scaledWidth = displayRect.right - displayRect.left;
         return scaledWidth / originalWidth;
     }
@@ -142,7 +143,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         float residentX = convertResidentX(x, scale);
         float residentY = convertResidentY(y, scale);
 
-        if (screenWidth * scale > MIN_RESIDENT_IMAGE_INCHES) {
+        if (bottomSideDisplayInch * scale > MIN_RESIDENT_IMAGE_INCHES) {
             int imageRadius = (int) (SCALED_PROFILE_IMAGE_SIZE * scale);
 
             Drawable residentDrawable = DemoUtil.getResidentProfileDrawable(getContext(), resident.getId());
@@ -154,7 +155,6 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
             circlePaint.setStyle(Paint.Style.STROKE);
             circlePaint.setStrokeWidth(3 * scale);
             canvas.drawCircle(residentX, residentY, SCALED_PROFILE_IMAGE_SIZE * scale, circlePaint);
-
         } else {
             int circleRadius = (int) (SCALED_CIRCLE_SIZE * scale);
 
