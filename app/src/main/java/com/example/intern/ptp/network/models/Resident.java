@@ -349,8 +349,8 @@ public class Resident implements Parcelable {
         this.ongoingAlert = ongoingAlert;
     }
 
-    public boolean isNurse() {
-        return id.equalsIgnoreCase("-1");
+    public boolean isResident() {
+        return !id.equalsIgnoreCase("-1");
     }
 
     @Override

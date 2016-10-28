@@ -133,7 +133,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
             marker.color = Integer.parseInt(resident.getColor());
             marker.displayName = resident.getFirstname();
 
-            if (!resident.isNurse()) {
+            if (resident.isResident()) {
                 Drawable residentDrawable = DemoUtil.getResidentProfileDrawable(getContext(), resident.getId());
                 marker.image = ((BitmapDrawable) residentDrawable).getBitmap();
             } else {

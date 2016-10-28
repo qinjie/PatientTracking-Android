@@ -5,8 +5,6 @@
     <string name="navigation_drawer_close">Close navigation</string>
 
     <string name="action_refresh">Refresh</string>
-    <string name="action_locations">View locations list</string>
-    <string name="LocationActivity">Location</string>
     <string name="action_search">Search</string>
     <string name="search_hint">Enter resident name &#8230;</string>
 
@@ -20,19 +18,14 @@
     <string name="error_incorrect_password">Your username or password is incorrect</string>
 
     <string name="title_fragment_resident">Residents</string>
-    <string name="title_fragment_location">Location List</string>
     <string name="title_fragment_map">Map</string>
     <string name="title_fragment_alert">Alerts</string>
     <string name="title_fragment_neasrest_resident">Nearest Resident</string>
     <string name="title_fragment_profile">My Profile</string>
-    <string name="title_fragment_change">Change Password</string>
 
     <string name="title_activity_resident">Resident</string>
-    <string name="title_activity_location">Location</string>
     <string name="title_activity_map">Map</string>
-    <string name="title_activity_alert">Alert</string>
 
-    <string name="ic_sos">Alert image</string>
     <string name="logout">Logout</string>
     <string name="alerts_alert_profile_picture">Resident\'s profile picture</string>
     <string name="btn_take_care">Take care</string>

@@ -48,7 +48,7 @@ public class ErrorView extends LinearLayout {
     private void init(Context context) {
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.view_error, this, true);
+        inflater.inflate(R.layout.view_error, this, true);
         ButterKnife.bind(this);
 
         errorImage.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));

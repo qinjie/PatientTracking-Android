@@ -183,7 +183,7 @@ public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnVie
 
         Resident resident = photoView.getTouchedResident(touchPoint);
 
-        if (resident != null && !resident.isNurse()) {
+        if (resident != null && resident.isResident()) {
             if (onResidentTouchListener != null) {
                 onResidentTouchListener.onResidentTouched(resident);
             }

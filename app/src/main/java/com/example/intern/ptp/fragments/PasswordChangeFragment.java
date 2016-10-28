@@ -148,7 +148,6 @@ public class PasswordChangeFragment extends BaseFragment {
 
         } else {
             Toast.makeText(getActivity(), R.string.validation_match_password, Toast.LENGTH_SHORT).show();
-            ;
         }
     }
 
