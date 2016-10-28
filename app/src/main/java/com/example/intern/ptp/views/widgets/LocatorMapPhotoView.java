@@ -42,7 +42,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private static final float SCALED_TEXT_SIZE = 24f;
     private static final float MAX_WITHIN_TOUCH_DISTANCE = 50f;
     private static final double MIN_RESIDENT_IMAGE_INCHES = 5d;
-    private static final int ANIMATION_DURATION = 2000;
+    private static final int ANIMATION_DURATION = 1000;
 
 
     private Paint circlePaint;
