@@ -2,19 +2,13 @@ package com.example.intern.ptp;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 
-import com.example.intern.ptp.utils.AnimUtils;
 import com.example.intern.ptp.utils.StateManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.views.widgets.ErrorView;
 import com.squareup.otto.Bus;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class BaseActivity extends Activity {

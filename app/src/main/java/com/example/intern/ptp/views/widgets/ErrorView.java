@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -49,7 +48,7 @@ public class ErrorView extends LinearLayout {
     private void init(Context context) {
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View view = inflater.inflate(R.layout.view_error, this, true);
+        inflater.inflate(R.layout.view_error, this, true);
         ButterKnife.bind(this);
 
         errorImage.setTypeface(FontManager.getTypeface(context, FontManager.FONTAWESOME));

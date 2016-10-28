@@ -17,20 +17,20 @@ import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.View;
 
 import com.example.intern.library.PhotoView;
 import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.utils.DemoUtil;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.OnMatrixChangedListener {
 
     private RectF displayRect;
-    private List<Resident> residents;
+
+    private HashMap<String, ResidentMarker> residentMarker;
 
     private float scale;
     private double bottomSideDisplayInch;
@@ -39,8 +39,9 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private static final float SCALED_PROFILE_IMAGE_SIZE = 18f;
     private static final float SCALED_TEXT_SIZE = 24f;
     private static final float MAX_WITHIN_TOUCH_DISTANCE = 50f;
-
     private static final double MIN_RESIDENT_IMAGE_INCHES = 5d;
+    private static final int ANIMATION_DURATION = 1000;
+
 
     private Paint circlePaint;
     private Paint textPaint;
@@ -55,7 +56,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private void init(Context context) {
         isInEditMode();
 
-        residents = new ArrayList<>();
+        residentMarker = new HashMap<>();
 
         circlePaint = new Paint();
         circlePaint.setStyle(Paint.Style.FILL);
@@ -96,15 +97,20 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
 
         scale = calculateScale();
 
-        for (final Resident resident : residents) {
-            drawResidentIndicator(canvas, resident);
+        for (final ResidentMarker marker : residentMarker.values()) {
+
+            animateMarker(marker);
+
+            drawResidentIndicator(canvas, marker);
         }
 
-        for (final Resident resident : residents) {
-            if (!resident.isNurse()) {
-                drawResidentName(canvas, resident);
+        for (final ResidentMarker marker : residentMarker.values()) {
+            if (marker.shouldShowDisplayName) {
+                drawResidentName(canvas, marker);
             }
         }
+
+        this.postInvalidateDelayed(1000 / 60);
     }
 
     @Override
@@ -114,7 +120,34 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     }
 
     public void setResidents(List<Resident> residents) {
-        this.residents = residents;
+
+        for (Resident resident : residents) {
+            ResidentMarker marker = residentMarker.get(resident.getId());
+
+            if (marker == null) {
+                marker = new ResidentMarker();
+                marker.x = Integer.parseInt(resident.getPixelx());
+                marker.y = Integer.parseInt(resident.getPixely());
+            }
+
+            marker.color = Integer.parseInt(resident.getColor());
+            marker.displayName = resident.getFirstname();
+
+            if (resident.isResident()) {
+                Drawable residentDrawable = DemoUtil.getResidentProfileDrawable(getContext(), resident.getId());
+                marker.image = ((BitmapDrawable) residentDrawable).getBitmap();
+            } else {
+                marker.shouldShowDisplayName = false;
+            }
+
+            marker.destinationX = Integer.parseInt(resident.getPixelx());
+            marker.destinationY = Integer.parseInt(resident.getPixely());
+            marker.originX = marker.x;
+            marker.originY = marker.y;
+            marker.timestamp = System.currentTimeMillis();
+            residentMarker.put(resident.getId(), marker);
+        }
+
         invalidate();
     }
 
@@ -142,21 +175,27 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         return y - (0.9f * textSize);
     }
 
-    private void drawResidentIndicator(Canvas canvas, Resident resident) {
-        int color = Integer.parseInt(resident.getColor());
-        circlePaint.setColor(color);
+    private void animateMarker(ResidentMarker marker) {
 
-        int x = Integer.parseInt(resident.getPixelx());
-        int y = Integer.parseInt(resident.getPixely());
-        float residentX = convertResidentX(x, scale);
-        float residentY = convertResidentY(y, scale);
+        long timeElapsed = System.currentTimeMillis() - marker.timestamp;
 
-        if (bottomSideDisplayInch * scale > MIN_RESIDENT_IMAGE_INCHES) {
+        if (timeElapsed < ANIMATION_DURATION) {
+            float animationProgressPercentage = (float) timeElapsed / ANIMATION_DURATION;
+            marker.x = (int) (marker.originX + (animationProgressPercentage * (marker.destinationX - marker.originX)));
+            marker.y = (int) (marker.originY + (animationProgressPercentage * (marker.destinationY - marker.originY)));
+        }
+    }
+
+    private void drawResidentIndicator(Canvas canvas, ResidentMarker marker) {
+        circlePaint.setColor(marker.color);
+
+        float residentX = convertResidentX(marker.x, scale);
+        float residentY = convertResidentY(marker.y, scale);
+
+        if (bottomSideDisplayInch * scale > MIN_RESIDENT_IMAGE_INCHES && marker.shouldShowDisplayName) {
             int imageRadius = (int) (SCALED_PROFILE_IMAGE_SIZE * scale);
 
-            Drawable residentDrawable = DemoUtil.getResidentProfileDrawable(getContext(), resident.getId());
-            Bitmap bitmap = ((BitmapDrawable) residentDrawable).getBitmap();
-            Bitmap croppedBitmap = getCroppedBitmap(bitmap, imageRadius * 2, imageRadius * 2);
+            Bitmap croppedBitmap = getCroppedBitmap(marker.image, imageRadius * 2, imageRadius * 2);
 
             canvas.drawBitmap(croppedBitmap, residentX - imageRadius, residentY - imageRadius, circlePaint);
 
@@ -171,40 +210,33 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         }
     }
 
-    private void drawResidentName(Canvas canvas, Resident resident) {
-        int x = Integer.parseInt(resident.getPixelx());
-        int y = Integer.parseInt(resident.getPixely());
-        float residentX = convertResidentX(x, scale);
-        float residentY = convertResidentY(y, scale);
-
-        String text = resident.getFirstname();
+    private void drawResidentName(Canvas canvas, ResidentMarker marker) {
+        float residentX = convertResidentX(marker.x, scale);
+        float residentY = convertResidentY(marker.y, scale);
 
         textPaint.setTextSize(SCALED_TEXT_SIZE * scale);
-        float residentNameX = calculateTextX(residentX, textPaint.measureText(text));
+        float residentNameX = calculateTextX(residentX, textPaint.measureText(marker.displayName));
         float residentNameY = calculateTextY(residentY, textPaint.getTextSize());
 
         textPaint.setColor(Color.GRAY);
-        canvas.drawText(text, residentNameX + 1, residentNameY, textPaint);
-        int color = Integer.parseInt(resident.getColor());
-        textPaint.setColor(color);
-        canvas.drawText(text, residentNameX, residentNameY, textPaint);
+        canvas.drawText(marker.displayName, residentNameX + 1, residentNameY, textPaint);
+        textPaint.setColor(marker.color);
+        canvas.drawText(marker.displayName, residentNameX, residentNameY, textPaint);
     }
 
     public Resident getTouchedResident(PointF point) {
         float closestDistance = Float.MAX_VALUE;
         Resident closestResident = null;
 
-        for (Resident resident : residents) {
-            int x = Integer.parseInt(resident.getPixelx());
-            int y = Integer.parseInt(resident.getPixely());
-            float residentX = convertResidentX(x, scale);
-            float residentY = convertResidentY(y, scale);
+        for (ResidentMarker marker : residentMarker.values()) {
+            float residentX = convertResidentX(marker.x, scale);
+            float residentY = convertResidentY(marker.y, scale);
 
             float distance = (float) (Math.pow(point.x - residentX, 2.d) + Math.pow(point.y - residentY, 2.d));
 
             if (closestDistance > distance) {
                 closestDistance = distance;
-                closestResident = resident;
+                closestResident = marker.resident;
             }
         }
 
@@ -238,5 +270,18 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     public void ready() {
         isReady = true;
         displayRect = getDisplayRect();
+    }
+
+    private class ResidentMarker {
+        Resident resident;
+
+        int destinationX, destinationY;
+        int originX, originY;
+        int x, y;
+        int color;
+        String displayName;
+        Bitmap image;
+        boolean shouldShowDisplayName = true;
+        long timestamp;
     }
 }

@@ -19,12 +19,10 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.client.MapClient;
 import com.example.intern.ptp.network.models.Location;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.NotificationMessage;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.example.intern.ptp.views.adapter.MapListAdapter;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -145,7 +143,7 @@ public class MapListFragment extends BaseFragment {
     public void onServerError(ServerError serverError) {
         if (serverError.getType().equals(ServerError.ERROR_UNKNOWN)) {
 
-            if(adapter.getCount() > 0) {
+            if (adapter.getCount() > 0) {
                 showContent();
                 Toast.makeText(getActivity(), R.string.error_unknown_server_error, Toast.LENGTH_SHORT).show();
             } else {
