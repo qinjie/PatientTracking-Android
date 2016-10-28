@@ -60,5 +60,6 @@
     <string name="validation_match_password">New and Confirm Password do not match.</string>
     <string name="success_change_password">Password successfully changed</string>
     <string name="error_title_login_failed">Login Failed</string>
-    <string name="error_message_login_failed">Network connection unavailable.\nPlease check that you have a data connection and try again.</string>
+    <string name="error_message_login_failed">Network connection unavailable.\nPlease check your data connection and try again.</string>
+    <string name="error_could_not_load_map">Sorry we have been unable to load the map.\nPlease check your data connection and try again.</string>
 </resources>

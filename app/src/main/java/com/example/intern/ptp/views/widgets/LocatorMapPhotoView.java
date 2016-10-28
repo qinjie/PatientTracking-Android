@@ -1,19 +1,28 @@
 package com.example.intern.ptp.views.widgets;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.example.intern.library.PhotoView;
 import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.network.models.Resident;
+import com.example.intern.ptp.utils.DemoUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,25 +32,29 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private RectF displayRect;
     private List<Resident> residents;
 
-    private float originalWidth;
     private float scale;
+    private double bottomSideDisplayInch;
 
-    private static final float SCALED_CIRCLE_SIZE = 12;
-    private static final float SCALED_TEXT_SIZE = 32;
-    private static final float MAX_WITHIN_TOUCH_DISTANCE = 50;
+    private static final float SCALED_CIRCLE_SIZE = 13f;
+    private static final float SCALED_PROFILE_IMAGE_SIZE = 18f;
+    private static final float SCALED_TEXT_SIZE = 24f;
+    private static final float MAX_WITHIN_TOUCH_DISTANCE = 50f;
+
+    private static final double MIN_RESIDENT_IMAGE_INCHES = 5d;
 
     private Paint circlePaint;
     private Paint textPaint;
 
-    private Resident touchedResident;
+    private boolean isReady = false;
 
     public LocatorMapPhotoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-
     private void init(Context context) {
+        isInEditMode();
+
         residents = new ArrayList<>();
 
         circlePaint = new Paint();
@@ -49,7 +62,21 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         circlePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-        displayRect = getDisplayRect();
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        double density = metrics.density * 160;
+        double x = Math.pow(metrics.widthPixels / density, 2);
+        double y = Math.pow(metrics.heightPixels / density, 2);
+
+        int orientation = getContext().getResources().getConfiguration().orientation;
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            bottomSideDisplayInch = Math.sqrt(Math.min(x, y));
+        } else {
+            bottomSideDisplayInch = Math.sqrt(Math.max(x, y));
+        }
     }
 
     @Override
@@ -63,7 +90,11 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        updateScaleFactor();
+        if (!isReady) {
+            return;
+        }
+
+        scale = calculateScale();
 
         for (final Resident resident : residents) {
             drawResidentIndicator(canvas, resident);
@@ -75,7 +106,6 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
             }
         }
     }
-
 
     @Override
     public void onMatrixChanged(RectF rect) {
@@ -89,9 +119,11 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     }
 
     private float calculateScale() {
-        float scaledImageWidth = displayRect.right - displayRect.left;
+        Bitmap b = ((BitmapDrawable) getDrawable()).getBitmap();
+        float originalWidth = b.getWidth();
 
-        return scaledImageWidth / originalWidth;
+        float scaledWidth = displayRect.right - displayRect.left;
+        return scaledWidth / originalWidth;
     }
 
     private float convertResidentX(float x, float scale) {
@@ -107,33 +139,36 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     }
 
     private float calculateTextY(float y, float textSize) {
-        return y - (0.75f * textSize);
-    }
-
-    private void updateScaleFactor() {
-        Bitmap b = ((BitmapDrawable) getDrawable()).getBitmap();
-        originalWidth = b.getWidth();
-        scale = calculateScale();
+        return y - (0.9f * textSize);
     }
 
     private void drawResidentIndicator(Canvas canvas, Resident resident) {
         int color = Integer.parseInt(resident.getColor());
-
-        if (resident == touchedResident) {
-            circlePaint.setColor(Color.BLACK);
-        } else {
-            circlePaint.setColor(color);
-        }
+        circlePaint.setColor(color);
 
         int x = Integer.parseInt(resident.getPixelx());
         int y = Integer.parseInt(resident.getPixely());
         float residentX = convertResidentX(x, scale);
         float residentY = convertResidentY(y, scale);
 
-        circlePaint.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(residentX, residentY, SCALED_CIRCLE_SIZE * scale, circlePaint);
-        circlePaint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(residentX, residentY, (SCALED_CIRCLE_SIZE - 2) * scale, circlePaint);
+        if (bottomSideDisplayInch * scale > MIN_RESIDENT_IMAGE_INCHES) {
+            int imageRadius = (int) (SCALED_PROFILE_IMAGE_SIZE * scale);
+
+            Drawable residentDrawable = DemoUtil.getResidentProfileDrawable(getContext(), resident.getId());
+            Bitmap bitmap = ((BitmapDrawable) residentDrawable).getBitmap();
+            Bitmap croppedBitmap = getCroppedBitmap(bitmap, imageRadius * 2, imageRadius * 2);
+
+            canvas.drawBitmap(croppedBitmap, residentX - imageRadius, residentY - imageRadius, circlePaint);
+
+            circlePaint.setStyle(Paint.Style.STROKE);
+            circlePaint.setStrokeWidth(3 * scale);
+            canvas.drawCircle(residentX, residentY, SCALED_PROFILE_IMAGE_SIZE * scale, circlePaint);
+        } else {
+            int circleRadius = (int) (SCALED_CIRCLE_SIZE * scale);
+
+            circlePaint.setStyle(Paint.Style.FILL);
+            canvas.drawCircle(residentX, residentY, circleRadius, circlePaint);
+        }
     }
 
     private void drawResidentName(Canvas canvas, Resident resident) {
@@ -144,7 +179,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
 
         String text = resident.getFirstname();
 
-        textPaint.setTextSize(SCALED_TEXT_SIZE * (scale * 0.75f));
+        textPaint.setTextSize(SCALED_TEXT_SIZE * scale);
         float residentNameX = calculateTextX(residentX, textPaint.measureText(text));
         float residentNameY = calculateTextY(residentY, textPaint.getTextSize());
 
@@ -178,5 +213,30 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         } else {
             return closestResident;
         }
+    }
+
+    public Bitmap getCroppedBitmap(Bitmap bitmap, int width, int height) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return Bitmap.createScaledBitmap(output, width, height, false);
+    }
+
+    public void ready() {
+        isReady = true;
+        displayRect = getDisplayRect();
     }
 }
