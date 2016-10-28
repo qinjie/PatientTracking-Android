@@ -2,21 +2,16 @@ package com.example.intern.ptp.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.example.intern.ptp.R;
-import com.example.intern.ptp.utils.AnimUtils;
 import com.example.intern.ptp.utils.StateManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.views.widgets.ErrorView;
 import com.squareup.otto.Bus;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class BaseFragment extends Fragment {
@@ -59,7 +54,7 @@ public class BaseFragment extends Fragment {
     }
 
     public void showProgress(boolean isInitialLoading) {
-       stateManager.showProgress(isInitialLoading);
+        stateManager.showProgress(isInitialLoading);
     }
 
     public void showError(String message) {

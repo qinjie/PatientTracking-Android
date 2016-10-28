@@ -1,7 +1,6 @@
 package com.example.intern.ptp;
 
 import android.app.Application;
-import android.widget.Toast;
 
 import com.example.intern.ptp.network.client.AlertClient;
 import com.example.intern.ptp.network.client.AuthenticationClient;
@@ -11,7 +10,6 @@ import com.example.intern.ptp.network.client.UserClient;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
-import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 

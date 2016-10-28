@@ -2,7 +2,6 @@ package com.example.intern.ptp.fragments;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +24,6 @@ import com.example.intern.ptp.services.NearestService;
 import com.example.intern.ptp.utils.Preferences;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class NearestResidentFragment extends BaseFragment {
 

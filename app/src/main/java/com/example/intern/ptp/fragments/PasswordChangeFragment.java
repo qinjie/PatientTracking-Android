@@ -3,7 +3,6 @@ package com.example.intern.ptp.fragments;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.wifi.WifiInfo;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,15 +20,11 @@ import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.client.UserClient;
 import com.example.intern.ptp.network.models.PasswordChangeInfo;
 import com.example.intern.ptp.utils.Preferences;
-import com.example.intern.ptp.utils.StateManager;
-import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class PasswordChangeFragment extends BaseFragment {
@@ -153,7 +147,8 @@ public class PasswordChangeFragment extends BaseFragment {
                     .show();
 
         } else {
-            Toast.makeText(getActivity(), R.string.validation_match_password, Toast.LENGTH_SHORT).show();;
+            Toast.makeText(getActivity(), R.string.validation_match_password, Toast.LENGTH_SHORT).show();
+            ;
         }
     }
 

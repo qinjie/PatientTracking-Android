@@ -23,8 +23,6 @@ import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.utils.DemoUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -112,7 +110,7 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
             }
         }
 
-        this.postInvalidateDelayed( 1000 / 60);
+        this.postInvalidateDelayed(1000 / 60);
     }
 
     @Override
@@ -182,8 +180,9 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         long timeElapsed = System.currentTimeMillis() - marker.timestamp;
 
         if (timeElapsed < ANIMATION_DURATION) {
-            marker.x = (int) (marker.originX + ((float)timeElapsed / ANIMATION_DURATION) * (marker.destinationX - marker.originX));
-            marker.y = (int) (marker.originY + ((float) timeElapsed / ANIMATION_DURATION) * (marker.destinationY - marker.originY));
+            float animationProgressPercentage = (float) timeElapsed / ANIMATION_DURATION;
+            marker.x = (int) (marker.originX + (animationProgressPercentage * (marker.destinationX - marker.originX)));
+            marker.y = (int) (marker.originY + (animationProgressPercentage * (marker.destinationY - marker.originY)));
         }
     }
 

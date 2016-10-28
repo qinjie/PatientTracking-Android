@@ -15,7 +15,7 @@ public class ServerResponse extends BusMessage {
     public static final String POST_CHANGE_PASSWORD = "post_change_password";
 
 
-    public ServerResponse(String type, Object message   ) {
+    public ServerResponse(String type, Object message) {
         super(type, message);
     }
 }

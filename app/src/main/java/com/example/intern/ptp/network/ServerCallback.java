@@ -1,11 +1,8 @@
 package com.example.intern.ptp.network;
 
-import android.os.Debug;
-
 import com.example.intern.ptp.BuildConfig;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
-import com.example.intern.ptp.utils.bus.response.ServerResponse;
 import com.squareup.otto.Bus;
 
 import retrofit2.Call;

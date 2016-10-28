@@ -3,7 +3,6 @@ package com.example.intern.ptp.utils.bus.response;
 import com.example.intern.ptp.network.ServerCallback;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 
 public class ServerError<T> extends BusMessage {
 
