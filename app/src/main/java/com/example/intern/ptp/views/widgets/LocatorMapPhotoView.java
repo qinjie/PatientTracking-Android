@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.example.intern.library.PhotoView;
 import com.example.intern.library.PhotoViewAttacher;
@@ -44,12 +45,16 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private Paint circlePaint;
     private Paint textPaint;
 
+    private boolean isReady = false;
+
     public LocatorMapPhotoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
     private void init(Context context) {
+        isInEditMode();
+
         residents = new ArrayList<>();
 
         circlePaint = new Paint();
@@ -57,7 +62,6 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         circlePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-        displayRect = getDisplayRect();
 
         DisplayMetrics metrics = new DisplayMetrics();
         ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -85,6 +89,10 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if (!isReady) {
+            return;
+        }
 
         scale = calculateScale();
 
@@ -225,5 +233,10 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return Bitmap.createScaledBitmap(output, width, height, false);
+    }
+
+    public void ready() {
+        isReady = true;
+        displayRect = getDisplayRect();
     }
 }

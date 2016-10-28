@@ -114,6 +114,8 @@ public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnVie
                     photoAttacher.setOnMatrixChangeListener(photoView);
                     photoAttacher.setOnViewTapListener(MapFragment.this);
 
+                    photoView.ready();
+
                     // create a new intent related to MapPointsService
                     Intent serviceIntent = new Intent(getActivity(), MapPointsService.class);
                     serviceIntent.putExtra(Preferences.floor_idTag, floorId);
@@ -129,7 +131,7 @@ public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnVie
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
                 try {
-                    showContent();
+                    showError(getResources().getString(R.string.error_could_not_load_map));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -138,10 +140,6 @@ public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnVie
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
                 try {
-                    // assign a null image to mBitMap when failed loading the map
-                    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.null_image);
-
-                    photoView.setImageBitmap(bitmap);
                     showProgress(true);
                 } catch (Exception e) {
                     e.printStackTrace();
