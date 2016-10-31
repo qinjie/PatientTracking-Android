@@ -19,6 +19,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        develop {
+            applicationId "com.example.intern.ptp"
+            buildConfigField 'String', 'API_ROOT', '"http://153.20.44.136/patient-tracking-web"'
+        }
+        staging {
+            applicationId "com.example.intern.ptp.develop"
+            buildConfigField 'String', 'API_ROOT', '"http://153.20.44.136/patient-tracking-web"'
+        }
+    }
 }
 
 dependencies {

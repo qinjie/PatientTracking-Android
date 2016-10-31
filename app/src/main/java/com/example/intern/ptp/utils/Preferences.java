@@ -9,6 +9,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
+import com.example.intern.ptp.BuildConfig;
 import com.example.intern.ptp.LoginActivity;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.ServerApi;
@@ -23,10 +24,10 @@ import retrofit2.Response;
 
 public class Preferences {
     // base URL for API
-    public static final String root = "http://153.20.44.136/patient-tracking-web/api/web/"; //server
+    public static final String root = BuildConfig.API_ROOT + "/api/web/"; //server
 
     // base URL for images in server
-    public static final String imageRoot = "http://153.20.44.136/patient-tracking-web/backend/web/";
+    public static final String imageRoot = BuildConfig.API_ROOT + "/backend/web/";
 
     // tags for Shared Preferences to store and retrieve some piece of data from local
     public static final String SharedPreferencesTag = "Resident_Tracking_Preferences";
