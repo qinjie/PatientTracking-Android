@@ -42,7 +42,7 @@ public class Preferences {
     // tag for sending alert id through intents
     public static final String notify_idTag = "Resident_Tracking_notification";
 
-
+    public static final String BUNDLE_KEY_RESIDENT = "bundle_key_resident";
     public static final String BUNDLE_KEY_ALERT = "bundle_key_alert";
     public static final String BUNDLE_KEY_NEXT_OF_KINS = "bundle_key_next_of_kins";
 

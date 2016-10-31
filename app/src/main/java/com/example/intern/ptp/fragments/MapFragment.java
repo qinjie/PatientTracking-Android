@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.intern.library.PhotoViewAttacher;
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.services.MapPointsService;
@@ -26,6 +25,7 @@ import com.squareup.picasso.Target;
 import java.util.List;
 
 import butterknife.BindView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnViewTapListener {
 
@@ -99,19 +99,26 @@ public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnVie
 
         final String floorId = args.getString(Preferences.floor_idTag);
         final String url = args.getString(Preferences.floorFilePathTag);
+        final Resident followThisResident = args.getParcelable(Preferences.BUNDLE_KEY_RESIDENT);
+
+        photoAttacher = new PhotoViewAttacher(photoView);
 
         final Target mapLoadTarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 try {
-                    photoView.setResetable(true);
                     photoView.setImageBitmap(bitmap);
 
+                    if(followThisResident != null) {
+                        photoView.setFollowResident(followThisResident);
+                    }
+
                     // to be able to get coordinates of the rectangular map's 4 edges and handle zooming event
-                    photoAttacher = new PhotoViewAttacher(photoView);
                     photoAttacher.setOnMatrixChangeListener(photoView);
                     photoAttacher.setOnViewTapListener(MapFragment.this);
+                    photoAttacher.update();
 
+                    photoAttacher.setZoomable(false);
                     photoView.ready();
 
                     // create a new intent related to MapPointsService

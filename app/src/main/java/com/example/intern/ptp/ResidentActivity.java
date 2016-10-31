@@ -145,6 +145,7 @@ public class ResidentActivity extends BaseActivity implements MapFragment.OnResi
             Bundle args = new Bundle();
             args.putString(Preferences.floor_idTag, resident.getFloorId());
             args.putString(Preferences.floorFilePathTag, url);
+            args.putParcelable(Preferences.BUNDLE_KEY_RESIDENT, resident);
             fragment.setArguments(args);
         }
 
