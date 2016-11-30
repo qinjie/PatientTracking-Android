@@ -23,7 +23,7 @@ android {
     productFlavors {
         develop {
             applicationId "com.example.intern.ptp"
-            buildConfigField 'String', 'API_ROOT', '"http://153.20.44.136/patient-tracking-web"'
+            buildConfigField 'String', 'API_ROOT', '"http://128.199.93.67/PatientTracking-Web"'
         }
         staging {
             applicationId "com.example.intern.ptp.develop"
@@ -35,7 +35,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':library')
-    compile 'com.google.android.gms:play-services:9.6.1'
+    compile 'com.google.android.gms:play-services:10.0.1'
     compile 'com.google.firebase:firebase-messaging:9.0.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
