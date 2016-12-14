@@ -9,11 +9,13 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.example.intern.ptp.R;
 import com.example.intern.ptp.ResidentActivity;
 import com.example.intern.ptp.network.models.Alert;
+import com.example.intern.ptp.services.TakeCareService;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
@@ -62,19 +64,20 @@ public class MyFcmListenerService extends FirebaseMessagingService {
             int residentId = Integer.parseInt(alert.getResidentId());
             int notificationId = Integer.parseInt(alert.getId());
 
-            Intent intent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notificationId, intent,
+            Intent openResidentIntent = new Intent(MyFcmListenerService.this, ResidentActivity.class);
+            openResidentIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            openResidentIntent.putExtra(Preferences.RESIDENT_ID, alert.getResidentId());
+            PendingIntent openResidentPendingIntent = PendingIntent.getActivity(MyFcmListenerService.this, notificationId, openResidentIntent,
                     PendingIntent.FLAG_ONE_SHOT);
 
+            Intent takeCareIntent = new Intent(MyFcmListenerService.this, TakeCareService.class);
+            takeCareIntent.putExtra(Preferences.RESIDENT_ID, alert.getResidentId());
+            takeCareIntent.putExtra(Preferences.BUNDLE_KEY_ALERT, alert);
+            PendingIntent takeCarePendingIntent = PendingIntent.getService(this, notificationId, takeCareIntent, 0);
+
             String contentTitle = alert.getFirstname() + " " + alert.getLastname();
-
             List<String> alertTypes = Arrays.asList(getResources().getStringArray(R.array.alert_types));
-
             String content = alertTypes.get(Integer.parseInt(alert.getType()));
-
             Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
             int imageIdentifier = getResources().getIdentifier("profile" + residentId, "drawable", getPackageName());
@@ -82,7 +85,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
             int notificationColor = ContextCompat.getColor(getApplicationContext(), R.color.red);
 
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext())
+            NotificationCompat.Builder phoneNotificationBuilder = new NotificationCompat.Builder(getApplicationContext())
                     .setLargeIcon(largeIcon)
                     .setSmallIcon(R.drawable.ic_bell)
                     .setContentTitle(contentTitle)
@@ -90,11 +93,29 @@ public class MyFcmListenerService extends FirebaseMessagingService {
                     .setContentText(content)
                     .setAutoCancel(true)
                     .setSound(notificationSound)
-                    .setContentIntent(pendingIntent)
-                    .setOngoing(true);
+                    .setContentIntent(openResidentPendingIntent)
+                    .setGroup(alert.getResidentId())
+                    .setOngoing(true)
+                    .addAction(R.drawable.ic_bell,
+                            getString(R.string.take_care), takeCarePendingIntent);
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(Preferences.notify_idTag, residentId, notificationBuilder.build());
+            NotificationCompat.Builder wearNotificationBuilder = new NotificationCompat.Builder(getApplicationContext())
+                    .setLargeIcon(largeIcon)
+                    .setSmallIcon(R.drawable.ic_bell)
+                    .setContentTitle(contentTitle)
+                    .setColor(notificationColor)
+                    .setContentText(content)
+                    .setAutoCancel(true)
+                    .setSound(notificationSound)
+                    .setContentIntent(openResidentPendingIntent)
+                    .setGroup(alert.getResidentId())
+                    .setOngoing(false).addAction(R.drawable.ic_bell,
+                            getString(R.string.take_care), takeCarePendingIntent);
+
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(Preferences.notify_idTag, residentId, phoneNotificationBuilder.build());
+            notificationManager.notify(Preferences.notify_idTag, residentId, wearNotificationBuilder.build());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

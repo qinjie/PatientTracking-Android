@@ -168,7 +168,7 @@ public class AlertListFragment extends BaseFragment implements AdapterView.OnIte
 
             Intent intent = new Intent(activity, ResidentActivity.class);
             intent.putExtra(Preferences.BUNDLE_KEY_ALERT, alert);
-            intent.putExtra(Preferences.resident_idTag, alert.getResidentId());
+            intent.putExtra(Preferences.RESIDENT_ID, alert.getResidentId());
 
             activity.startActivity(intent);
         }

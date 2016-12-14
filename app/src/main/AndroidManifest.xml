@@ -65,6 +65,11 @@
             android:exported="false"
             android:process=":nearestservice" />
 
+        <service
+            android:name=".services.TakeCareService"
+            android:exported="false"
+            android:process=":takecareservice" />
+
     </application>
 
 </manifest>

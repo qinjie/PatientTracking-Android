@@ -91,7 +91,7 @@ public class MapActivity extends BaseActivity implements MapFragment.OnResidentT
     @Override
     public void onResidentTouched(Resident resident) {
         Intent intent = new Intent(this, ResidentActivity.class);
-        intent.putExtra(Preferences.resident_idTag, resident.getId());
+        intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
         this.startActivityForResult(intent, 0);
     }
 }

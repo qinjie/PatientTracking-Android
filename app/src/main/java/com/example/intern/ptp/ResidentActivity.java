@@ -96,7 +96,7 @@ public class ResidentActivity extends BaseActivity implements MapFragment.OnResi
 
         toggleGroup.setOnCheckedChangeListener(toggleListener);
 
-        String residentId = this.getIntent().getStringExtra(Preferences.resident_idTag);
+        String residentId = this.getIntent().getStringExtra(Preferences.RESIDENT_ID);
 
         refreshView(residentId);
     }

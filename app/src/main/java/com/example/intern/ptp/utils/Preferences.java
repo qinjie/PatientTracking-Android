@@ -38,7 +38,7 @@ public class Preferences {
     public static final String FCM_token_statusTag = "Resident_Tracking.FCM_token_status";
 
     // tag for sending resident id through intents
-    public static final String resident_idTag = "Resident_Tracking.id";
+    public static final String RESIDENT_ID = "Resident_Tracking.id";
 
     // tag for sending alert id through intents
     public static final String notify_idTag = "Resident_Tracking_notification";
@@ -66,6 +66,7 @@ public class Preferences {
 
     // tag for checking whether the user has received all untaken care notification from server after the user logs in
     public static final String first_login_alert_statusTag = "Resident_Tracking.first_login_alert_status";
+
 
     // whether there is a dialog on screen
     public static boolean isDialog = false;

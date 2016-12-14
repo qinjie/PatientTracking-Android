@@ -73,7 +73,7 @@ public class NearestResidentFragment extends BaseFragment {
                             @Override
                             public void onClick(View v) {
                                 Intent intent = new Intent(activity, ResidentActivity.class);
-                                intent.putExtra(Preferences.resident_idTag, resident.getId());
+                                intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
                                 startActivity(intent);
                             }
                         });

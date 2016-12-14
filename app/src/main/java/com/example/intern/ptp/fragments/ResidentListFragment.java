@@ -159,7 +159,7 @@ public class ResidentListFragment extends BaseFragment {
                 Resident resident = (Resident) adapter.getItem(position);
 
                 Intent intent = new Intent(activity, ResidentActivity.class);
-                intent.putExtra(Preferences.resident_idTag, resident.getId());
+                intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
                 activity.startActivity(intent);
             }
         });
