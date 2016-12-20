@@ -15,6 +15,7 @@ import com.example.intern.ptp.network.models.LoginResult;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
@@ -27,7 +28,7 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.login_password)
     EditText mPasswordView;
 
-    private String username, password, MAC;
+    private String username, password;
     private SharedPreferences pref;
 
     @Override
@@ -50,11 +51,6 @@ public class LoginActivity extends BaseActivity {
 
         // get password stored in the Shared Preferences
         password = pref.getString("password", "");
-
-        // get MAC address of the device
-        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wInfo = wifiManager.getConnectionInfo();
-        MAC = wInfo.getMacAddress();
 
         // set username and password to the two text views that receive input username and password form user
         // in order to help user save time
@@ -89,7 +85,7 @@ public class LoginActivity extends BaseActivity {
         showProgress(true);
 
         AuthenticationClient service = AuthenticationClient.getClient();
-        service.login(this, new LoginInfo(username, password, MAC));
+        service.login(this, new LoginInfo(username, password, FirebaseInstanceId.getInstance().getToken()));
     }
 
     private void login(LoginResult result) {

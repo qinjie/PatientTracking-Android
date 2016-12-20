@@ -66,12 +66,7 @@ public class Preferences {
 
     // tag for checking whether the user has received all untaken care notification from server after the user logs in
     public static final String first_login_alert_statusTag = "Resident_Tracking.first_login_alert_status";
-
-
-    // whether there is a dialog on screen
-    public static boolean isDialog = false;
-
-
+    
     /**
      * go to log in screen
      */
@@ -134,20 +129,16 @@ public class Preferences {
     public static void checkFcmTokenAndFirstLoginAlertStatus(final Context context) {
         try {
             // retrieve FCM token status and data from Shared Preferences
-            String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString(Preferences.FCM_tokenTag, "");
+            final String fcmToken = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getString(Preferences.FCM_tokenTag, "");
             boolean fcmTokenStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean(Preferences.FCM_token_statusTag, false);
 
             // if there is a registered FCM token
             if (!fcmToken.equalsIgnoreCase("")) {
-                // get MAC address of the device
-                WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-                WifiInfo wInfo = wifiManager.getConnectionInfo();
-                final String macAddress = wInfo.getMacAddress();
 
                 // if FCM token has been sent to server successfully
                 if (fcmTokenStatus) {
                     // make sure user has received all untaken care notification from server after login
-                    notifyUntakenCareAlerts(context, macAddress);
+                    notifyUntakenCareAlerts(context, fcmToken);
                     return;
                 }
 
@@ -155,7 +146,7 @@ public class Preferences {
                 ServerApi api = ServiceGenerator.createService(ServerApi.class, context);
 
                 // create request object to send FCM token to server
-                Call<String> call = api.setFCMToken(new FCMInfo(macAddress, fcmToken));
+                Call<String> call = api.setFCMToken(new FCMInfo(fcmToken));
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
@@ -166,7 +157,7 @@ public class Preferences {
                                 context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).edit().putBoolean(Preferences.FCM_token_statusTag, true).apply();
 
                                 // make sure user has received all untaken care notification from server after login
-                                notifyUntakenCareAlerts(context, macAddress);
+                                notifyUntakenCareAlerts(context, fcmToken);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -188,7 +179,7 @@ public class Preferences {
     /**
      * request all untakencare alerts from server
      */
-    private static void notifyUntakenCareAlerts(final Context context, String macAddress) {
+    private static void notifyUntakenCareAlerts(final Context context, String fcmToken) {
         try {
             // check first login alert status
             boolean firstLoginAlertStatus = context.getSharedPreferences(Preferences.SharedPreferencesTag, Preferences.SharedPreferences_ModeTag).getBoolean(Preferences.first_login_alert_statusTag, false);
@@ -199,7 +190,7 @@ public class Preferences {
             ServerApi api = ServiceGenerator.createService(ServerApi.class, context);
 
             // create request object to request all untaken care alerts from server
-            Call<String> call = api.notifyUntakenCareAlerts(macAddress);
+            Call<String> call = api.notifyUntakenCareAlerts(fcmToken);
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
