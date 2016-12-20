@@ -22,6 +22,7 @@ import com.example.intern.ptp.network.models.PasswordChangeInfo;
 import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.bus.response.ServerError;
 import com.example.intern.ptp.utils.bus.response.ServerResponse;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
@@ -121,15 +122,10 @@ public class PasswordChangeFragment extends BaseFragment {
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             try {
-                                // get MAC address of the device
-                                WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
-                                WifiInfo wInfo = wifiManager.getConnectionInfo();
-                                final String macAddress = wInfo.getMacAddress();
-
                                 showProgress(true);
 
                                 UserClient userService = UserClient.getClient();
-                                userService.changePassword(getActivity(), new PasswordChangeInfo(username, currentPassword, newPassword, macAddress));
+                                userService.changePassword(getActivity(), new PasswordChangeInfo(username, currentPassword, newPassword, FirebaseInstanceId.getInstance().getToken()));
 
                             } catch (Exception e) {
 

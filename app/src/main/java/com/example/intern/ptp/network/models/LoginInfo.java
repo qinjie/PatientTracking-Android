@@ -10,14 +10,14 @@ public class LoginInfo {
     @SerializedName("password")
     @Expose
     private String password;
-    @SerializedName("mac_address")
+    @SerializedName("fcm_token")
     @Expose
-    private String macAddress;
+    private String fcmToken;
 
-    public LoginInfo(String username, String password, String macAddress) {
+    public LoginInfo(String username, String password, String fcmToken) {
         this.username = username;
         this.password = password;
-        this.macAddress = macAddress;
+        this.fcmToken = fcmToken;
     }
 
     /**
@@ -49,17 +49,17 @@ public class LoginInfo {
     }
 
     /**
-     * @return The macAddress
+     * @return The fcmToken
      */
-    public String getMacAddress() {
-        return macAddress;
+    public String getFcmToken() {
+        return fcmToken;
     }
 
     /**
-     * @param macAddress The MAC
+     * @param fcmToken The FCM Token
      */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
 }

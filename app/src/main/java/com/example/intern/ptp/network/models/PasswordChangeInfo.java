@@ -13,15 +13,15 @@ public class PasswordChangeInfo {
     @SerializedName("new_password")
     @Expose
     private String newPassword;
-    @SerializedName("mac_address")
+    @SerializedName("fcm_token")
     @Expose
-    private String macAddress;
+    private String fcmToken;
 
-    public PasswordChangeInfo(String username, String currentPassword, String newPassword, String macAddress) {
+    public PasswordChangeInfo(String username, String currentPassword, String newPassword, String fcmToken) {
         this.username = username;
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
-        this.macAddress = macAddress;
+        this.fcmToken = fcmToken;
     }
 
     /**
@@ -67,16 +67,16 @@ public class PasswordChangeInfo {
     }
 
     /**
-     * @return The macAddress
+     * @return The fcmToken
      */
-    public String getMacAddress() {
-        return macAddress;
+    public String getFcmToken() {
+        return fcmToken;
     }
 
     /**
-     * @param macAddress The mac_address
+     * @param fcmToken The FCM Token
      */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }

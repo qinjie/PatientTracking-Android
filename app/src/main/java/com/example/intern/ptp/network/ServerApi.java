@@ -70,7 +70,7 @@ public interface ServerApi {
 
     // get notified by untakencare notifications
     @POST("user/alertuntakencare")
-    Call<String> notifyUntakenCareAlerts(@Query("mac_address") String macAddress);
+    Call<String> notifyUntakenCareAlerts(@Query("fcm_token") String fcmToken);
 
     // user takes care of an alert
     @POST("user/takecare")
