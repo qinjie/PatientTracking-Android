@@ -6,6 +6,8 @@ import com.example.intern.ptp.utils.Preferences;
 import com.example.intern.ptp.utils.UserManager;
 import com.example.intern.ptp.utils.bus.BusManager;
 import com.example.intern.ptp.utils.bus.response.ServerError;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.otto.Bus;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -25,11 +28,15 @@ public class ServiceGenerator {
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
     // build base URL for the API service and add converter factory for serialization and deserialization of objects
+
+    private static Gson gson = new GsonBuilder()
+            .setLenient()
+            .create();
+
     private static Retrofit.Builder builder =
             new Retrofit.Builder()
                     .baseUrl(API_BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create());
-
+                    .addConverterFactory(GsonConverterFactory.create(gson));
 
     /**
      * create an API service related to an API interface
@@ -45,6 +52,11 @@ public class ServiceGenerator {
         final String token = UserManager.getSessionToken(context);
 
         if (token != null) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            httpClient.addInterceptor(loggingInterceptor);
+
             httpClient.addInterceptor(new Interceptor() {
                 @Override
                 public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -78,7 +90,6 @@ public class ServiceGenerator {
                 return response;
             }
         });
-
 
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = builder.client(client).build();
