@@ -5,8 +5,6 @@ import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
 import com.example.intern.ptp.BuildConfig;
@@ -66,7 +64,7 @@ public class Preferences {
 
     // tag for checking whether the user has received all untaken care notification from server after the user logs in
     public static final String first_login_alert_statusTag = "Resident_Tracking.first_login_alert_status";
-    
+
     /**
      * go to log in screen
      */
