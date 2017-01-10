@@ -27,7 +27,7 @@ android {
         }
         staging {
             applicationId "com.example.intern.ptp.develop"
-            buildConfigField 'String', 'API_ROOT', '"http://153.20.44.136/patient-tracking-web"'
+            buildConfigField 'String', 'API_ROOT', '"http://128.199.93.67/PatientTracking-Web"'
         }
     }
 }
