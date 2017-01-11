@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,18 +24,31 @@ import com.example.intern.ptp.services.NearestService;
 import com.example.intern.ptp.utils.Preferences;
 
 import butterknife.BindView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NearestResidentFragment extends BaseFragment {
 
-    @BindView(R.id.tvResident)
-    TextView tvResident;
+    @BindView(R.id.nearest_detected_layout)
+    View detectedLayout;
 
-    @BindView(R.id.tvDistance)
-    TextView tvDistance;
+    @BindView(R.id.nearest_detected_image)
+    CircleImageView detectedImage;
+
+    @BindView(R.id.nearest_detected_name)
+    TextView detectedName;
+
+    @BindView(R.id.nearest_detected_distance)
+    TextView detectedDistance;
+
+    @BindView(R.id.nearest_scanning_layout)
+    View scanningLayout;
+
+    @BindView(R.id.nearest_scanning_image)
+    CircleImageView scanningImage;
+
 
     private Activity activity;
     private String username;
-    private boolean red = true;
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
@@ -67,9 +80,13 @@ public class NearestResidentFragment extends BaseFragment {
                 // if successfully receive the nearest resident from server
                 final Resident resident = intent.getParcelableExtra(Preferences.nearest_residentTag);
                 if (resident != null) {
-                    tvResident.setText(resident.getFirstname() + " " + resident.getLastname());
                     if (resident.getId() != null) {
-                        tvResident.setOnClickListener(new View.OnClickListener() {
+                        detectedLayout.setVisibility(View.VISIBLE);
+                        scanningLayout.setVisibility(View.GONE);
+
+                        detectedName.setText(resident.getFirstname() + " " + resident.getLastname());
+
+                        detectedName.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent intent = new Intent(activity, ResidentActivity.class);
@@ -77,16 +94,19 @@ public class NearestResidentFragment extends BaseFragment {
                                 startActivity(intent);
                             }
                         });
+
+
+                        String profilePicture = "profile" + resident.getId();
+                        Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
+
+                        if (image == null) {
+                            image = context.getDrawable(context.getResources().getIdentifier("profile31", "drawable", context.getPackageName()));
+                        }
+
+                        detectedImage.setImageDrawable(image);
+
+                        detectedDistance.setText(resident.getDistance());
                     }
-                    tvDistance.setText(resident.getDistance());
-                    if (red) {
-                        tvResident.setTextColor(Color.RED);
-                        tvDistance.setTextColor(Color.RED);
-                    } else {
-                        tvResident.setTextColor(Color.BLUE);
-                        tvDistance.setTextColor(Color.BLUE);
-                    }
-                    red = !red;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,7 +172,7 @@ public class NearestResidentFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_nearest, container, false);
+        return inflater.inflate(R.layout.fragment_nearest2, container, false);
     }
 
     @Override

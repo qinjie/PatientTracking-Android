@@ -55,4 +55,6 @@
     <string name="error_title_login_failed">Login Failed</string>
     <string name="error_message_login_failed">Network connection unavailable.\nPlease check your data connection and try again.</string>
     <string name="error_could_not_load_map">Sorry we have been unable to load the map.\nPlease check your data connection and try again.</string>
+    <string name="catching_signal">Catching the signal &#8230;</string>
+    <string name="not_the_nearest_resident">This is not the nearest resident</string>
 </resources>
