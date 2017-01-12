@@ -48,6 +48,7 @@ public class NearestResidentFragment extends BaseFragment {
     @BindView(R.id.nearest_scanning_image)
     CircleImageView scanningImage;
 
+    private boolean showingBack = false;
 
     private Activity activity;
     private String username;
@@ -232,4 +233,27 @@ public class NearestResidentFragment extends BaseFragment {
         super.onDetach();
     }
 
+    private void flipCard() {
+        if (showingBack) {
+            getFragmentManager().popBackStack();
+            return;
+        }
+
+        // Flip to the back.
+        showingBack = true;
+
+        getFragmentManager()
+                .beginTransaction()
+
+                .setCustomAnimations(
+                        R.animator.flip_right_in,
+                        R.animator.flip_right_out,
+                        R.animator.flip_left_in,
+                        R.animator.flip_left_out)
+
+
+                .replace(R.id.container, new CardBackFragment())
+                .addToBackStack(null)
+                .commit();
+    }
 }
