@@ -1,91 +1,81 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.intern.ptp.fragments.NearestResidentFragment">
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:id="@+id/nearest_scanning_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/nearest_scanning_image"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:src="@drawable/female"
+            app:civ_border_color="@color/grey"
+            app:civ_border_width="1dp" />
+
+        <TextView
+            android:id="@+id/nearest_scanning_title"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/catching_signal" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/nearest_detected_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_centerInParent="true"
+            android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="5dp"
-                android:gravity="center_vertical"
-                android:textSize="20dp"
-                android:text="Resident: "
-                android:lines="2"
-                android:textColor="@android:color/darker_gray" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="5dp"
-                android:background="@android:color/darker_gray"
-                android:layout_weight="1" />
-
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/nearest_detected_image"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:src="@drawable/profile30"
+                app:civ_border_color="@color/grey"
+                app:civ_border_width="2dp" />
 
             <TextView
+                android:id="@+id/nearest_detected_name"
+                style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:gravity="center_vertical"
-                android:layout_margin="5dp"
-                android:lines="2"
-                android:textSize="20dp"
-                android:text="Distance (m): "
-                android:textColor="@android:color/darker_gray" />
+                android:layout_marginTop="8dp"
+                android:text="Peter Pan" />
 
+            <TextView
+                android:id="@+id/nearest_detected_distance"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="12m"
+                android:textColor="@color/grey" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:id="@+id/nearest_recatching_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="25"
-            android:orientation="vertical">
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:text="@string/not_the_nearest_resident" />
 
-            <TextView
-                android:id="@+id/tvResident"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:gravity="center_vertical"
-                android:textSize="20dp"
-                android:lines="2"
-                android:textColor="#0000ff" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_margin="5dp"
-                android:background="@android:color/darker_gray"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/tvDistance"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:layout_margin="5dp"
-                android:textSize="20dp"
-                android:lines="2"
-                android:textColor="#0000ff" />
-
-        </LinearLayout>
-    </LinearLayout>
-</RelativeLayout>
+    </RelativeLayout>
+</FrameLayout>

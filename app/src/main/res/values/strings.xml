@@ -57,4 +57,5 @@
     <string name="error_could_not_load_map">Sorry we have been unable to load the map.\nPlease check your data connection and try again.</string>
     <string name="catching_signal">Catching the signal &#8230;</string>
     <string name="not_the_nearest_resident">This is not the nearest resident</string>
+    <string name="nearest_distance">%1$sm</string>
 </resources>

@@ -23,6 +23,8 @@ import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.services.NearestService;
 import com.example.intern.ptp.utils.Preferences;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -105,7 +107,7 @@ public class NearestResidentFragment extends BaseFragment {
 
                         detectedImage.setImageDrawable(image);
 
-                        detectedDistance.setText(resident.getDistance());
+                        detectedDistance.setText(String.format(Locale.getDefault(), getString(R.string.nearest_distance), resident.getDistance()));
                     }
                 }
             } catch (Exception e) {
@@ -172,7 +174,7 @@ public class NearestResidentFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_nearest2, container, false);
+        return inflater.inflate(R.layout.fragment_nearest, container, false);
     }
 
     @Override
