@@ -26,6 +26,7 @@ import com.example.intern.ptp.utils.Preferences;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NearestResidentFragment extends BaseFragment {
@@ -52,6 +53,8 @@ public class NearestResidentFragment extends BaseFragment {
 
     private Activity activity;
     private String username;
+    Resident resident;
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
@@ -84,20 +87,11 @@ public class NearestResidentFragment extends BaseFragment {
                 final Resident resident = intent.getParcelableExtra(Preferences.nearest_residentTag);
                 if (resident != null) {
                     if (resident.getId() != null) {
+                        NearestResidentFragment.this.resident = resident;
                         detectedLayout.setVisibility(View.VISIBLE);
                         scanningLayout.setVisibility(View.GONE);
 
                         detectedName.setText(resident.getFirstname() + " " + resident.getLastname());
-
-                        detectedName.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(activity, ResidentActivity.class);
-                                intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
-                                startActivity(intent);
-                            }
-                        });
-
 
                         String profilePicture = "profile" + resident.getId();
                         Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
@@ -107,10 +101,13 @@ public class NearestResidentFragment extends BaseFragment {
                         }
 
                         detectedImage.setImageDrawable(image);
-
                         detectedDistance.setText(String.format(Locale.getDefault(), getString(R.string.nearest_distance), resident.getDistance()));
+
+                        return;
                     }
                 }
+
+                NearestResidentFragment.this.resident = null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -233,27 +230,21 @@ public class NearestResidentFragment extends BaseFragment {
         super.onDetach();
     }
 
-    private void flipCard() {
-        if (showingBack) {
-            getFragmentManager().popBackStack();
-            return;
+    @OnClick(R.id.nearest_detected_image)
+    public void onResidentImageClicked() {
+        goToResidentProfile();
+    }
+
+    @OnClick(R.id.nearest_detected_name)
+    public void onResidentNameClicked() {
+        goToResidentProfile();
+    }
+
+    private void goToResidentProfile() {
+        if(resident != null) {
+            Intent intent = new Intent(activity, ResidentActivity.class);
+            intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
+            startActivity(intent);
         }
-
-        // Flip to the back.
-        showingBack = true;
-
-        getFragmentManager()
-                .beginTransaction()
-
-                .setCustomAnimations(
-                        R.animator.flip_right_in,
-                        R.animator.flip_right_out,
-                        R.animator.flip_left_in,
-                        R.animator.flip_left_out)
-
-
-                .replace(R.id.container, new CardBackFragment())
-                .addToBackStack(null)
-                .commit();
     }
 }
