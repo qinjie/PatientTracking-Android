@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,19 +23,38 @@ import com.example.intern.ptp.network.models.Resident;
 import com.example.intern.ptp.services.NearestService;
 import com.example.intern.ptp.utils.Preferences;
 
+import java.util.Locale;
+
 import butterknife.BindView;
+import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NearestResidentFragment extends BaseFragment {
 
-    @BindView(R.id.tvResident)
-    TextView tvResident;
+    @BindView(R.id.nearest_detected_layout)
+    View detectedLayout;
 
-    @BindView(R.id.tvDistance)
-    TextView tvDistance;
+    @BindView(R.id.nearest_detected_image)
+    CircleImageView detectedImage;
+
+    @BindView(R.id.nearest_detected_name)
+    TextView detectedName;
+
+    @BindView(R.id.nearest_detected_distance)
+    TextView detectedDistance;
+
+    @BindView(R.id.nearest_scanning_layout)
+    View scanningLayout;
+
+    @BindView(R.id.nearest_scanning_image)
+    CircleImageView scanningImage;
+
+    private boolean showingBack = false;
 
     private Activity activity;
     private String username;
-    private boolean red = true;
+    Resident resident;
+
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(final Context context, Intent intent) {
@@ -67,27 +86,28 @@ public class NearestResidentFragment extends BaseFragment {
                 // if successfully receive the nearest resident from server
                 final Resident resident = intent.getParcelableExtra(Preferences.nearest_residentTag);
                 if (resident != null) {
-                    tvResident.setText(resident.getFirstname() + " " + resident.getLastname());
                     if (resident.getId() != null) {
-                        tvResident.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(activity, ResidentActivity.class);
-                                intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
-                                startActivity(intent);
-                            }
-                        });
+                        NearestResidentFragment.this.resident = resident;
+                        detectedLayout.setVisibility(View.VISIBLE);
+                        scanningLayout.setVisibility(View.GONE);
+
+                        detectedName.setText(resident.getFirstname() + " " + resident.getLastname());
+
+                        String profilePicture = "profile" + resident.getId();
+                        Drawable image = context.getDrawable(context.getResources().getIdentifier(profilePicture, "drawable", context.getPackageName()));
+
+                        if (image == null) {
+                            image = context.getDrawable(context.getResources().getIdentifier("profile31", "drawable", context.getPackageName()));
+                        }
+
+                        detectedImage.setImageDrawable(image);
+                        detectedDistance.setText(String.format(Locale.getDefault(), getString(R.string.nearest_distance), resident.getDistance()));
+
+                        return;
                     }
-                    tvDistance.setText(resident.getDistance());
-                    if (red) {
-                        tvResident.setTextColor(Color.RED);
-                        tvDistance.setTextColor(Color.RED);
-                    } else {
-                        tvResident.setTextColor(Color.BLUE);
-                        tvDistance.setTextColor(Color.BLUE);
-                    }
-                    red = !red;
                 }
+
+                NearestResidentFragment.this.resident = null;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -210,4 +230,21 @@ public class NearestResidentFragment extends BaseFragment {
         super.onDetach();
     }
 
+    @OnClick(R.id.nearest_detected_image)
+    public void onResidentImageClicked() {
+        goToResidentProfile();
+    }
+
+    @OnClick(R.id.nearest_detected_name)
+    public void onResidentNameClicked() {
+        goToResidentProfile();
+    }
+
+    private void goToResidentProfile() {
+        if(resident != null) {
+            Intent intent = new Intent(activity, ResidentActivity.class);
+            intent.putExtra(Preferences.RESIDENT_ID, resident.getId());
+            startActivity(intent);
+        }
+    }
 }
