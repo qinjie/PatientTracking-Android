@@ -58,4 +58,6 @@
     <string name="catching_signal">Catching the signal &#8230;</string>
     <string name="not_the_nearest_resident">This is not the nearest resident</string>
     <string name="nearest_distance">%1$sm</string>
+    <string name="action_show_profile_picture">Show profile picture</string>
+    <string name="action_hide_profile_picture">Hide profile picture</string>
 </resources>

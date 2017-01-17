@@ -59,7 +59,7 @@ public class MapListFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         try {
-            inflater.inflate(R.menu.menu_fragment_map, menu);
+            inflater.inflate(R.menu.menu_fragement_maplist, menu);
             ActionBar actionBar = activity.getActionBar();
             if (actionBar != null) {
                 // set title for action bar and search it

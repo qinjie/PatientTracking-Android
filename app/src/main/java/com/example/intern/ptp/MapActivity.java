@@ -16,6 +16,7 @@ import com.example.intern.ptp.utils.Preferences;
 
 public class MapActivity extends BaseActivity implements MapFragment.OnResidentTouchListener {
 
+    MenuItem showProfilePictureMenuItem;
     Fragment mapFragment;
 
     @Override
@@ -56,6 +57,20 @@ public class MapActivity extends BaseActivity implements MapFragment.OnResidentT
                 case android.R.id.home:
                     this.finish();
                     return true;
+
+                case R.id.action_show_profile_picture:
+                    showProfilePictureMenuItem = item;
+                    String currentMenuItemTitle = showProfilePictureMenuItem.getTitle().toString();
+
+                    if (currentMenuItemTitle.equals(getString(R.string.action_show_profile_picture))) {
+                        showProfilePictureMenuItem.setTitle(getString(R.string.action_hide_profile_picture));
+                    } else {
+                        showProfilePictureMenuItem.setTitle(getString(R.string.action_show_profile_picture));
+                    }
+
+                    ((MapFragment) mapFragment).toggleProfilePicture();
+                    return true;
+
                 default:
                     return super.onOptionsItemSelected(item);
             }
@@ -69,6 +84,7 @@ public class MapActivity extends BaseActivity implements MapFragment.OnResidentT
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         try {
+            getMenuInflater().inflate(R.menu.menu_activity_map, menu);
 
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {

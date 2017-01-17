@@ -42,10 +42,10 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     private static final double MIN_RESIDENT_IMAGE_INCHES = 5d;
     private static final int ANIMATION_DURATION = 1000;
 
-
     private Paint circlePaint;
     private Paint textPaint;
 
+    private boolean shouldShowProfilePicture = false;
     private boolean isReady = false;
 
     public LocatorMapPhotoView(Context context, AttributeSet attrs) {
@@ -192,7 +192,10 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
         float residentX = convertResidentX(marker.x, scale);
         float residentY = convertResidentY(marker.y, scale);
 
-        if (bottomSideDisplayInch * scale > MIN_RESIDENT_IMAGE_INCHES && marker.shouldShowDisplayName) {
+        if (bottomSideDisplayInch * scale > MIN_RESIDENT_IMAGE_INCHES
+                && marker.shouldShowDisplayName
+                && shouldShowProfilePicture
+                ) {
             int imageRadius = (int) (SCALED_PROFILE_IMAGE_SIZE * scale);
 
             Bitmap croppedBitmap = getCroppedBitmap(marker.image, imageRadius * 2, imageRadius * 2);
@@ -270,6 +273,11 @@ public class LocatorMapPhotoView extends PhotoView implements PhotoViewAttacher.
     public void ready() {
         isReady = true;
         displayRect = getDisplayRect();
+    }
+
+    public void toggleProfilePicture() {
+        shouldShowProfilePicture = !shouldShowProfilePicture;
+        invalidate();
     }
 
     private class ResidentMarker {
