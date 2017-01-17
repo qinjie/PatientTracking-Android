@@ -190,6 +190,10 @@ public class MapFragment extends BaseFragment implements PhotoViewAttacher.OnVie
         }
     }
 
+    public void toggleProfilePicture() {
+        photoView.toggleProfilePicture();
+    }
+
     public interface OnResidentTouchListener {
         void onResidentTouched(Resident resident);
     }
